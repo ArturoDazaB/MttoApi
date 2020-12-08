@@ -1,0 +1,201 @@
+﻿﻿========================================================================================================================
+========================================================================================================================
+--------------------------------------------------CONTROLADORES---------------------------------------------------------
+========================================================================================================================
+========================================================================================================================
+
+1) ConfiguracionController: Este controlador esta destinado a usarse en las paginas "PaginaConfiguracion" y 
+   "PaginaConfiguracionAdmin. 
+   
+   Este controlador es el encargado de recibir los objetos DTO que contendran la nueva informacion del usuario a 
+   modificar.
+
+   A continuacion se listaran los URL que permitiran acceder a dicho controlador:
+     
+     a) localhost:12345/mttoapp/configuracion/usuario/{cedula},
+        localhost:12345/mttoapp/configuracion/usu/{cedula}.
+
+        Este metodo recibira como parametro un numero de cedula del tipo double (parametro que se obtiene del URL),
+        y un objeto JSON del tipo "ConfiguracionU" con los campos modificables (Telefono, Correo, Userpassword).
+
+        Si todos los condicionales se cumplen y el objeto puede ser modificado este metodo retornara el codigo
+        de estatus 200 (Ok) junto con un objeto JSON del tipo "InformacionGeneral" con todos la informacion (incluso
+        los nuevos datos) del usuario que se acaba de modificar.
+
+    b) localhost:12345/mttoapp/configuracion/administrator/{cedula},
+       localhost:12345/mttoapp/configuracion/adm/{cedula}
+
+       Este metodo funciona de manera analoga al metodo anterior, con la difeencia de que el objeto JSON es del tipo
+       "ConfiguracionA" (Campos modificables: Nombres, Apellidos, Fecha Nacimiento, Telefono, Correo, Username y 
+       Userpassword).
+
+       NOTA: ES IMPORTANTE RECARCAR QUE SOLO EL USUARIO ADMINISTRATOR ES Y DEBE SER EL UNICO USUARIO CON 
+             ACCESO A DICHO METODO.
+
+------------------------------------------------------------------------------------------------------------------------
+
+2) LogInController: Este controlador esta destinado a usarse en la pagina "PaginaPrincipal". Es el encargado de recibir
+   el objeto JSON del tipo "LogIn" (objeto que alberga el username y el password del usuario que desea ingresar).
+
+   A continuacion se listaran los URL que permitiran acceder a los metodos del controlador.
+
+     a) localhost:12345/mttoapp/login?username=<username>&password=<password>,
+        localhost:12345/mttoapp/login?USERNAME=<username>&PASSWORD=<password>.
+
+        Este metodo recibe como parametros el nombre de usuario y la password como parametros (ambos string). Retorna
+        tres valores distintos dependiendo de si se cumplen o no las condiciones:
+
+        *Ok(<DateTime> UltimaConexion): Se retorna el codigo de estatus 200 Ok junto con la fecha y hora de la
+        ultima conexion del usuario que acaba de ingresar (se cumplen todas las condiciones).
+
+        *BadRequest(<string> "Contraeña Incorrecta"): Se retorna el codigo de estatus 400 Bad Request (Mala Solicitd)
+        junto con un mensaje indicando que no se cumplio la validacion de la password enviada.
+
+        *NotFound(): Se retorna el codigo de estatus 404 NotFound (No Encontrado). Este mensaje indica que 
+        no se cumplio la validacion del username enviado.
+
+------------------------------------------------------------------------------------------------------------------------
+
+3) RegistroUsuariosController: Este controlador esta destiado a usarse en la pagina "PaginaRegistro". Es el encargado 
+   de recibir el objeto JSON del tipo "InformacionGeneral" (Clase que alberga dos propiedades del tipo "Personas" y 
+   del tipo "Usuarios") con toda la informacion del nuevo usuario a registrarse en la plataforma.
+
+   A continuacion se listaran los URL que permitiran acceder a los metodos del controlador.
+
+     a) localhost:12345/mttoapp/regitro.
+
+     Este metodo recibe como parametros (dentro del body o cuerpo del mensaje de solicutd HTTP) un objeto JSON del tipo
+     "InformacionGeneral" con todos los datos del nuevo usuario a registrar. 
+
+     Este metodo retorna tres respuestas HTTP:
+
+     *BadRequest(<string> mensaje): Se retorna el codigo de estatus 400 Bad Request (Mala Solicitud) junto con un 
+     mensaje indicando cual de las siguientes tres condiciones no se cumplio:
+
+        -BadRequest("Numero de cedula ya registrado: " + cedula);
+        -BadRequest("Numero de ficha ya registrado: " + ficha);
+        -BadRequest("Nombre de usuario ya registrado: " + username);
+
+    *BadRequest(<string> ex: Parecida al metodo anterior con la diferencia de que el mensaje retornado indica si 
+    existio un error dentro del servidor y el manejo de la data.
+
+    *Ok(): Se retorna el codido de estatus 200 Ok indicando que el usuario fue registrado satisfactoriamente.
+
+------------------------------------------------------------------------------------------------------------------------
+
+4) QueryAdminController: Este controlador esta destinado a usarse en la pagina "PaginaQueryAdmin". Es el encargado de 
+   retornar una lista con objetos del tipo "QueryAdmin" (Clase que alberga tres propiedades: Nombres, Apellidos, 
+   Cedula). 
+
+   A continacion se listaran los URL que permitiran acceder a los metodos del controlador.
+
+     a) localhost:12345/mttoapp/queryadmin/cedula,
+        localhost:12345/mttoapp/queryadmin/id.
+
+        Este metodo recibe como parametro dentro del URL el numero de cedula (ID) y retorna dos mensajes dependiendo
+        de la validacion de las condiciones>
+
+        *NotFound(): Se retorna el codigo de estatus 404 Not Found (No Encontrado), indicando asi que el numero ingresado
+        no tiene ninguna coincidencia con algun registro dentro de la tabla Personas.
+
+        *Ok(<List<QueryAdmin>> result): Se retorna el codigo de estatus 200 Ok junto con un objeto del tipo 
+        List<QueryAdmin> con todos los registros encontrados que coincidieran con el numero enviado como parametro (Se
+        cumple con la existencia de al menos un registro).
+
+    b) localhost:12345/mttoapp/queryadmin/ficha,
+       localhost:12345/mttoapp/queryadmin/numeroficha
+
+       Este metodo funciona de manera similar al metodo anterior, la unica diferencia es que en vez de realizar
+       la consulta por medio de una busqueda comparativa del numero de cedula (id) se utilizara el numero de ficha
+       como referencia. 
+
+    c) localhost:12345/mttoapp/queryadmin/nombres,
+       localhost:12345/mttoapp/queryadmin/nombre.
+
+       Similar a los metodos anteriores con la diferencia de que la referencia a usar para la consulta de los registros
+       es el Nombre(s) del usuario a buscar.
+    
+    d) localhost:12345/mttoapp/queryadmin/apellidos,
+       localhost:12345/mttoapp/queryadmin/apellido.
+
+       Similar a los metodos anteriores con la diferencia de que la referencia a usar para la consulta de los registros
+       es el Apellido(s) del usuario a buscar.
+
+    e) localhost:12345/mttoapp/queryadmin/username.
+
+       Similar a los metodos anteriores con la diferencia de que la referencia a usar para la consulta de los registros
+       es el Username del usuario a buscar.
+
+    f) localhost:12345/mttoapp/getinfo?cedula=<12345678>.
+
+       Este metodo recibe como parametro dentro del URL el numero de cedula del usuario a consultar y dependiendo de la 
+       validacion de las condiciones establecidas retornara tres mensajes distintos:
+
+       *BadRequest("Informacion no disponible"): Se retorna el codigo de estatus 400 Bad Request (Mala Solicitud) junto
+       con un mensaje indicando que la informacion no se encuentra disponible. 
+       -----------------------------------------------------------------------------------------------------------------
+       NOTA: ESTE MENSAJE ACTUALMENTE SOLO SE RETORNA SI SE SOLICITA LA INFORMACION DEL USUARIO "Administrator".
+       -----------------------------------------------------------------------------------------------------------------
+
+       *BadRequest(): Se retorna el codigo de estatus 400 Bad Request (Mala solicitud) indicando que el numero de cedula
+       no corresponde a ningun usuario o hubo algun error en algun intento de consulta de base de datos.
+
+       *Ok(<InformacionGeneral> info): Se retorna el codigo de estatus 200 Ok junto con un objeto del tipo
+       "InformacionGeneral" el cual contiene toda la informacion del usuario que posea el numero de cedula consultado.
+
+------------------------------------------------------------------------------------------------------------------------
+
+5) RegistroTablerosController: Este controllador esta destinado a ser llamado en la pagina "PaginaRegistroTablero". Es 
+   el controlador encargado de recibir un objeto JSON del tipo "Tableros" en el cuerpo de la solicitud HTTP y registrar
+   dicho tablero dentro de la base de datos y un objeto JSON del tipo List<Items> el cual representara los items 
+   asignados a dicho tablero.
+
+   A continuacion se listaran los URL que permitiran acceder a los metodos.
+
+     a) localhost:12345/mttoapp/registrotableros
+
+        Este metodo recibe como parametro dentro del URL [FromBody] un objeto JSON del tipo "RegistroTablero" con toda
+        la informacion del tablero y con la lista de elementos (items) que forman parte del tablero a describir. 
+
+        Este metodo retorna tres tipos de respuesta distintas (HTTP Response):
+
+        *BadRequest(<string> mensaje): Se retorna el codigo de estatus 400 Bad Request (Mala Solicitud) junto con un 
+         mensaje indicando cual de las siguientes tres condiciones no se cumplio:
+
+        -BadRequest("Tablero Id ya registrado: " + TableroId);
+        -BadRequest("SapId ya registrado: " + SapId);
+        -BadRequest("Codigo QR ya se encuentra registrado: " + CodigoQRData);
+
+        *BadRequest(<string> ex): Se retorna el codigo de estatus 400 Bad Request (Mala Solicitud) junto con el mensaje
+        de error (exception).
+
+        *Ok("Registro Exitoso"): Se retorna el codigo de estatus 200 Ok junto con un mensaje indicando que se realizo 
+        el registro de tablero exitosamente.
+
+------------------------------------------------------------------------------------------------------------------------
+
+6) ConsultaTablerosController: Este controlador esta destinado a ser llamados en la pagina "PaginaConsultaTableros". Es
+   el controlador encargado de recibir [FromBody], en sus dos metodos, un objeto JSON del tipo "RequestConsultaTablero",
+   el cual contendra la informacion de que usuario es el que se encuentra realizando la solicitud HTTP y el TableroId o 
+   el SapId del tablero que se desea consultar (jamas ambas).
+
+   A continuacion se listaran los URL que permitiran acceder a los metodos de dicho tablero
+
+   a) localhost:12345/mttoapp/consultatableros/tableroid
+
+      Este metodo recibe en el cuerpo (body) de la solicitud HTTP un objeto JSON del tipo "RequestConsultaTablero" con
+      el Id del usuario que acaba de realizar la solicitud y el Id del tablero que se desea consultar. Este metodo es
+      llamado cuando se realiza consulta por escaneo y consulta por tablero id.
+
+      Este metodo retorna tres tipos de respuesta:
+
+      *BadRequest(<string> exception): Se retorna el codigo de estatus 400 Bad Request (Mala Solicitud) junto con el 
+      error o excepcion que ocurrio durante la consulta en la base de datos.
+
+      *NotFound(<string> "No se encontro registro de tableros con el siguiente Id: " + info.TableroId): Se retorna
+      el codigo de estatus 404 Not Found (No Encontrado) junto con un mensaje indicando que el Id del tablero a consultar
+      no se encuentra registrado.
+
+      *Ok(<RegistroTablero> Tablero): Se retorna el codigo de estatus 200 Ok junto con un objeto JSON del tipo 
+      "RegistroTablero" con toda la informacion basica del tablero consultado y los items/elementos que forman parte
+      del tablero.

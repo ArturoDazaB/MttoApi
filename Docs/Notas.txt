@@ -1,0 +1,17 @@
+﻿﻿========================================================================================================================
+========================================================================================================================
+-----------------------------------------------------NOTAS--------------------------------------------------------------
+========================================================================================================================
+========================================================================================================================
+
+* Se deben crear las siguientes clases dentro de la aplicacion:
+	- ConfiguracionU: Contiene los campos modificables a nivel de un usuario de bajo nivel.
+	- ConfiguracionA: Contiene los campos modificables a nivel de un usuario de alto nivel (usuario administrator).
+	- InformacionGeneral: Contiene dos parametros del tipo "Personas" y "Usuarios".
+	- LogInResponse: Contiene dos campos del tipo string destinados a contenr el nombre de usuario y la contraseña del 
+	  usuario que desea ingrear a la plataforma.
+	- QueryAdmin: Contiene los parametros Cedula (double), Nombres y Apellidos (string).
+	- RequestConsultaTablero: Contiene los parametros => UserId (Id del usuario que realiza la consulta), TableroId
+	  con el Id del tablero a consultar y SapId junto con el Id de SAP del tablero a consultar.
+	- RegistroTablero: Contiene toda la informacion basica del tablero a registrar o a consultar junto con la lista
+	  de items que forman parte del tablero.

@@ -1,0 +1,328 @@
+﻿﻿========================================================================================================================
+========================================================================================================================
+--------------------------------------------------BITACORA--------------------------------------------------------------
+========================================================================================================================
+========================================================================================================================
+            DB Version                               =                             NOTAS
+------------------------------------------------------------------------------------------------------------------------
+           *MTTOAPP_V1(DB4_2_4_2)                    =  *Se creo el archivo "Tablas.cs", el cual contendra las clases
+                                                     =  asignadas a representar cada una de las tablas de la base de
+                                                     =  datos (MTTOAPP_V1). Este archivo se encuentra contenido en la
+                                                     =  carpeta "Model" del proyecto.
+                                                     =
+                                                     =  *Se creo el archivo "MTTOAPP_V1Context.cs" el cual contendra 
+                                                     =  a la clase que comparte el mismo nombre. Esta clase es 
+                                                     =  derivada de la clase "DbContext", la cual es una clase
+                                                     =  perteneciente a el paquete "EntityFrameworkCore". Una clase
+                                                     =  de este tipo, o derivada de este tipo representa una sesion 
+                                                     =  con la base de datos que puede ser usada para realizar 
+                                                     =  solicitudes sql (query), ademas de modelar las tablas 
+                                                     =  de la base de datos y mappearlas.
+                                                     =
+                                                     =  *Se creo el archivo "DTO.cs" (DTO = Data Transfer Object o
+                                                     =  Objeto de Transferencia de Datos). Este archivo albergara 
+                                                     =  a las clases que funcionaran como objetos del tipo DTO, los
+                                                     =  cuales se utilizaran cuando no se necesita manejar toda la
+                                                     =  informacion de una o mas tablas.
+                                                     =
+                                                     =  *Se crearon las clases "ConfiguracionU", "ConfiguracionA" (la
+                                                     =  cual es derivada de "ConfiguracionU") y "InformacionGeneral".
+                                                     =  La clase "InformacionGeneral" funciona como objeto modelo para
+                                                     =  el controlador "UserInfoController" (el cual se alberga en el
+                                                     =  archivo "UserInfoController.cs"). Dicha clase solo posee
+                                                     =  dos propiedades del tipo "Personas" y otra del tipo "Usuarios",
+                                                     =  asi, cuando se solicite toda la informacion de un usuario se
+                                                     =  recibira un solo objeto json del tipo "InformacionGeneral".
+                                                     =  (Este tipo de controllador esta diseñado para la pagina 
+                                                     =  "Configuracion" y "ConfiguracionAdmin" donde se necesita
+                                                     =  desplegar toda la informacion de un usuario).
+                                                     =
+                                                     =  Las clases "ConfiguracionU" y "ConfiguracionA" son objetos
+                                                     =  que serviran como molde para la informacion suministrada
+                                                     =  desde el cliente. Cuando se modifican datos desde la pagina
+                                                     =  "Configuracion" o "ConfiguracionAdmin" no se pueden modificar
+                                                     =  todos los campos de la informacion personal y la informacion
+                                                     =  de usuario del usuario que se desea modificar, en vez de eso
+                                                     =  se envian solo los parametros permitidos para modificar.
+                                                     =
+                                                     =  Se toma en cuenta dos clases por la misma razon de la exitencia
+                                                     =  de dos paginas para la modificacion de datos, donde 
+                                                     =  "ConfiguracionU" esta creada para obtener los campos modificables
+                                                     =  permitidos a un usuario distinto al administrator, mientras
+                                                     =  que la clase "ConfiguracionA" esta creada bajo la misma
+                                                     =  estructura que "ConfiguracionU" solo que con mas campos 
+                                                     =  modificables (Esto debido a que solo el administrator o
+                                                     =  administrador es el que puede cambiar mas campos).
+                                                     =
+                                                     =  *Se crearon los archivos: "PersonasController.cs",
+                                                     =  "UsuariosController.cs", "UserInfoController.cs" y 
+                                                     =  "ConfiguracionController.cs" los cuales albergaran las 
+                                                     =  clases "controlladores" llamadas de igual manera que sus
+                                                     =  archivos contenedores respectivamente.
+                                                     =
+                                                     =  Las rutas de estos controladores son:
+                                                     =    + PersonasController: mttoapp/personas
+                                                     =      - mttoapp/personas (Se obtienen todos los registros
+                                                     =        de la tabla "Personas").
+                                                     =
+                                                     =      - mttoapp/personas/cedula/12345678,
+                                                     =        mttoapp/personas/id/12345678 (Se obtiene un registro 
+                                                     =        especifico dentro de la tabla "Personas").
+                                                     =
+                                                     =      - mttoapp/personas/ficha/1234,
+                                                     =        mttoapp/numeroficha/1234 (Se obtiene un registro espe-
+                                                     =        cifico dentro de la tabla "Personas").
+                                                     =
+                                                     =    + UsuariosController: mttoapp/usuarios (Es importante aclarar
+                                                     =      que este controlador es un homologo al controlador anterior,
+                                                     =      es decir, sus solicitudes HTTP son semejantes).
+                                                     =
+                                                     =      - mttoapp/usuarios.
+                                                     =
+                                                     =      - mttoapp/usuarios/cedula/12345678,
+                                                     =        mttoapp/usuarios/id/12345678.
+                                                     =
+                                                     =      - mttoapp/usuarios/ficha/1234,
+                                                     =        mttoapp/usuarios/numeroficha/1234.
+                                                     =
+                                                     =    + UserInfoController: mttoapp/getinfo (Este controlador es 
+                                                     =      usado para obtener toda la informacion, personal y de 
+                                                     =      usuario, del usuario que se vaya a modificar en cualquiera
+                                                     =      de las pantallas de configuracion que exista dentro de la
+                                                     =      aplicacion. Es importante señalar se creo la clase 
+                                                     =      "InformacionGeneral" dentro del archivo "Tablas.cs").
+                                                     =
+                                                     =      - mttoapp/getinfo/cedula/1234567 (Se obtiene toda la infor-
+                                                     =        macion de un usuario mediante el numero de cedula).
+                                                     =
+                                                     =      - mttoapp/getinfo/ficha/1234,
+                                                     =        mttoapp/getinfo/numeroficha/1234 (Se obtiene toda la
+                                                     =        informacion de un usuario mediante el numero de cedula).
+                                                     =
+                                                     =    + ConfiguracionController: mttoapp/configuracion (Este
+                                                     =      controllador es usado para retornar los campos modificables
+                                                     =      de las tablas "Personas" y "Usuarios". Para estos se crea-
+                                                     =      ron las clases "ConfiguracionU" y "ConfiguracionA" tal como
+                                                     =      se explico en la entrada anterior).
+                                                     =
+                                                     =      - mttoapp/configuracion/usuario/12345678,
+                                                     =        mttoapp/configuracion/usu/12345678 (Metodo HTTP Put. Aqui
+                                                     =        se envia mediante en el URI un id -"Cedula"- y un objeto
+                                                     =        JSON del tipo "ConfiguracionU" con los datos a actualizar).
+                                                     =
+                                                     =      - mttoapp/configuracion/administrator/12345678,
+                                                     =        mttoapp/configuracion/adm/12345678 (Igual que el metodo
+                                                     =        anterior solo que envia un objeto JSON del tipo
+                                                     =        "ConfiguracionA").
+------------------------------------------------------------------------------------------------------------------------
+           *MTTOAPP_V3(DB4_2_4_2)                    =  *Se creo el archivo "LogInController.cs", el cual contendra a la
+                                                     =  la clase controlador de nombre homologo. La ruta para esta clase
+                                                     =  es: mttoapp/login. Esta clase esta diseñada para recibir como
+                                                     =  el nombre de usuario y la contraseña introducidos en la pagina 
+                                                     =  de inicio de la aplicacion. Actualmente solo posee un metodo 
+                                                     =  enlazado a la solicitud HTTP GET, el cual recibe dos parametros
+                                                     =  directamente en el URL de la solicitud:
+                                                     =
+                                                     =    - mttoapp/login?username=<username>&password=<password>,
+                                                     =      mttoapp/login?USERNAME=<username>&PASSWORD=<password>
+                                                     =
+                                                     =  Esta metodo retorna codigo de status HTTP:
+                                                     =
+                                                     =    - Ok(<DateTime>): Codigo de estatus 200 (Ok) con la ultima
+                                                     =      fecha y hora del usuario que acaba de logearse.
+                                                     =
+                                                     =    - BadRequest("Contraseña Incorrecta"): Codigo de estatus 
+                                                     =      400 (BadRequest): junto con una cadena de texto que 
+                                                     =      informando que la constraseña proporcionada es incorrecta.
+                                                     =
+                                                     =    - NotFound(): Codigo de estatus 400 (NotFound) indicando que
+                                                     =      el nombre de usuario proporcionado no existe.
+                                                     =
+                                                     =  Tambien es importante señalar que cada que se retorne el codigo
+                                                     =  de estatus Ok 200 se añade un nuevo registro a la tabla 
+                                                     =  ultimas conexiones
+                                                     =
+                                                     =  *Se creo el archivo "RegistroUsuariosController.cs", el cual 
+                                                     =  contendra la clase controlador de nombre homologo. La ruta para
+                                                     =  esta clase es: mttoapp/registro. Esta clase esta diseñada para
+                                                     =  recibir un objeto JSON del tipo "InformacionGeneral" con los 
+                                                     =  datos del nuevo usuario a registrar, todo mediante el un unico
+                                                     =  metodo con la etiqueta HTTP POST. El objeto JSON debe ser 
+                                                     =  enviado en el cuerpo de la solicitud. El URL para acceder a este
+                                                     =  controlador es:
+                                                     =
+                                                     =    - mttoapp/registro
+                                                     =
+                                                     =  Es importante señalar que este metodo retorna:
+                                                     =
+                                                     =    - BadRequest("Numero de cedula ya registrado"),
+                                                     =      BadRequest("Numero de ficha ya registrado"),
+                                                     =      BadRequest("Nombre de usuario ya registrado"),
+                                                     =      BadRequest(<Exception> ex).
+                                                     =
+                                                     =    - Ok().
+                                                     =
+                                                     =  *Se creo el archivo "RegistroTablerosController.cs", el cual 
+                                                     =  contendra la clase controlador de nombre homologo. Esta clase 
+                                                     =  posee un unico metodo enlazado con la solicitud HTTP POST, 
+                                                     =  recibiendo como parametro (dentro del cueerpo -body- de la 
+                                                     =  solicitud) un objeto JSON del tipo "Tableros" con toda la
+                                                     =  informacion del nuevo tablero a registrar. 
+                                                     =
+                                                     =  El URL para acceder al metodo de este controlador es:
+                                                     =
+                                                     =    - mttoapp/registrotableros
+                                                     =
+                                                     =  Este metodo retorna las siguientes respuestas HTTP:
+                                                     =
+                                                     =    - BadRequest("Tablero ID ya registrado"),
+                                                     =      BadRequest("SAP ID ya registrado"),
+                                                     =      BadRequest("Codigo QR Data ya registrado"),
+                                                     =      BadRequest(<Exception> ex).
+                                                     =
+                                                     =    - Ok().
+------------------------------------------------------------------------------------------------------------------------
+           *MTTOAPP_V5(DB4_2_5_1)                    =  *Se creo el archivo "ConsultaTablerosController.cs", el cual 
+                                                     =  contendra la clase controlador de nombre homologo. Esta clase
+                                                     =  posee un tres metodos (actualmente existentes dos) los cuales
+                                                     =  se encargaran de tomar el tableroid o sapid del tablero
+                                                     =  que se desea consultar (busqueda por consulta) o de tomar 
+                                                     =  el payload del codigoQR escaneado y buscar el tablero en la
+                                                     =  base de datos.
+                                                     =
+                                                     =  El URL para acceder al metodo de este controlador es:
+                                                     =
+                                                     =     - mttoapp/consultatableros/consultatableroid.
+                                                     =     - mttoapp/consultatableros/consultasapid.
+                                                     =
+                                                     =  Estos metodos funcionan re la misma manera y retornan la
+                                                     =  misma informacion. Estas son las siguientes respuestas
+                                                     =  HTTP se obtienen:
+                                                     =
+                                                     =     - BadRequest("Ocurrio un error: " + <string>)
+                                                     =     - NotFound()
+                                                     =     - Ok(<ResponseConsultaTablero> tablero)
+                                                     =
+                                                     =  *Se creo la clase "RequestConsultaTablero" como el objeto
+                                                     =  que se enviara como parametro de busqueda. Esta clase posee
+                                                     =  tres atributos: UserId, el cual contendra el id (cedula)
+                                                     =  del usuario que se encuentra haciendo la consulta, TableroId
+                                                     =  el cual contendra el Id del tablero a buscar (TableroId) y
+                                                     =  SapId, el cual contendra el Id de SAP del tablero a buscar.
+                                                     =  Cuando se realice una solicitud este objeto debe tener 
+                                                     =  informacion de AL MENOS 2 de los 3 par,ametros/atributos, esto
+                                                     =  debido a que o se busca un tablero usando como referencia su 
+                                                     =  id o el id de sap asignado a este.
+                                                     =
+                                                     =  *Se creo la clase "RegistroTablero" como el objeto a enviar
+                                                     =  al controlador de la clase "RegistroTableroController". Esta
+                                                     =  clase posee dos atributos: tableroinfo (<Tableros>) el cual
+                                                     =  contendra toda la informacion basica del tablero a registrar y
+                                                     =  itemsTablero (List<Items>) el cual contendra la lista de items
+                                                     =  que forman parte del tablero a registrar.
+                                                     =
+                                                     =  Este objeto tambien sera usado como el objeto retornado en 
+                                                     =  cualquiera de los metodos del controlador 
+                                                     =  "ConsutaTablerosController".
+                                                     =
+                                                     =  *Se creo la clase "RequestQueryAdmin" (Dentro del archivo
+                                                     =  DTO.cs). Esta clase sera la que permitira modelar y recibir
+                                                     =  la informacion de los objetos JSON que son enviados al contro-
+                                                     =  lador "QueryAdminController". Se encuentra formada por dos 
+                                                     =  propiedades: <string> Parametro => El cual sera la variable 
+                                                     =  string que recibira el parametro de busqueda (Cedula, ficha
+                                                     =  Nombres, Apellidos, Username) y <double> UserId => Propiedad
+                                                     =  que contendra el id del usuario que realizo la solicitud; re-
+                                                     =  gularmente el unico usuario capaz de acceder a este controlador
+                                                     =  es el usuario Administrator, sin embargo se planea extender el
+                                                     =  acceso a este controlador a usuario de diferentes niveles.
+                                                     =
+                                                     =  *Se creo la clase "RequestRegistroUsuario" (Dentro del archivo
+                                                     =  DTO.cs). Esta clase sera la que se enviara (Objeto JSON) como
+                                                     =  parametro al realizar la solicitud HTTP al controllador 
+                                                     =  "RegistroUsuarioController". Esta clase se encuentra formada por
+                                                     =  dos parametro: <InformacionGeneral> NewUser => Propiedad del tipo
+                                                     =  "InformacionGeneral" (Clase de dos miembros: <Personas> Persona, 
+                                                     =  y <Usuarios> Usuario) la cual contendra toda la informacion del
+                                                     =  nuevo usuario a registrar, y <double> "UserId" la cual contendra
+                                                     =  el Id del usuario que realizo la solicitud.
+------------------------------------------------------------------------------------------------------------------------
+          *MTTOAPP_V6(DB4_2_5_1)                     =  *Se creo un nuevo proyecto que lleva por nombre "MttoApi", el 
+                                                     =  el cual sera el proyecto al cual se migrara el codigo del pro-
+                                                     =  yecto anterior ("WebApi").
+========================================================================================================================
+========================================================================================================================
+--------------------------------------------------CODIGO BORRADO--------------------------------------------------------
+========================================================================================================================
+========================================================================================================================
+
+-Codigo perteneciente a la clase "GetFicha" dentro de la clase controlador "UserInfoController":
+------------------------------------------------------------------------------------------------
+  + Personas Persona = null;
+            Usuarios Usuario = null;
+            InformacionGeneral Info = new InformacionGeneral(Persona, Usuario);
+            List<Personas> Lista = await this._context.Personas.ToListAsync();
+
+            foreach(Personas x in Lista)
+            {
+                if(ficha == x.NumeroFicha)
+                {
+                    Persona = await this._context.Personas.FindAsync(x.Cedula);
+                    Usuario = await this._context.Usuarios.FindAsync(x.Cedula);
+                    Info = new InformacionGeneral(Persona, Usuario);
+                    break;
+                }
+            }
+
+            if(Info.Persona == null && Info.Usuario == null)
+            {
+                return NotFound("Numero de ficha no encontrado: " + ficha);
+            }
+
+            return Ok(Info);
+------------------------------------------------------------------------------------------------
+
+-Codigo perteneciente a la clase "GetCedula" dentro de la clase controlador "UserInfoController":
+------------------------------------------------------------------------------------------------
+  +Personas personainfo = await this._context.Personas.FindAsync(cedula);
+            Usuarios usuarioinfo = await this._context.Usuarios.FindAsync(cedula);
+            InformacionGeneral Info = new InformacionGeneral(personainfo, usuarioinfo);
+
+            if (Info.Persona == null && Info.Usuario == null)
+            {
+                return NotFound("Numero de cedula no registrado: "+cedula);
+            }
+
+            return Ok(Info);
+------------------------------------------------------------------------------------------------
+
+-Codigo perteneciente a la clase "GetUsername" dentro de la clase controlador "UserInfoController":
+------------------------------------------------------------------------------------------------
+  +//SE CREAN E INICIALIZAN LAS VARIABLES "persona" y "cont" (contador)
+                        Personas persona = null;
+                        int cont = 0;
+
+                        //SE INICIA UN CICLO DE BUSQUEDA
+                        do
+                        {
+                            //SE BUSCA EL REGISTRO DENTRO DE LA TABLA PERSONAS QUE COMPARTA EL MISMO NUMERO DE CEDULA QUE EL USUARIO EVALUADO EN EL MOMENTO
+                            persona = await this._context.Personas.FindAsync(x.Cedula);
+                            //SE AUTOINCREMENTA EL CONTADOR EN UNA UNIDAD
+                            cont++;
+
+                            //SE EVALUA EL ESTADO DE LA VARIABLE PERSONA
+                            /*-------------------------------------------------------------------------------
+                             * ESTE PROCESO SE EJECUTA DEBIDO A LA BUSQUEDA DEL REGISTRO DENTRO DE LA BASE 
+                             * DE DATOS. UTILIZANDO ENTITYFRAMEWORK CADA QUE UNA ENTIDAD ES BUSCADA O UTILIZADA
+                             * LA LIBRERIA CREA UNA ENTIDAD DENTRO DE ELLA HOMOLOGA AL OBJETO QUE ESTA RETENIENDO.
+                             * SI SE DECIDIERA USAR O UBICAR OTRA ENTIDAD DENTRO DE LA CLASE CONTEXTO SE DEBE 
+                             * INDICAR A LA LIBRERIA EF QUE LA ENTIDAD RETENIDA ACTUALMENTE PUEDE SER DESECHADA
+                              -------------------------------------------------------------------------------*/
+                            if (persona != null)
+                                //SE DESECHA LA ENTIDAD RETENIDA POR LA CLASE CONTEXTO
+                                this._context.Entry(persona).State = EntityState.Detached;
+
+                          //EL CICLO SE REPETIRA SOLO SI EL REGISTRO NO FUE ENCONTRADO (OSEA EL OBJETO PERSONA ES NULO) Y EL 
+                          //CONTADOR SEA MENOR A 5 (ES DECIR EL CICLO SOLO SE REPETIRA UN MAXIMO DE 5 VECES).
+                        } while (persona == null && cont < 5);
+------------------------------------------------------------------------------------------------
