@@ -75,7 +75,7 @@ namespace MttoApi   .Controllers
                     //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
                     //DE LA TABLA "HistorialSolicitudesWeb".
                     Historialsolicitudesweb solicitudesweb =
-                        Historialsolicitudesweb.NewHistorialSolocitudesWeb(cedula, 11);
+                        Historialsolicitudesweb.NewHistorialSolocitudesWeb(cedula, 12);
 
                     //SE ALMACENA EL REGISTRO DENTRO DE LA BASE DE DATOS
                     this._context.Historialsolicitudesweb.Add(solicitudesweb);
@@ -147,7 +147,7 @@ namespace MttoApi   .Controllers
                     //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
                     //DE LA TABLA "HistorialSolicitudesWeb".
                     Historialsolicitudesweb solicitudesweb =
-                        Historialsolicitudesweb.NewHistorialSolocitudesWeb(0, 12);
+                        Historialsolicitudesweb.NewHistorialSolocitudesWeb(0, 13);
 
                     //SE ALMACENA EL REGISTRO DENTRO DE LA BASE DE DATOS
                     this._context.Historialsolicitudesweb.Add(solicitudesweb);

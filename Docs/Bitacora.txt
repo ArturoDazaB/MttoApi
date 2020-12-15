@@ -250,6 +250,48 @@
           *MTTOAPP_V6(DB4_2_5_1)                     =  *Se creo un nuevo proyecto que lleva por nombre "MttoApi", el 
                                                      =  el cual sera el proyecto al cual se migrara el codigo del pro-
                                                      =  yecto anterior ("WebApi").
+------------------------------------------------------------------------------------------------------------------------
+          *MTTOAPP_V6                                =  *Se llevaron a cabo modificaciones sobre el codigo general de
+                                                     =  la clase "QueryAdminController":
+                                                     =   - Se cambio la ruta del URL que redirige la solicitud al 
+                                                     =     controlador. Anteriormente => mttoapp/cedula
+                                                     =                                => mttoapp/nombres
+                                                     =     Actualmente => mttoapp/queryadmin/cedula
+                                                     =                 => mttoapp/queryadmin/nombres
+                                                     =
+                                                     =   - Se cambio el tipo de metodo HTTP GET por HTTP POST, debido 
+                                                     =     a que las solicitudes web procesadas por dicho controlador
+                                                     =     contienen objetos JSON dentro del cuerpo (body) de la solicitud
+                                                     =     Esto causo problemas al intentar asignar contenido al cuerpo
+                                                     =     de la solicitud. 
+                                                     =
+                                                     =   - Continuando, debido a lo anteriormente expuesto se decidio 
+                                                     =     cambiar el nombre de los metodos asignados a cada una de las
+                                                     =     solicitudes que procesa dicho controlador. Ej: GetCedula =>
+                                                     =     QueryCedula.
+                                                     =
+                                                     =   - Por ultimo, se agrego un nuevo metodo asignado a la siguiente
+                                                     =     direccion URL => 
+                                                     =     <IpAdress>:<Port>/mttoapp/queryadmin/onuserselected
+                                                     =     Este metodo, llamado "GetUserSelectedInfo", recibe un objeto
+                                                     =     JSON del tipo "UserSelectedRequest" (objeto DTO) en el cuerpo
+                                                     =     (body) de la solicitud web, luego busca la informacion completa
+                                                     =     del usuario consultado y retorna un objeto JSON del tipo 
+                                                     =     "InformacionGeneral".
+                                                     =
+                                                     =  *Se creo una nueva clase dentro del archivo DTO.cs. Esta clase, 
+                                                     =  tal como es mencionada anteriormente, se encuentra destinada a 
+                                                     =  representar un objeto del tipo DTO que contendra el Id (cedula)
+                                                     =  del usuario que fue seleccionado en la lista de usuarios obtenida
+                                                     =  luego de la busqueda realizada en la pagina "PaginaQueryAdmin", 
+                                                     =  el Id del usuario que acaba de hacer la solicitud.
+                                                     =  ----------------------------------------------------------------
+                                                     =  NOTA: AUNQUE LA PAGINA "PaginaQueryAdmin" FUE DISENADA EN UN 
+                                                     =  PRINCIPIO PARA ACCESO EXCLUSIVO AL USUARIO ADMINISTRATOR, SE 
+                                                     =  ADICIONO LA ULTIA PROPIEDAD MENCIONADA EN LA CLASE "UserSelec-
+                                                     =  tedRequest" PARA PERMITIR EL ACCESO DE USUARIOS DE CIERTOS
+                                                     =  NIVELES Y RANGOS Y QUE ESTAS SOLICITUDES SEAN REGISTRADAS
+                                                     =  ----------------------------------------------------------------
 ========================================================================================================================
 ========================================================================================================================
 --------------------------------------------------CODIGO BORRADO--------------------------------------------------------

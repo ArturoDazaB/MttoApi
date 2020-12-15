@@ -153,4 +153,18 @@ namespace MttoApi.Model
         public double UserId { get; set; }
     }
 
+    //===================================================================================
+    //===================================================================================
+
+    public partial class UserSelectedRequest
+    {
+        public double UserIdSelected { get; set; }
+        public double UserIdRequested { get; set; }
+
+        /* CLASE OBJETO FORMADA POR DOS PARAMETROS/PROPIEDADES, 
+         * UserIdSelected => Id del usuario a retornar
+         * UserIdRequested => Id del usuario que realiza al solicitud
+         */
+    }
+
 }

@@ -81,33 +81,36 @@ namespace MttoApi.Model
                     break;
                 //--------------------------------------------------------------------------------------------------------------------------------------------------
                 //CONTROLADOR = "Query Admin Controller"
-                //REQUEST GET mttoapp/getinfo/cedula
-                //        GET mttoapp/getinfo/id
+                //REQUEST POST mttoapp/getinfo/cedula
+                //        POST mttoapp/getinfo/id
                 //----------------------------------------------------
-                //        GET mttoapp/getinfo/ficha
-                //        GET mttoapp/getinfo/numeroficha
+                //        POST mttoapp/getinfo/ficha
+                //        POST mttoapp/getinfo/numeroficha
                 //----------------------------------------------------
-                //        GET mttoapp/getinfo/nombre
-                //        GET mttoapp/getinfo/nombres
+                //        POST mttoapp/getinfo/nombre
+                //        POST mttoapp/getinfo/nombres
                 //----------------------------------------------------
-                //        GET mttoapp/getinfo/apellidos
-                //        GET mttoapp/getinfo/apellido
+                //        POST mttoapp/getinfo/apellidos
+                //        POST mttoapp/getinfo/apellido
                 //----------------------------------------------------
-                //        GET mttoapp/getinfo/username
+                //        POST mttoapp/getinfo/username
                 case 6:
-                    _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPGET;Metodo=GetCedula;RespuestaHTTP=Ok(<List<QueryAdmin>> ObjetoLista)";
+                    _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPPOST;Metodo=QueryCedula;RespuestaHTTP=Ok(<List<QueryAdmin>> ObjetoLista)";
                     break;
                 case 7:
-                    _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPGET;Metodo=GetFicha;RespuestaHTTP=Ok(<List<QueryAdmin>> ObjetoLista)";
+                    _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPPOST;Metodo=QueryFicha;RespuestaHTTP=Ok(<List<QueryAdmin>> ObjetoLista)";
                     break;
                 case 8:
-                    _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPGET;Metodo=GetNombre;RespuestaHTTP=Ok(<List<QueryAdmin>> ObjetoLista)";
+                    _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPPOST;Metodo=QueryNombre;RespuestaHTTP=Ok(<List<QueryAdmin>> ObjetoLista)";
                     break;
                 case 9:
-                    _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPGET;Metodo=GetApellido;RespuestaHTTP=Ok(<List<QueryAdmin>> ObjetoLista)";
+                    _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPPOST;Metodo=QueryApellido;RespuestaHTTP=Ok(<List<QueryAdmin>> ObjetoLista)";
                     break;
                 case 10:
-                    _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPGET;Metodo=GetUsername;RespuestaHTTP=Ok(<List<QueryAdmin>> ObjetoLista)";
+                    _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPPOST;Metodo=QueryUsername;RespuestaHTTP=Ok(<List<QueryAdmin>> ObjetoLista)";
+                    break;
+                case 11:
+                    _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPPOST;Metodo=GetUserSelectedInfo;RespuestaHTTP=Ok(<InformacionGeneral> Objeto)";
                     break;
                 //--------------------------------------------------------------------------------------------------------------------------------------------------
                 //CONTROLADOR = "Configuracion Controller"
@@ -116,10 +119,10 @@ namespace MttoApi.Model
                 //----------------------------------------------------
                 //        PUT mttoapp/configuracion/administrator/<cedula>
                 //        PUT mttoapp/configuracion/adm/<cedula>
-                case 11:
+                case 12:
                     _solicitud = "Controlador=ConfiguracionController;SolicitudHTTP=HTTPPUT;Metodo=ActualizarUsuario;RespuestaHTTP=Ok(<string> mensaje)";
                     break;
-                case 12:
+                case 13:
                     _solicitud = "Controlador=ConfiguracionController;SolicitudHTTP=HTTPPUT;Metodo=ActualizarUsuarioAdm;RespuestaHTTP=Ok(<string> mensaje)";
                     break;
             }

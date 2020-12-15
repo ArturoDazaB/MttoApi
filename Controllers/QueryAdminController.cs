@@ -10,7 +10,7 @@ using MttoApi.Model.Context;
 
 namespace MttoApi.Controllers
 {
-    [Route("mttoapp ")]
+    [Route("mttoapp/queryadmin")]
     [ApiController]
     public class QueryAdminController : ControllerBase
     {
@@ -25,10 +25,10 @@ namespace MttoApi.Controllers
         //===============================================================================================
         // GET: mttoapp/queryadmin/cedula
         // GET: mttoapp/queryadmin/id
-        [HttpGet]
+        [HttpPost]
         [Route("cedula")]
         [Route("id")]
-        public async Task<ActionResult<List<QueryAdmin>>> GetCedula([FromBody] RequestQueryAdmin request)
+        public async Task<ActionResult<List<QueryAdmin>>> QueryCedula([FromBody] RequestQueryAdmin request)
         {
             //CREACION E INICIALIZACION DE VARIABLES
             QueryAdmin query = new QueryAdmin();
@@ -92,10 +92,10 @@ namespace MttoApi.Controllers
 
         // GET: mttoapp/queryadmin/ficha
         // GET: mttoapp/queryadmin/numeroficha
-        [HttpGet]
+        [HttpPost]
         [Route("ficha")]
         [Route("numeroficha")]
-        public async Task<ActionResult<List<QueryAdmin>>> GetFicha([FromBody] RequestQueryAdmin request)
+        public async Task<ActionResult<List<QueryAdmin>>> QueryFicha([FromBody] RequestQueryAdmin request)
         {
             //CREACION E INICIALIZACION DE VARIABLES
             QueryAdmin query = new QueryAdmin();
@@ -158,12 +158,12 @@ namespace MttoApi.Controllers
             
         }
 
-        // GET: mttoapp/queryadmin/nombre
-        // GET: mttoapp/queryadmin/nombres
-        [HttpGet]
+        // POST: mttoapp/queryadmin/nombre
+        // POST: mttoapp/queryadmin/nombres
+        [HttpPost]
         [Route("nombre")]
         [Route("nombres")]
-        public async Task<ActionResult<List<QueryAdmin>>> GetNombres([FromBody] RequestQueryAdmin request)
+        public async Task<ActionResult<List<QueryAdmin>>> QueryNombres([FromBody] RequestQueryAdmin request)
         {
             //CREACION E INICIALIZACION DE VARIABLES
             QueryAdmin query = new QueryAdmin();
@@ -224,12 +224,12 @@ namespace MttoApi.Controllers
                 
         }
 
-        // GET: mttoapp/queryadmin/apellidos
-        // GET: mttoapp/queryadmin/apellido
-        [HttpGet]
+        // POST: mttoapp/queryadmin/apellidos
+        // POST: mttoapp/queryadmin/apellido
+        [HttpPost]
         [Route("apellidos")]
         [Route("apellido")]
-        public async Task<ActionResult<List<QueryAdmin>>> GetApellidos([FromBody] RequestQueryAdmin request)
+        public async Task<ActionResult<List<QueryAdmin>>> QueryApellidos([FromBody] RequestQueryAdmin request)
         {
             //CREACION E INICIALIZACION DE VARIABLES
             QueryAdmin query = new QueryAdmin();
@@ -290,10 +290,10 @@ namespace MttoApi.Controllers
                 
         }
 
-        // GET: mttoapp/queryadmin/username
-        [HttpGet]
+        // POST: mttoapp/queryadmin/username
+        [HttpPost]
         [Route("username")]
-        public async Task<ActionResult<List<QueryAdmin>>> GetUsername([FromBody] RequestQueryAdmin request)
+        public async Task<ActionResult<List<QueryAdmin>>> QueryUsername([FromBody] RequestQueryAdmin request)
         {
             //CREACION E INICIALIZACION DE VARIABLES
             QueryAdmin query = new QueryAdmin();
@@ -366,8 +366,61 @@ namespace MttoApi.Controllers
 
         //===============================================================================================
         //===============================================================================================
-        
+        [HttpPost]
+        [Route("onuserselected")]
+        public async Task<ActionResult<InformacionGeneral>> GetUserSelectedInfo([FromBody] UserSelectedRequest userselected)
+        {
+            //SE CREA E INICIALIZA LA VARIABLE QUE 
+            var fullinfo = new InformacionGeneral();
 
+            //SE VERIFICA QUE EL OBJETO DEL TIPO "QueryAdmin" ENVIADO NO SEA NULO O VACIO
+            if (userselected == null)
+            {
+                return BadRequest("Error, vuelva a intentarlo nuevamente");
+            }
+            else if(userselected != null)
+            {
+                //SE INICIA LA TRANSACCION DE DATA CON LA BASE DE DATOS
+                using (var transaction = this._context.Database.BeginTransaction())
+                {
+                    //SE BUSCA EL REGISTRO DENTRO DE LA TABLA DE USUARIOS QUE COINDICA CON EL ID DEL OBJETO ENVIADO
+                    fullinfo.Persona = await this._context.Personas.FindAsync(userselected.UserIdSelected);
+                    //SE VERIFICA SI EL OBJETO QUE RECIBIO LA INFORMACION SE ENCUENTRA NULO O NO
+                    if (fullinfo.Persona != null)
+                        //SI NO SE ENCUENTRA NULO SE DESECHA AL OBJETO RETENIDO POR LA CLASE CONTEXTO
+                        this._context.Entry(fullinfo.Persona).State = EntityState.Detached;
 
+                    //SE REPITE EL MISMO PROCESO EN LA BUSQUEDA DEL REGISTRO DENTRO DE LA TABLA USUARIOS
+                    fullinfo.Usuario = await this._context.Usuarios.FindAsync(userselected.UserIdSelected);
+                    if (fullinfo.Usuario != null)
+                        this._context.Entry(fullinfo.Usuario).State = EntityState.Detached;
+
+                    //SE VUELVE A VERISICAR EL ESTADO DE LOS OBJTOS QUE CONTIENEN LA INFORMACION SOLICITADA DE LA BASE DE DATOS
+                    if (fullinfo.Persona == null && fullinfo.Usuario == null)
+                    {
+                        //SE DETIENE LA TRANSACCION DE DATOS CON LA BASE DE DATOS
+                        await transaction.CommitAsync();
+                        //SE RETORNA LA RESPUESTA DE ESTATUS BAD REQUEST 400
+                        return BadRequest("Error, vuelva a intentarlo nuevamente");
+                    }
+                        
+                    //--------------------------------------------------------------------------------------------------------
+                    //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
+                    //DE LA TABLA "HistorialSolicitudesWeb".
+                    Historialsolicitudesweb solicitudesweb =
+                        Historialsolicitudesweb.NewHistorialSolocitudesWeb(userselected.UserIdRequested, 11);
+
+                    //SE ALMACENA EL REGISTRO DENTRO DE LA BASE DE DATOS
+                    this._context.Historialsolicitudesweb.Add(solicitudesweb);
+                    this._context.Entry(solicitudesweb).State = EntityState.Added;
+
+                    await this._context.SaveChangesAsync();
+                    //-------------------------------------------------------------------------------------------------------
+                    await transaction.CommitAsync();
+                }
+            }
+
+            return Ok(fullinfo);
+        }
     }
 }
