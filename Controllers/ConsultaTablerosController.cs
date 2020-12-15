@@ -25,7 +25,7 @@ namespace MttoApi.Controllers
         //========================================================================================================
         //========================================================================================================
         // GET: mttoapp/consultatableros/tableroid
-        [HttpGet]
+        [HttpPost]
         [Route("tableroid")]
         public async Task<ActionResult<RegistroTablero>> ConsultaTableroId([FromBody] RequestConsultaTablero info)
         {
