@@ -28,6 +28,26 @@ namespace MttoApi.Controllers
             return await _context.Usuarios.ToListAsync();
         }
 
+        //===============================================================================================
+        //===============================================================================================
+
+        [HttpGet]
+        [Route("verifygeneratedusername")]
+        public ActionResult<bool> VerifyUsername(string generatedusername)
+        {
+            //SE VERIFICA QUE EL NOMBRE DE USUARIO ENVIADO NO SEA NULO O VACIO
+            if (string.IsNullOrEmpty(generatedusername) == false)
+            {
+                //SE CONSULTA EL NOMBRE DE USARIO EN CADA UNO DE LOS REGISTROS DENTRO DE LA TABLA "Usuarios"
+                //DE EXISTIR => return TRUE
+                //DE NO EXISTIR => return false
+                return Ok(this._context.Usuarios.Any(x => x.Username.ToLower() == generatedusername.ToLower()));
+            }
+
+            //SI EL NOMBRE DE USUARIO SE ENCUENTRA VACIO SE RETORNA UN MENSAJE BAD REQUEST INFORMANDO AL USUARIO
+            return BadRequest("El nombre de usuario enviado se encuentra vacio o nulo");
+        }
+
         // GET: mttoapp/usuarios/cedula/12345678
         // GET: mttoapp/usuarios/id/12345678
         [HttpGet]
