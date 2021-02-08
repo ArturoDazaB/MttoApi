@@ -10,14 +10,28 @@ using MttoApi.Model.Context;
 
 namespace MttoApi.Controllers
 {
-    [Route("mttoapp/queryadmin")]
+    //===================================================================================================
+    //===================================================================================================
+    //SE AÑADE A LA CLASE EL ROUTING "ApiController" LA CUAL IDENTIFICARA A LA CLASE "ConfiguracionCon-
+    //troller" COMO UN CONTROLADOR DEL WEB API.
     [ApiController]
+
+    //SE AÑADE A LA CLASE EL ROUTING "Route" JUNTO CON LA DIRECCION A LA CUAL SE DEBE LLAMAR PARA PODER
+    //ACCESO A LA CLASE CONTROLLADOR. EJ:
+    //https:/<ipadress>:<port>/mttoapp/queryadmin <=> https://192.168.1.192:8000/mttoapp/queryadmin
+    [Route("mttoapp/queryadmin")]
     public class QueryAdminController : ControllerBase
     {
+        //SE CREA UNA VARIABLE LOCAL DEL TIPO "Context" LA CUAL FUNCIONA COMO LA CLASE
+        //QUE MAPEARA LA INFORMACION PARA LECTURA Y ESCRITURA EN LA BASE DE DATOS
         private readonly MTTOAPP_V6Context _context;
 
+        //===============================================================================================
+        //===============================================================================================
+        //CONSTRUCTOR
         public QueryAdminController(MTTOAPP_V6Context context)
         {
+            //SE INICIALIZA LA VARIABLE LOCAL
             this._context = context;
         }
 
@@ -25,9 +39,25 @@ namespace MttoApi.Controllers
         //===============================================================================================
         // GET: mttoapp/queryadmin/cedula
         // GET: mttoapp/queryadmin/id
+        //SE ADICIONA EL ROUTING "HttpGet" LO CUAL INDICARA QUE LA FUNCION "ConsultaTableroId" RESPONDERA A
+        //A SOLICITUDES HTTP DE TIPO GET
         [HttpPost]
+
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
+        //https://<ipaddress>:<port>/mttoapp/queryadmin/cedula <=> https://192.168.1.192:8000/mttoapp/queryadmin/cedula
+        //https://<ipaddress>:<port>/mttoapp/queryadmin/id <=> https://192.168.1.192:8000/mttoapp/queryadmin/id
         [Route("cedula")]
         [Route("id")]
+
+        //--------------------------------------------------------------------------------------------------
+        //FUNCION QUE RETORNARA UNA LISTA DE USUARIOS, LOS CUALES DEBEN CUMPLIR CON EL PARAMETRO DE BUSQUEDA
+        //ENVIADO. EL LLAMADO SE HACE DESDE LA PAGINA "PaginaQueryAdmin" DE LA APLICACION "Mtto App".
+        //EN ESTA FUNCION SE RECIBEN LOS PARAMETROS: 
+        // -request:  OBJETO DEL TIPO "RequestQueryAdmin" EL CUAL CONTENDRA EL PARAMETRO ENVIADO Y EL NUMERO
+        // DE OPCION DE BUSQUEDA (0 => Consulta por cedula; 1=> Consulta por Ficha; 2=> Consulta por Nombr(s)
+        // 3=> Consulta por Apellido(s); 4=> Consulta por Username)
+        //--------------------------------------------------------------------------------------------------
         public async Task<ActionResult<List<QueryAdmin>>> QueryCedula([FromBody] RequestQueryAdmin request)
         {
             //CREACION E INICIALIZACION DE VARIABLES

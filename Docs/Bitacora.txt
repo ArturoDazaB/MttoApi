@@ -295,6 +295,15 @@
 ------------------------------------------------------------------------------------------------------------------------
         03/02/2021                                   =  Se creo una nueva funcion en el controlador "UsuariosController", 
                                                      =  la cual lleva por nombre "VerifyUsername".
+------------------------------------------------------------------------------------------------------------------------
+        05/02/2021                                   =  *Se agregaron comentarios y se dio formato a la clase 
+                                                     =  "ConfiguracionController".
+                                                     =
+                                                     =  *Se agregaron comentarios y se dio formato a la clase 
+                                                     =  "ConsultaTablerosController".
+                                                     =
+                                                     =  *Se agregaron comentarios y se dio formato a la clase
+                                                     =  "LogInController".
 ========================================================================================================================
 ========================================================================================================================
 --------------------------------------------------CODIGO BORRADO--------------------------------------------------------
