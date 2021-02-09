@@ -13,8 +13,8 @@ namespace MttoApi.Controllers
 {
     //===================================================================================================
     //===================================================================================================
-    //SE AÑADE A LA CLASE EL ROUTING "ApiController" LA CUAL IDENTIFICARA A LA CLASE "ConfiguracionCon-
-    //troller" COMO UN CONTROLADOR DEL WEB API.
+    //SE AÑADE A LA CLASE EL ROUTING "ApiController" LA CUAL IDENTIFICARA A LA CLASE "LogInController"
+    //COMO UN CONTROLADOR DEL WEB API.
     [ApiController]
 
     //SE AÑADE A LA CLASE EL ROUTING "Route" JUNTO CON LA DIRECCION A LA CUAL SE DEBE LLAMAR PARA PODER
@@ -40,7 +40,7 @@ namespace MttoApi.Controllers
         //========================================================================================================
         // GET: mttoapp/login?username=<username>&password=<password>
         // GET: mttoapp/login?USERNAME=<username>&PASSWORD=<password>
-        //SE ADICIONA EL ROUTING "HttpGet" LO CUAL INDICARA QUE LA FUNCION "ConsultaTableroId" RESPONDERA A
+        //SE ADICIONA EL ROUTING "HttpGet" LO CUAL INDICARA QUE LA FUNCION "Get" RESPONDERA A
         //A SOLICITUDES HTTP DE TIPO GET
         [HttpGet]
 

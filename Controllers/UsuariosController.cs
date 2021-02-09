@@ -8,31 +8,46 @@ using MttoApi.Model.Context;
 
 namespace MttoApi.Controllers
 {
-    [Route("mttoapp/usuarios")]
+    //===================================================================================================
+    //===================================================================================================
+    //SE AÑADE A LA CLASE EL ROUTING "ApiController" LA CUAL IDENTIFICARA A LA CLASE "UsuariosController
+    //COMO UN CONTROLADOR DEL WEB API.
     [ApiController]
+
+    //SE AÑADE A LA CLASE EL ROUTING "Route" JUNTO CON LA DIRECCION A LA CUAL SE DEBE LLAMAR PARA PODER
+    //ACCESO A LA CLASE CONTROLLADOR. EJ:
+    //https:/<ipadress>:<port>/mttoapp/usuarios <=> https://192.168.1.192:8000/mttoapp/usuarios
+    [Route("mttoapp/usuarios")]
     public class UsuariosController : ControllerBase
     {
+        //SE CREA UNA VARIABLE LOCAL DEL TIPO "Context" LA CUAL FUNCIONA COMO LA CLASE
+        //QUE MAPEARA LA INFORMACION PARA LECTURA Y ESCRITURA EN LA BASE DE DATOS
         private readonly MTTOAPP_V6Context _context;
 
+        //===============================================================================================
+        //===============================================================================================
+        //CONSTRUCTOR
         public UsuariosController(MTTOAPP_V6Context context)
         {
-            _context = context;
+            //SE INICIALIZA LA VARIABLE LOCAL
+            this._context = context;
         }
 
         //===============================================================================================
         //===============================================================================================
-        // GET: mttoapp/Usuarios
+        //SE ADICIONA EL ROUTING "HttpGet" LO CUAL INDICARA QUE LA FUNCION "VerifyUsername" RESPONDERA A
+        //A SOLICITUDES HTTP DE TIPO GET
+        // POST mttoapp/registro
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Usuarios>>> GetUsuarios()
-        {
-            return await _context.Usuarios.ToListAsync();
-        }
 
-        //===============================================================================================
-        //===============================================================================================
-
-        [HttpGet]
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
+        //https:/<ipadress>:<port>/mttoapp/usuarios/verifygeneratedusername <=> https://192.168.1.192:8000/mttoapp/usuarios/verifygeneratedusername
         [Route("verifygeneratedusername")]
+        //--------------------------------------------------------------------------------------------------
+        //FUNCION QUE RECIBIRA EL NOMBRE DE USUARIO GENERADO POR LA APLICACION, EVALUA SI DICHO APELLIDO 
+        //SE ENCUENTRA O NO REGISTRADO Y RETORNA VERDADERO O FALSO DEPENIENDO DE LA EVALUACION
+        //--------------------------------------------------------------------------------------------------
         public ActionResult<bool> VerifyUsername(string generatedusername)
         {
             //SE VERIFICA QUE EL NOMBRE DE USUARIO ENVIADO NO SEA NULO O VACIO
@@ -48,29 +63,45 @@ namespace MttoApi.Controllers
             return BadRequest("El nombre de usuario enviado se encuentra vacio o nulo");
         }
 
+        //===============================================================================================
+        //===============================================================================================
+        // GET: mttoapp/Usuarios
+        [HttpGet]
+        //public async Task<ActionResult<IEnumerable<Usuarios>>> GetUsuarios()
+        public ActionResult<string> GetUsuarios()
+        {
+            //return await _context.Usuarios.ToListAsync();
+            return Ok("FUNCION DESACTIVADA");
+        }
+
         // GET: mttoapp/usuarios/cedula/12345678
         // GET: mttoapp/usuarios/id/12345678
         [HttpGet]
         [Route("cedula/{cedula}")]
         [Route("id/{cedula}")]
-        public async Task<ActionResult<Usuarios>> GetUsuariosCedula(double cedula)
+        //public async Task<ActionResult<Usuarios>> GetUsuariosCedula(double cedula)
+        public ActionResult<string> GetUsuariosCedula(double cedula)
         {
-            var usuarios = await _context.Usuarios.FindAsync(cedula);
+            /*var usuarios = await _context.Usuarios.FindAsync(cedula);
 
             if (usuarios == null)
             {
                 return NotFound("Cedula no encontrada:  " + cedula);
             }
 
-            return Ok(usuarios);
+            return Ok(usuarios);*/
+
+            return Ok("FUNCION DESACTIVADA");
         }
 
         // GET: api/Usuarios/5
         [HttpGet]
         [Route("ficha/{ficha}")]
         [Route("numeroficha/{ficha}")]
-        public async Task<ActionResult<Usuarios>> GetUsuariosFicha(double ficha)
+        //public async Task<ActionResult<Usuarios>> GetUsuariosFicha(double ficha)
+        public ActionResult<string> GetUsuariosFicha(double ficha)
         {
+            /*
             Usuarios usuario = null;
             List<Personas> Lista = await this._context.Personas.ToListAsync();
 
@@ -86,89 +117,10 @@ namespace MttoApi.Controllers
             if (usuario == null)
             {
                 return NotFound("Cedula no encontrada:  " + ficha);
-            }
+            }*/
 
-            return Ok(usuario);
+            return Ok("FUNCION DESACTIVADA");
         }
-
-        //===============================================================================================
-        //===============================================================================================
-        /*
-        // PUT: api/Usuarios/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuarios(double id, Usuarios usuarios)
-        {
-            if (id != usuarios.Cedula)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(usuarios).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UsuariosExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Usuarios
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPost]
-        public async Task<ActionResult<Usuarios>> PostUsuarios(Usuarios usuarios)
-        {
-            _context.Usuarios.Add(usuarios);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (UsuariosExists(usuarios.Cedula))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetUsuarios", new { id = usuarios.Cedula }, usuarios);
-        }
-
-        // DELETE: api/Usuarios/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Usuarios>> DeleteUsuarios(double id)
-        {
-            var usuarios = await _context.Usuarios.FindAsync(id);
-            if (usuarios == null)
-            {
-                return NotFound();
-            }
-
-            _context.Usuarios.Remove(usuarios);
-            await _context.SaveChangesAsync();
-
-            return usuarios;
-        }
-
-        */
 
         private bool UsuariosExists(double id)
         {

@@ -13,7 +13,7 @@ namespace MttoApi.Controllers
 {
     //===================================================================================================
     //===================================================================================================
-    //SE AÑADE A LA CLASE EL ROUTING "ApiController" LA CUAL IDENTIFICARA A LA CLASE "ConfiguracionCon-
+    //SE AÑADE A LA CLASE EL ROUTING "ApiController" LA CUAL IDENTIFICARA A LA CLASE "ConsultaTablerosCon-
     //troller" COMO UN CONTROLADOR DEL WEB API.
     [ApiController]
 
@@ -151,7 +151,7 @@ namespace MttoApi.Controllers
         //========================================================================================================
         //========================================================================================================
         // POST: mttoapp/consultatableros/consultasapid
-        //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "ConsultaTableroId" RESPONDERA A
+        //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "ConsultaTableroSapId" RESPONDERA A
         //A SOLICITUDES HTTP DE TIPO POST
         [HttpPost]
 

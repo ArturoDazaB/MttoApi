@@ -304,6 +304,25 @@
                                                      =
                                                      =  *Se agregaron comentarios y se dio formato a la clase
                                                      =  "LogInController".
+                                                     =
+                                                     =  *Se agregaron comentarios y se dio formato a la clase 
+                                                     =  "QueryAdminController".
+                                                     =
+                                                     =  *Se agregaron comentarios y se dio formato a la clase 
+                                                     =  "RegistroTablerosController".
+                                                     =
+                                                     =  *Se agregaron comentarios y se dio formato a la clase 
+                                                     =  "RegistroUsuariosController".
+                                                     =
+                                                     =  *Se agregaron comentarios y se dio formato a la clase 
+                                                     =  "UsuariosController".
+                                                     =
+                                                     =  *Se agregaron comentarios y se dio formato a la clase 
+                                                     =  "PersonasController" (FUERA DE SERVICIO).
+------------------------------------------------------------------------------------------------------------------------
+        09/02/2021                                   =  *Se modificaron y se dio formato a todas las clases de tipo
+                                                     =  Controller (Clases representadas por los archivos de la carpeta
+                                                     =  "Controllers" del proyecto).
 ========================================================================================================================
 ========================================================================================================================
 --------------------------------------------------CODIGO BORRADO--------------------------------------------------------

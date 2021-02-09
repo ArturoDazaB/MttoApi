@@ -172,7 +172,7 @@ namespace MttoApi.Controllers
 
         //===============================================================================================
         //===============================================================================================
-        //SE ADICIONA EL ROUTING "HttpPut" LO CUAL INDICARA QUE LA FUNCION "ActualizarUsuario" RESPONDERA A
+        //SE ADICIONA EL ROUTING "HttpPut" LO CUAL INDICARA QUE LA FUNCION "ActualizarUsuarioAdmin" RESPONDERA A
         //A SOLICITUDES HTTP DE TIPO PUT
         [HttpPut]
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using MttoApi.Model;
 using MttoApi.Model.Context;
+using System;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,8 +13,8 @@ namespace MttoApi.Controllers
 {
     //===================================================================================================
     //===================================================================================================
-    //SE AÑADE A LA CLASE EL ROUTING "ApiController" LA CUAL IDENTIFICARA A LA CLASE "ConfiguracionCon-
-    //troller" COMO UN CONTROLADOR DEL WEB API.
+    //SE AÑADE A LA CLASE EL ROUTING "ApiController" LA CUAL IDENTIFICARA A LA CLASE "QueryAdminContro-
+    //ller" COMO UN CONTROLADOR DEL WEB API.
     [ApiController]
 
     //SE AÑADE A LA CLASE EL ROUTING "Route" JUNTO CON LA DIRECCION A LA CUAL SE DEBE LLAMAR PARA PODER
@@ -39,8 +40,8 @@ namespace MttoApi.Controllers
         //===============================================================================================
         // GET: mttoapp/queryadmin/cedula
         // GET: mttoapp/queryadmin/id
-        //SE ADICIONA EL ROUTING "HttpGet" LO CUAL INDICARA QUE LA FUNCION "ConsultaTableroId" RESPONDERA A
-        //A SOLICITUDES HTTP DE TIPO GET
+        //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "QueryCedula" RESPONDERA A
+        //A SOLICITUDES HTTP DE TIPO POST
         [HttpPost]
 
         //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
@@ -61,17 +62,16 @@ namespace MttoApi.Controllers
         public async Task<ActionResult<List<QueryAdmin>>> QueryCedula([FromBody] RequestQueryAdmin request)
         {
             //CREACION E INICIALIZACION DE VARIABLES
-            QueryAdmin query = new QueryAdmin();
-            List<QueryAdmin> result = new List<QueryAdmin>();
+            List<QueryAdmin> result = new List<QueryAdmin>();   //=> LISTA DE USUARIOS QUE COINCIDEN CON EL PARAMETRO ENVIADO
 
-            //SE LISTAN TODOS LOS REGISTROS EN LA TABLA PERSONAS
+            //CREACION E INICIALIZACION DE LA LISTA DE USUARIOS REGISTRADOS EN LA PLATAFORMA
             List<Personas> registros = await this._context.Personas.ToListAsync();
 
             //SE RECORRE CADA UNO DE LOS REGISTROS ("Personas")
             foreach (Personas x in registros)
             {
                 //SE EVALUAN TODOS LOS REGISTROS MENOS EL REGISTRO DEL USUARIO ADMINISTRATOR
-                if (x.Cedula != 0)
+                if (x.Cedula != 0) //=> true => EL REGISTRO EVALUADO NO ES EL USUARIO ADMINISTRATOR
                 {
                     //SE EVALUA QUE EL DATO ENVIADO SE ENCUENTRE DENTRO DE LA LISTA REGISTROS.
                     /*------------------------------------------------------------------------
@@ -84,10 +84,8 @@ namespace MttoApi.Controllers
                      ------------------------------------------------------------------------*/
                     if (request.Parametro.ToString() == x.Cedula.ToString().Substring(0, request.Parametro.ToString().Length))
                     {
-                        //SI LA COMPARACION COINCIDE SE PROCEDE CREAR UN OBJETO DEL TIPO "QueryAdmin" CON LA INFORMACION NECESARIA
-                        query = QueryAdmin.NewQueryAdmin(x);
-                        //SE AGREGA A LA LISTA EL OBJETO "QueryAdmin" CREADO
-                        result?.Add(query);
+                        //SE AGREGA A LA LISTA EL REGISTRO DE DICHA PERSONA
+                        result?.Add(QueryAdmin.NewQueryAdmin(x));
                     }
                 }
             }
@@ -98,37 +96,71 @@ namespace MttoApi.Controllers
                 return NotFound();
             else
             {
-                //DIFERENTE DE CERO: SE RETORNA EL CODIGO DE ESTATUS 200 OK JUNTO CON LA LISTA DE USUARIOS OBTENIDOS
-                using(var transaction = this._context.Database.BeginTransaction())
+                //SE INICIA EL CICLO TRY...CATCH
+                try
                 {
-                    //--------------------------------------------------------------------------------------------------------
-                    //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
-                    //DE LA TABLA "HistorialSolicitudesWeb".
-                    Historialsolicitudesweb solicitudesweb =
-                        Historialsolicitudesweb.NewHistorialSolocitudesWeb(request.UserId, 6);
+                    //DIFERENTE DE CERO: SE RETORNA EL CODIGO DE ESTATUS 200 OK JUNTO CON LA LISTA DE USUARIOS OBTENIDOS
+                    using (var transaction = this._context.Database.BeginTransaction())
+                    {
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
+                        //DE LA TABLA "HistorialSolicitudesWeb".
+                        Historialsolicitudesweb solicitudesweb =
+                            Historialsolicitudesweb.NewHistorialSolocitudesWeb(request.UserId, 6);
 
-                    //SE ALMACENA EL REGISTRO DENTRO DE LA BASE DE DATOS
-                    this._context.Historialsolicitudesweb.Add(solicitudesweb);
-                    this._context.Entry(solicitudesweb).State = EntityState.Added;
-                    //-------------------------------------------------------------------------------------------------------
-                    await this._context.SaveChangesAsync();
-                    await transaction.CommitAsync();
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE ALMACENA EL REGISTRO DENTRO DE LA BASE DE DATOS
+                        this._context.Historialsolicitudesweb.Add(solicitudesweb);      //=> SE CREA LA INFORMACION DE UN NUEVO REGISTRO EN LA TABLA HistorialSolicitudesWeb.
+                        this._context.Entry(solicitudesweb).State = EntityState.Added;  //=> SE CAMBIA EL ESTADO DEL OBJETO CREADO COMO REFERENCIA.
+
+                       //--------------------------------------------------------------------------------------------------------
+                        //SE GUARDAN LOS CAMBIOS REALIZADOS SOBRE LA BASE DE DATOS
+                        await this._context.SaveChangesAsync();
+                        //SE CULMINA LA TRANSACCION CON LA BASE DE DATOS
+                        await transaction.CommitAsync();
+                    }
+
+                    //SE RETORNA EL CODIGO 200 OK JUNTO CON LA LISTA DE USUARIOS QUE COINCIDEN
+                    return Ok(result);
                 }
-
-                return Ok(result);
+                //SI OCURRE ALGUNA EXCEPCION EN EL PROCESO DE LECTURA Y ESCRITURA DE LA BASE DE DATOS EL CODIGO
+                //SE REDIRIGE A LA SECCION CATCH DEL CICLO TRY...CATCH
+                catch (Exception ex) when (ex is DbUpdateException ||
+                                           ex is DbUpdateConcurrencyException)
+                {
+                    //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
+                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                }
             }
                 
         }
 
+        //===============================================================================================
+        //===============================================================================================
         // GET: mttoapp/queryadmin/ficha
         // GET: mttoapp/queryadmin/numeroficha
+        //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "QueryFicha" RESPONDERA A
+        //A SOLICITUDES HTTP DE TIPO POST
         [HttpPost]
+
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
+        //https://<ipaddress>:<port>/mttoapp/queryadmin/ficha <=> https://192.168.1.192:8000/mttoapp/queryadmin/ficha
+        //https://<ipaddress>:<port>/mttoapp/queryadmin/numeroficha <=> https://192.168.1.192:8000/mttoapp/queryadmin/numeroficha
         [Route("ficha")]
         [Route("numeroficha")]
+
+        //--------------------------------------------------------------------------------------------------
+        //FUNCION QUE RETORNARA UNA LISTA DE USUARIOS, LOS CUALES DEBEN CUMPLIR CON EL PARAMETRO DE BUSQUEDA
+        //ENVIADO. EL LLAMADO SE HACE DESDE LA PAGINA "PaginaQueryAdmin" DE LA APLICACION "Mtto App".
+        //EN ESTA FUNCION SE RECIBEN LOS PARAMETROS: 
+        // -request:  OBJETO DEL TIPO "RequestQueryAdmin" EL CUAL CONTENDRA EL PARAMETRO ENVIADO Y EL NUMERO
+        // DE OPCION DE BUSQUEDA (0 => Consulta por cedula; 1=> Consulta por Ficha; 2=> Consulta por Nombr(s)
+        // 3=> Consulta por Apellido(s); 4=> Consulta por Username)
+        //--------------------------------------------------------------------------------------------------
         public async Task<ActionResult<List<QueryAdmin>>> QueryFicha([FromBody] RequestQueryAdmin request)
         {
             //CREACION E INICIALIZACION DE VARIABLES
-            QueryAdmin query = new QueryAdmin();
             List<QueryAdmin> result = new List<QueryAdmin>();
 
             //SE LISTAN TODOS LOS REGISTROS EN LA TABLA PERSONAS
@@ -151,10 +183,8 @@ namespace MttoApi.Controllers
                      ------------------------------------------------------------------------*/
                     if (request.Parametro == x.NumeroFicha.ToString().Substring(0, request.Parametro.Length))
                     {
-                        //SI LA COMPARACION COINCIDE SE PROCEDE CREAR UN OBJETO DEL TIPO "QueryAdmin" CON LA INFORMACION NECESARIA
-                        query = QueryAdmin.NewQueryAdmin(x);
-                        //SE AGREGA A LA LISTA EL OBJETO "QueryAdmin" CREADO
-                        result?.Add(query);
+                        //SE AGREGA A LA LISTA EL REGISTRO DE DICHA PERSONA
+                        result?.Add(QueryAdmin.NewQueryAdmin(x));
                     }
                 }
             }
@@ -165,38 +195,69 @@ namespace MttoApi.Controllers
                 return NotFound();
             else
             {
-                //DIFERENTE DE CERO: SE RETORNA EL CODIGO DE ESTATUS 200 OK JUNTO CON LA LISTA DE USUARIOS OBTENIDOS
-                using(var transaction = this._context.Database.BeginTransaction())
+                //INICIAMOS EL CICLO TRY... CATCH
+                try 
                 {
-                    //--------------------------------------------------------------------------------------------------------
-                    //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
-                    //DE LA TABLA "HistorialSolicitudesWeb".
-                    Historialsolicitudesweb solicitudesweb =
-                        Historialsolicitudesweb.NewHistorialSolocitudesWeb(request.UserId, 7);
+                    //DIFERENTE DE CERO: SE RETORNA EL CODIGO DE ESTATUS 200 OK JUNTO CON LA LISTA DE USUARIOS OBTENIDOS
+                    using (var transaction = this._context.Database.BeginTransaction())
+                    {
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
+                        //DE LA TABLA "HistorialSolicitudesWeb".
+                        Historialsolicitudesweb solicitudesweb =
+                            Historialsolicitudesweb.NewHistorialSolocitudesWeb(request.UserId, 7);
 
-                    //SE ALMACENA EL REGISTRO DENTRO DE LA BASE DE DATOS
-                    this._context.Historialsolicitudesweb.Add(solicitudesweb);
-                    this._context.Entry(solicitudesweb).State = EntityState.Added;
-                    //-------------------------------------------------------------------------------------------------------
-                    await this._context.SaveChangesAsync();
-                    await transaction.CommitAsync();
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE ALMACENA EL REGISTRO DENTRO DE LA BASE DE DATOS
+                        this._context.Historialsolicitudesweb.Add(solicitudesweb);      //=> SE CREA LA INFORMACION DE UN NUEVO REGISTRO EN LA TABLA HistorialSolicitudesWeb.
+                        this._context.Entry(solicitudesweb).State = EntityState.Added;  //=> SE CAMBIA EL ESTADO DEL OBJETO CREADO COMO REFERENCIA.
+
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE GUARDAN LOS CAMBIOS REALIZADOS SOBRE LA BASE DE DATOS
+                        await this._context.SaveChangesAsync();
+                        //SE CULMINA LA TRANSACCION CON LA BASE DE DATOS
+                        await transaction.CommitAsync();
+                    }
+
+                    return Ok(result);
                 }
-
-                return Ok(result);
+                //SI OCURRE ALGUNA EXCEPCION EN EL PROCESO DE LECTURA Y ESCRITURA DE LA BASE DE DATOS EL CODIGO
+                //SE REDIRIGE A LA SECCION CATCH DEL CICLO TRY...CATCH
+                catch (Exception ex) when (ex is DbUpdateException ||
+                                           ex is DbUpdateConcurrencyException)
+                {
+                    //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
+                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                }
             }
-            
-            
         }
 
+        //===============================================================================================
+        //===============================================================================================
+        //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "QueryNombres" RESPONDERA A
+        //A SOLICITUDES HTTP DE TIPO POST
         // POST: mttoapp/queryadmin/nombre
         // POST: mttoapp/queryadmin/nombres
         [HttpPost]
+
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
+        //https://<ipaddress>:<port>/mttoapp/queryadmin/nombre <=> https://192.168.1.192:8000/mttoapp/queryadmin/nombre
+        //https://<ipaddress>:<port>/mttoapp/queryadmin/nombres <=> https://192.168.1.192:8000/mttoapp/queryadmin/nombres
         [Route("nombre")]
         [Route("nombres")]
+
+        //--------------------------------------------------------------------------------------------------
+        //FUNCION QUE RETORNARA UNA LISTA DE USUARIOS, LOS CUALES DEBEN CUMPLIR CON EL PARAMETRO DE BUSQUEDA
+        //ENVIADO. EL LLAMADO SE HACE DESDE LA PAGINA "PaginaQueryAdmin" DE LA APLICACION "Mtto App".
+        //EN ESTA FUNCION SE RECIBEN LOS PARAMETROS: 
+        // -request:  OBJETO DEL TIPO "RequestQueryAdmin" EL CUAL CONTENDRA EL PARAMETRO ENVIADO Y EL NUMERO
+        // DE OPCION DE BUSQUEDA (0 => Consulta por cedula; 1=> Consulta por Ficha; 2=> Consulta por Nombr(s)
+        // 3=> Consulta por Apellido(s); 4=> Consulta por Username)
+        //--------------------------------------------------------------------------------------------------
         public async Task<ActionResult<List<QueryAdmin>>> QueryNombres([FromBody] RequestQueryAdmin request)
         {
             //CREACION E INICIALIZACION DE VARIABLES
-            QueryAdmin query = new QueryAdmin();
             List<QueryAdmin> result = new List<QueryAdmin>();
 
             //SE LISTAN TODOS LOS REGISTROS EN LA TABLA PERSONAS
@@ -219,10 +280,8 @@ namespace MttoApi.Controllers
                      ------------------------------------------------------------------------*/
                     if (request.Parametro.ToLower() == x.Nombres.Substring(0, request.Parametro.Length).ToLower())
                     {
-                        //SI LA COMPARACION COINCIDE SE PROCEDE CREAR UN OBJETO DEL TIPO "QueryAdmin" CON LA INFORMACION NECESARIA
-                        query = QueryAdmin.NewQueryAdmin(x);
-                        //SE AGREGA A LA LISTA EL OBJETO "QueryAdmin" CREADO
-                        result.Add(query);
+                        //SE AGREGA A LA LISTA EL REGISTRO DE DICHA PERSONA
+                        result?.Add(QueryAdmin.NewQueryAdmin(x));
                     }
                 }
             }
@@ -233,36 +292,70 @@ namespace MttoApi.Controllers
                 return NotFound();
             else
             {
-                //DIFERENTE DE CERO: SE RETORNA EL CODIGO DE ESTATUS 200 OK JUNTO CON LA LISTA DE USUARIOS OBTENIDOS
-                using (var transaction = this._context.Database.BeginTransaction())
+                //INICIAMOS EL CICLO TRY... CATCH
+                try
                 {
-                    //--------------------------------------------------------------------------------------------------------
-                    //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
-                    //DE LA TABLA "HistorialSolicitudesWeb".
-                    Historialsolicitudesweb solicitudesweb =
-                        Historialsolicitudesweb.NewHistorialSolocitudesWeb(request.UserId, 8);
+                    //DIFERENTE DE CERO: SE RETORNA EL CODIGO DE ESTATUS 200 OK JUNTO CON LA LISTA DE USUARIOS OBTENIDOS
+                    using (var transaction = this._context.Database.BeginTransaction())
+                    {
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
+                        //DE LA TABLA "HistorialSolicitudesWeb".
+                        Historialsolicitudesweb solicitudesweb =
+                            Historialsolicitudesweb.NewHistorialSolocitudesWeb(request.UserId, 8);
 
-                    //SE ALMACENA EL REGISTRO DENTRO DE LA BASE DE DATOS
-                    this._context.Historialsolicitudesweb.Add(solicitudesweb);
-                    this._context.Entry(solicitudesweb).State = EntityState.Added;
-                    //-------------------------------------------------------------------------------------------------------
-                    await this._context.SaveChangesAsync();
-                    await transaction.CommitAsync();
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE ALMACENA EL REGISTRO DENTRO DE LA BASE DE DATOS
+                        this._context.Historialsolicitudesweb.Add(solicitudesweb);      //=> SE CREA LA INFORMACION DE UN NUEVO REGISTRO EN LA TABLA HistorialSolicitudesWeb.
+                        this._context.Entry(solicitudesweb).State = EntityState.Added;  //=> SE CAMBIA EL ESTADO DEL OBJETO CREADO COMO REFERENCIA.
+
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE GUARDAN LOS CAMBIOS REALIZADOS SOBRE LA BASE DE DATOS
+                        await this._context.SaveChangesAsync();
+                        //SE CULMINA LA TRANSACCION CON LA BASE DE DATOS
+                        await transaction.CommitAsync();
+                    }
+
+                    return Ok(result);
                 }
-                return Ok(result);
+                //SI OCURRE ALGUNA EXCEPCION EN EL PROCESO DE LECTURA Y ESCRITURA DE LA BASE DE DATOS EL CODIGO
+                //SE REDIRIGE A LA SECCION CATCH DEL CICLO TRY...CATCH
+                catch (Exception ex) when (ex is DbUpdateException ||
+                                           ex is DbUpdateConcurrencyException)
+                {
+                    //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
+                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                }
             }
                 
         }
 
+        //===============================================================================================
+        //===============================================================================================
+        //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "QueryApellidos" RESPONDERA A
+        //A SOLICITUDES HTTP DE TIPO POST
         // POST: mttoapp/queryadmin/apellidos
         // POST: mttoapp/queryadmin/apellido
         [HttpPost]
+
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
+        //https://<ipaddress>:<port>/mttoapp/queryadmin/apellido <=> https://192.168.1.192:8000/mttoapp/queryadmin/apellido
+        //https://<ipaddress>:<port>/mttoapp/queryadmin/apellidos <=> https://192.168.1.192:8000/mttoapp/queryadmin/apellidos
         [Route("apellidos")]
         [Route("apellido")]
+
+        //--------------------------------------------------------------------------------------------------
+        //FUNCION QUE RETORNARA UNA LISTA DE USUARIOS, LOS CUALES DEBEN CUMPLIR CON EL PARAMETRO DE BUSQUEDA
+        //ENVIADO. EL LLAMADO SE HACE DESDE LA PAGINA "PaginaQueryAdmin" DE LA APLICACION "Mtto App".
+        //EN ESTA FUNCION SE RECIBEN LOS PARAMETROS: 
+        // -request:  OBJETO DEL TIPO "RequestQueryAdmin" EL CUAL CONTENDRA EL PARAMETRO ENVIADO Y EL NUMERO
+        // DE OPCION DE BUSQUEDA (0 => Consulta por cedula; 1=> Consulta por Ficha; 2=> Consulta por Nombr(s)
+        // 3=> Consulta por Apellido(s); 4=> Consulta por Username)
+        //--------------------------------------------------------------------------------------------------
         public async Task<ActionResult<List<QueryAdmin>>> QueryApellidos([FromBody] RequestQueryAdmin request)
         {
             //CREACION E INICIALIZACION DE VARIABLES
-            QueryAdmin query = new QueryAdmin();
             List<QueryAdmin> result = new List<QueryAdmin>();
 
             //SE LISTAN TODOS LOS REGISTROS EN LA TABLA PERSONAS
@@ -285,10 +378,8 @@ namespace MttoApi.Controllers
                      ------------------------------------------------------------------------*/
                     if (request.Parametro.ToLower() == x.Apellidos.Substring(0, request.Parametro.Length).ToLower())
                     {
-                        //SI LA COMPARACION COINCIDE SE PROCEDE CREAR UN OBJETO DEL TIPO "QueryAdmin" CON LA INFORMACION NECESARIA
-                        query = QueryAdmin.NewQueryAdmin(x);
-                        //SE AGREGA A LA LISTA EL OBJETO "QueryAdmin" CREADO
-                        result.Add(query);
+                        //SE AGREGA A LA LISTA EL REGISTRO DE DICHA PERSONA
+                        result?.Add(QueryAdmin.NewQueryAdmin(x));
                     }
                 }
             }
@@ -299,30 +390,64 @@ namespace MttoApi.Controllers
                 return NotFound();
             else
             {
-                using(var transaction = this._context.Database.BeginTransaction())
+                //INICIAMOS EL CICLO TRY... CATCH
+                try
                 {
                     //DIFERENTE DE CERO: SE RETORNA EL CODIGO DE ESTATUS 200 OK JUNTO CON LA LISTA DE USUARIOS OBTENIDOS
-                    //--------------------------------------------------------------------------------------------------------
-                    //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
-                    //DE LA TABLA "HistorialSolicitudesWeb".
-                    Historialsolicitudesweb solicitudesweb =
-                        Historialsolicitudesweb.NewHistorialSolocitudesWeb(request.UserId, 9);
+                    using (var transaction = this._context.Database.BeginTransaction())
+                    {
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
+                        //DE LA TABLA "HistorialSolicitudesWeb".
+                        Historialsolicitudesweb solicitudesweb =
+                            Historialsolicitudesweb.NewHistorialSolocitudesWeb(request.UserId, 9);
 
-                    //SE ALMACENA EL REGISTRO DENTRO DE LA BASE DE DATOS
-                    this._context.Historialsolicitudesweb.Add(solicitudesweb);
-                    this._context.Entry(solicitudesweb).State = EntityState.Added;
-                    //-------------------------------------------------------------------------------------------------------
-                    await this._context.SaveChangesAsync();
-                    await transaction.CommitAsync();
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE ALMACENA EL REGISTRO DENTRO DE LA BASE DE DATOS
+                        this._context.Historialsolicitudesweb.Add(solicitudesweb);      //=> SE CREA LA INFORMACION DE UN NUEVO REGISTRO EN LA TABLA HistorialSolicitudesWeb.
+                        this._context.Entry(solicitudesweb).State = EntityState.Added;  //=> SE CAMBIA EL ESTADO DEL OBJETO CREADO COMO REFERENCIA.
+
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE GUARDAN LOS CAMBIOS REALIZADOS SOBRE LA BASE DE DATOS
+                        await this._context.SaveChangesAsync();
+                        //SE CULMINA LA TRANSACCION CON LA BASE DE DATOS
+                        await transaction.CommitAsync();
+                    }
+
+                    return Ok(result);
                 }
-                return Ok(result);
+                //SI OCURRE ALGUNA EXCEPCION EN EL PROCESO DE LECTURA Y ESCRITURA DE LA BASE DE DATOS EL CODIGO
+                //SE REDIRIGE A LA SECCION CATCH DEL CICLO TRY...CATCH
+                catch (Exception ex) when (ex is DbUpdateException ||
+                                           ex is DbUpdateConcurrencyException)
+                {
+                    //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
+                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                }
             }
                 
         }
 
+        //===============================================================================================
+        //===============================================================================================
+        //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "QueryUsername" RESPONDERA A
+        //A SOLICITUDES HTTP DE TIPO POST
         // POST: mttoapp/queryadmin/username
         [HttpPost]
+
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
+        //https://<ipaddress>:<port>/mttoapp/queryadmin/username <=> https://192.168.1.192:8000/mttoapp/queryadmin/username
         [Route("username")]
+
+        //--------------------------------------------------------------------------------------------------
+        //FUNCION QUE RETORNARA UNA LISTA DE USUARIOS, LOS CUALES DEBEN CUMPLIR CON EL PARAMETRO DE BUSQUEDA
+        //ENVIADO. EL LLAMADO SE HACE DESDE LA PAGINA "PaginaQueryAdmin" DE LA APLICACION "Mtto App".
+        //EN ESTA FUNCION SE RECIBEN LOS PARAMETROS: 
+        // -request:  OBJETO DEL TIPO "RequestQueryAdmin" EL CUAL CONTENDRA EL PARAMETRO ENVIADO Y EL NUMERO
+        // DE OPCION DE BUSQUEDA (0 => Consulta por cedula; 1=> Consulta por Ficha; 2=> Consulta por Nombr(s)
+        // 3=> Consulta por Apellido(s); 4=> Consulta por Username)
+        //--------------------------------------------------------------------------------------------------
         public async Task<ActionResult<List<QueryAdmin>>> QueryUsername([FromBody] RequestQueryAdmin request)
         {
             //CREACION E INICIALIZACION DE VARIABLES
@@ -336,8 +461,8 @@ namespace MttoApi.Controllers
             foreach (Usuarios x in registros)
             {
                 //SE EVALUAN TODOS LOS REGISTROS MENOS EL REGISTRO DEL USUARIO ADMINISTRATOR
-                if (x.Cedula != 0   &&
-                    request.Parametro.Length <= x.Username.Length)
+                if (x.Cedula != 0   &&                              //=> ID (CEDULA) DEL REGISTRO EVALUADO DIFERENTE AL ID DEL ADMINISTRATOR
+                    request.Parametro.Length <= x.Username.Length)  //=> EL LARGO DEL PARAMETRO DEBE SER MENOR AL LARGO DEL USERNAME DEL REGISTRO EVALUADO
                 {
                     //SE EVALUA QUE EL DATO ENVIADO SE ENCUENTRE DENTRO DE LA LISTA REGISTROS.
                     /*------------------------------------------------------------------------
@@ -354,9 +479,12 @@ namespace MttoApi.Controllers
                         //SE BUSCA EL REGISTRO DENTRO DE LA TABLA PERSONAS QUE COMPARTA EL MISMO NUMERO DE CEDULA QUE EL USUARIO EVALUADO EN EL MOMENTO
                         var persona = await this._context.Personas.FindAsync(x.Cedula);
 
+                        //SE EVALUA SI EL REGISTRO OBTENIDO ES DIFERENTE DE NULO
                         if (persona != null)
+                        {
                             //SE DESECHA LA ENTIDAD RETENIDA POR LA CLASE CONTEXTO
                             this._context.Entry(persona).State = EntityState.Detached;
+                        }
 
                         //SI LA COMPARACION COINCIDE SE PROCEDE CREAR UN OBJETO DEL TIPO "QueryAdmin" CON LA INFORMACION NECESARIA
                         query = QueryAdmin.NewQueryAdmin(persona);
@@ -372,81 +500,132 @@ namespace MttoApi.Controllers
                 return NotFound();
             else
             {
-                using(var transaction = this._context.Database.BeginTransaction())
+                //INICIAMOS EL CICLO TRY... CATCH
+                try
                 {
                     //DIFERENTE DE CERO: SE RETORNA EL CODIGO DE ESTATUS 200 OK JUNTO CON LA LISTA DE USUARIOS OBTENIDOS
-                    //--------------------------------------------------------------------------------------------------------
-                    //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
-                    //DE LA TABLA "HistorialSolicitudesWeb".
-                    Historialsolicitudesweb solicitudesweb =
-                        Historialsolicitudesweb.NewHistorialSolocitudesWeb(request.UserId, 10);
+                    using (var transaction = this._context.Database.BeginTransaction())
+                    {
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
+                        //DE LA TABLA "HistorialSolicitudesWeb".
+                        Historialsolicitudesweb solicitudesweb =
+                            Historialsolicitudesweb.NewHistorialSolocitudesWeb(request.UserId, 10);
 
-                    //SE ALMACENA EL REGISTRO DENTRO DE LA BASE DE DATOS
-                    this._context.Historialsolicitudesweb.Add(solicitudesweb);
-                    this._context.Entry(solicitudesweb).State = EntityState.Added;
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE ALMACENA EL REGISTRO DENTRO DE LA BASE DE DATOS
+                        this._context.Historialsolicitudesweb.Add(solicitudesweb);      //=> SE CREA LA INFORMACION DE UN NUEVO REGISTRO EN LA TABLA HistorialSolicitudesWeb.
+                        this._context.Entry(solicitudesweb).State = EntityState.Added;  //=> SE CAMBIA EL ESTADO DEL OBJETO CREADO COMO REFERENCIA.
 
-                    await this._context.SaveChangesAsync();
-                    //-------------------------------------------------------------------------------------------------------
-                    await transaction.CommitAsync();
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE GUARDAN LOS CAMBIOS REALIZADOS SOBRE LA BASE DE DATOS
+                        await this._context.SaveChangesAsync();
+                        //SE CULMINA LA TRANSACCION CON LA BASE DE DATOS
+                        await transaction.CommitAsync();
+                    }
+
+                    return Ok(result);
                 }
-                return Ok(result);
-            }
-                
+                //SI OCURRE ALGUNA EXCEPCION EN EL PROCESO DE LECTURA Y ESCRITURA DE LA BASE DE DATOS EL CODIGO
+                //SE REDIRIGE A LA SECCION CATCH DEL CICLO TRY...CATCH
+                catch (Exception ex) when (ex is DbUpdateException ||
+                                           ex is DbUpdateConcurrencyException)
+                {
+                    //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
+                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                }
+            }    
         }
 
         //===============================================================================================
         //===============================================================================================
+        //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "GetUserSelectedInfo" RESPONDERA A
+        //A SOLICITUDES HTTP DE TIPO POST
         [HttpPost]
+
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
+        //https://<ipaddress>:<port>/mttoapp/queryadmin/onuserselected <=> https://192.168.1.192:8000/mttoapp/queryadmin/onuserselected
         [Route("onuserselected")]
+
+        //--------------------------------------------------------------------------------------------------
+        //FUNCION QUE RETORNARA LA INFORMACION GENERAL DEL USUARIO SELECCIONADO EN LA LISTA DE USUARIOS
+        //QUE COINCIDEN CON EL PARAMETRO DE BUSQUEDA Y LA OPCION SE CONSULTA SELECCIONADA
+        //--------------------------------------------------------------------------------------------------
         public async Task<ActionResult<InformacionGeneral>> GetUserSelectedInfo([FromBody] UserSelectedRequest userselected)
         {
             //SE CREA E INICIALIZA LA VARIABLE QUE 
             var fullinfo = new InformacionGeneral();
 
-            //SE VERIFICA QUE EL OBJETO DEL TIPO "QueryAdmin" ENVIADO NO SEA NULO O VACIO
-            if (userselected == null)
+            //SE VERIFICA QUE EL OBJETO DEL TIPO "UserSelectedRequest" ENVIADO NO SEA NULO O VACIO
+            if (userselected == null)   //=> true => EL OBJETO ES NULO
             {
+                //SE RETORNA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMATIVO
                 return BadRequest("Error, vuelva a intentarlo nuevamente");
             }
-            else if(userselected != null)
+            else if(userselected != null)   //=> true => EL OBJETO NO ES NULO
             {
-                //SE INICIA LA TRANSACCION DE DATA CON LA BASE DE DATOS
-                using (var transaction = this._context.Database.BeginTransaction())
+                //INICIAMOS EL CICLO TRY... CATCH
+                try 
                 {
-                    //SE BUSCA EL REGISTRO DENTRO DE LA TABLA DE USUARIOS QUE COINDICA CON EL ID DEL OBJETO ENVIADO
-                    fullinfo.Persona = await this._context.Personas.FindAsync(userselected.UserIdSelected);
-                    //SE VERIFICA SI EL OBJETO QUE RECIBIO LA INFORMACION SE ENCUENTRA NULO O NO
-                    if (fullinfo.Persona != null)
-                        //SI NO SE ENCUENTRA NULO SE DESECHA AL OBJETO RETENIDO POR LA CLASE CONTEXTO
-                        this._context.Entry(fullinfo.Persona).State = EntityState.Detached;
-
-                    //SE REPITE EL MISMO PROCESO EN LA BUSQUEDA DEL REGISTRO DENTRO DE LA TABLA USUARIOS
-                    fullinfo.Usuario = await this._context.Usuarios.FindAsync(userselected.UserIdSelected);
-                    if (fullinfo.Usuario != null)
-                        this._context.Entry(fullinfo.Usuario).State = EntityState.Detached;
-
-                    //SE VUELVE A VERISICAR EL ESTADO DE LOS OBJTOS QUE CONTIENEN LA INFORMACION SOLICITADA DE LA BASE DE DATOS
-                    if (fullinfo.Persona == null && fullinfo.Usuario == null)
+                    //SE INICIA LA TRANSACCION DE DATA CON LA BASE DE DATOS
+                    using (var transaction = this._context.Database.BeginTransaction())
                     {
-                        //SE DETIENE LA TRANSACCION DE DATOS CON LA BASE DE DATOS
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE BUSCA EL REGISTRO DENTRO DE LA TABLA DE USUARIOS QUE COINDICA CON EL ID DEL OBJETO ENVIADO
+                        fullinfo.Persona = await this._context.Personas.FindAsync(userselected.UserIdSelected);
+
+                        //SE VERIFICA SI EL OBJETO QUE RECIBIO LA INFORMACION SE ENCUENTRA NULO O NO
+                        if (fullinfo.Persona != null)
+                        {
+                            //SI NO SE ENCUENTRA NULO SE DESECHA AL OBJETO RETENIDO POR LA CLASE CONTEXTO
+                            this._context.Entry(fullinfo.Persona).State = EntityState.Detached;
+                        }
+
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE REPITE EL MISMO PROCESO EN LA BUSQUEDA DEL REGISTRO DENTRO DE LA TABLA USUARIOS
+                        fullinfo.Usuario = await this._context.Usuarios.FindAsync(userselected.UserIdSelected);
+
+                        //SE VERIFICA SI EL OBJETO QUE RECIBIO LA INFORMACION SE ENCUENTRA NULO O NO
+                        if (fullinfo.Usuario != null)
+                        {
+                            //SI NO SE ENCUENTRA NULO SE DESECHA AL OBJETO RETENIDO POR LA CLASE CONTEXTO
+                            this._context.Entry(fullinfo.Usuario).State = EntityState.Detached;
+                        }
+
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE VUELVE A VERISICAR EL ESTADO DE LOS OBJTOS QUE CONTIENEN LA INFORMACION SOLICITADA DE LA BASE DE DATOS
+                        if (fullinfo.Persona == null && fullinfo.Usuario == null)
+                        {
+                            //SE RETORNA LA RESPUESTA DE ESTATUS BAD REQUEST 400
+                            return BadRequest("Error, vuelva a intentarlo nuevamente");
+                        }
+
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
+                        //DE LA TABLA "HistorialSolicitudesWeb".
+                        Historialsolicitudesweb solicitudesweb =
+                            Historialsolicitudesweb.NewHistorialSolocitudesWeb(userselected.UserIdRequested, 11);
+
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE ALMACENA EL REGISTRO DENTRO DE LA BASE DE DATOS
+                        this._context.Historialsolicitudesweb.Add(solicitudesweb);      //=> SE CREA LA INFORMACION DE UN NUEVO REGISTRO EN LA TABLA HistorialSolicitudesWeb.
+                        this._context.Entry(solicitudesweb).State = EntityState.Added;  //=> SE CAMBIA EL ESTADO DEL OBJETO CREADO COMO REFERENCIA.
+
+                        //--------------------------------------------------------------------------------------------------------
+                        //SE GUARDAN LOS CAMBIOS REALIZADOS SOBRE LA BASE DE DATOS
+                        await this._context.SaveChangesAsync();
+                        //SE CULMINA LA TRANSACCION CON LA BASE DE DATOS
                         await transaction.CommitAsync();
-                        //SE RETORNA LA RESPUESTA DE ESTATUS BAD REQUEST 400
-                        return BadRequest("Error, vuelva a intentarlo nuevamente");
                     }
-                        
-                    //--------------------------------------------------------------------------------------------------------
-                    //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
-                    //DE LA TABLA "HistorialSolicitudesWeb".
-                    Historialsolicitudesweb solicitudesweb =
-                        Historialsolicitudesweb.NewHistorialSolocitudesWeb(userselected.UserIdRequested, 11);
-
-                    //SE ALMACENA EL REGISTRO DENTRO DE LA BASE DE DATOS
-                    this._context.Historialsolicitudesweb.Add(solicitudesweb);
-                    this._context.Entry(solicitudesweb).State = EntityState.Added;
-
-                    await this._context.SaveChangesAsync();
-                    //-------------------------------------------------------------------------------------------------------
-                    await transaction.CommitAsync();
+                }
+                //SI OCURRE ALGUNA EXCEPCION EN EL PROCESO DE LECTURA Y ESCRITURA DE LA BASE DE DATOS EL CODIGO
+                //SE REDIRIGE A LA SECCION CATCH DEL CICLO TRY...CATCH
+                catch (Exception ex) when (ex is DbUpdateException ||
+                                           ex is DbUpdateConcurrencyException)
+                {
+                    //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
+                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
                 }
             }
 
