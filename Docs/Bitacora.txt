@@ -327,8 +327,11 @@
                                                      =  *Se agregaron comentarios y se dio formato a la clase 
                                                      =  "MTTOAPP_V6Context" (Clase ubicada en el archivo Model/Context)
                                                      =
-                                                     =  *Se agregaron comentarios y se dio formato a la clase
-                                                     =  "Tablas" (Clase ubiada en la carpeta Model)
+                                                     =  *Se agregaron comentarios y se dio formato a la clases
+                                                     =  del archivo "Tablas" (Clase ubiada en la carpeta Model)
+                                                     =
+                                                     =  *Se agregaron comentarios y se dio formato a las clases
+                                                     =  del archivo "DTO" (DATA TRANSFER OBJECT)
 ========================================================================================================================
 ========================================================================================================================
 --------------------------------------------------CODIGO BORRADO--------------------------------------------------------
