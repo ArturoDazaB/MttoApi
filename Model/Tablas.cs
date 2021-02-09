@@ -6,8 +6,14 @@ namespace MttoApi.Model
     //--------------------------TABLAS DE LA BASE DE DATOS-------------------------------
     //===================================================================================
     //===================================================================================
+    //EN ESTE ARCHIVO SE ENCUENTRAN LAS CLASES DESTINADAS A REPRESENTAR EN FORMA DE
+    //OBJETO CADA UNA DE LAS TABLAS DE LA BASE DE DATOS.
+
+    //=======================================================================================================
+    //=======================================================================================================
     public partial class Historialconsultatableros
     {
+        //ATRIBUTOS (PROPIEDADES) DE LA TABLA "HistorialConsultaTableros"
         public int Id { get; set; }
         public string TableroId { get; set; }
         public string TipoDeConsulta { get; set; }
@@ -16,6 +22,8 @@ namespace MttoApi.Model
 
         //===================================================================================
         //===================================================================================
+        //FUNCION DE LA CLASE "Historalconsultatableros" QUE RECIBE CADA UNO DE LOS PARAMETROS
+        //LOS ASIGNA Y RETORNA UN OBJETO DE TIPO "Historialconsultatableros".
         public static Historialconsultatableros NewHistorialConsultaTableros(string tableroid, string tipodeconsulta, double usuarioid)
         {
             return new Historialconsultatableros()
@@ -28,10 +36,11 @@ namespace MttoApi.Model
         }
     }
 
-    //===================================================================================
-    //===================================================================================
+    //=======================================================================================================
+    //=======================================================================================================
     public partial class Historialsolicitudesweb
     {
+        //ATRIBUTOS (PROPIEDADES) DE LA TABLA "Historialsolicitudesweb"
         public int Id { get; set; }
         public double UsuarioId { get; set; }
         public DateTime FechaHora { get; set; }
@@ -39,11 +48,19 @@ namespace MttoApi.Model
 
         //===================================================================================
         //===================================================================================
-
+        //FUNCION QUE RECIBE COMO PARAMETROS EL USUARIO QUE ACABA DE REALIZAR LA SOLICITUD 
+        //HTTP DESDE EL APLICATIVO Y EL NUMERO DE SOLICITUD QUE EJECUTO
         public static Historialsolicitudesweb NewHistorialSolocitudesWeb(double userid, int solicitud)
         {
+            //SE CREA E INICIALIZA LA VARIABLE SOLICITUD 
+            //NOTA: VARIABLE QUE CONTENDRA LA CADENA DE TEXTO CON INFORMACION SIGNIFICATIVA DE
+            //SOLICITUD HECHA: Controlador = <nombre del controlador ejecutado>
+            //                 SolicitudHttp = <Tipo de solicitud RESTFul ejecutada>
+            //                 Metodo = <Nombre del metodo/funcion ejecutada>
+            //                 RespuestaHttp = <Tipo de respuesta que retorna la solicitud hecha>
             string _solicitud = string.Empty;
 
+            //SE EVALUA EL NUMERO DE SOLICITUD HTTP EJECUTADA PARA RETORNAR UN TIPO DE CADENA DE TEXTO
             switch (solicitud)
             {
                 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -127,34 +144,40 @@ namespace MttoApi.Model
                     break;
             }
 
+            //SE RETORNA UN OBJETO DE TIPO "Historialsolicitudesweb" CON TODA LA INFORMACION DE LA SOLICITUD HTTP EJECUTADA
             return new Historialsolicitudesweb()
             {
-                UsuarioId = userid,
-                FechaHora = DateTime.Now,
-                Solicitud = _solicitud,
+                UsuarioId = userid,         //=>ID DEL USUARIO QUE EJECUTO LA SOLITIUD
+                FechaHora = DateTime.Now,   //=>FECHA Y HORA DE LA SOLICITUD
+                Solicitud = _solicitud,     //=>INFORMACION SOBRE LA SOLICITUD
             };
         }
 
     }
 
-    //===================================================================================
-    //===================================================================================
+    //=======================================================================================================
+    //=======================================================================================================
     public partial class Items
     {
+        //ATRIBUTOS (PROPIEDADES) DE LA TABLA "Items"
+        //NOTA: ACTUALMENTE ESTA CLASE ES USADA PARA REPRESENTAR LOS ITEMS DENTRO DE LOS TABLEROS
         public int Id { get; set; }
         public string TableroId { get; set; }
         public string Descripcion { get; set; }
         public int Cantidad { get; set; }
     }
 
-    //===================================================================================
-    //===================================================================================
+    //=======================================================================================================
+    //=======================================================================================================
     public partial class Modificacionesusuario
     {
+        //ATRIBUTOS (PROPIEDADES) DE LA TABLA "Modificacionesusuario"
         public int Id { get; set; }
         public double IdModificado { get; set; }
         public double IdModificador { get; set; }
         public DateTime FechaHora { get; set; }
+        //NOTA: LAS PROPIEDADES QUE FIGUREN EL CARACTER '?' SON PROPIEDADES
+        //QUE DENTRO DE LA BASE DE DATO PUEDEN SER NULAS
         public bool? ModificacionNombres { get; set; }
         public bool? ModificacionApellidos { get; set; }
         public bool? ModificacionFecha { get; set; }
@@ -163,33 +186,61 @@ namespace MttoApi.Model
         public bool? ModificacionTelefono { get; set; }
         public bool? ModificacionPassword { get; set; }
 
-        public static Modificacionesusuario NewModificacionesUsuarios(Personas Persona, Personas PrevPersona,
-                                                                    Usuarios Usuario, Usuarios PrevUsuario, DateTime fechahora, double userid)
+        //===================================================================================
+        //===================================================================================
+        //CONSTRUCTOR
+        public Modificacionesusuario()
+        {
+            //SE INICIALIZAN LAS PROPIEDADES QUE IDENFITICARAN LOS CAMBIOS HECHOS ANTES DE
+            //REALIZAR LA MODIFICACION
+            ModificacionNombres = ModificacionApellidos = ModificacionFecha =
+                ModificacionUsername = ModificacionCorreo = ModificacionTelefono = ModificacionPassword = false;
+        }
+
+        //===================================================================================
+        //===================================================================================
+        //FUNCION QUE RECIBE MEDIANTE PARAMETROS TODA LA INFORMACION PARA GENERAR
+        //UN OBJETO DE TIPO "NewModificacionesUsuarios".
+        public static Modificacionesusuario NewModificacionesUsuarios(Personas Persona,     //INFORMACION PERSONAL NUEVA A REGISTRAR
+                                                                      Personas PrevPersona, //INFORMACION PERSONAL QUE SE ENCUENTRA REGISTRADA
+                                                                      Usuarios Usuario,     //INFORMACION DE USUARIO NUEVA A REGISTRAR
+                                                                      Usuarios PrevUsuario, //INFORMACION DE USUARIO QUE SE ENCUENTRA REGISTRADA
+                                                                      DateTime fechahora,   //FECHA Y HORA DE LA CREACION DEL NUEVO REGISTRO
+                                                                      double userid)        //ID DEL USUARIO QUE ACABA DE REALIZAR LA SOLICITUD DE MODIFICACION
         {
             //SE CREA UN NUEVO OBJETO ModificacionesUsuarios
             Modificacionesusuario Modificaciones = new Modificacionesusuario();
-            Modificaciones.FechaHora = DateTime.Now;
 
-            //SE VERIFICA SI SE ACCEDIO DESDE LA PAGINA DE ADMINISTRATOR 
+            //SE LE ASIGNA A LA PROPIEDAD "FechaHora" DEL OBJETO CREADO LA FECHA Y HORA RECIBIDA COMO PARAMETRO
+            Modificaciones.FechaHora = DateTime.Now;
+            //SE LE ASIGNA A LA PROPIEDAD "IdModificador" EL ID DEL USUARIO QUE SE ENCUENTRA REALIZANDO LA SOLICITUD DE MODIFICACION DE DATOS
             Modificaciones.IdModificador = userid;
+            //SE LE ASIGNA A LA PROPIEDAD "IdModificado" EL ID DEL REGISTRO DE USUARIO A MODIFICAR
             Modificaciones.IdModificado = Persona.Cedula;
 
             //SE EVALUA CUAL FUE EL CAMBIO REALIZADO
-            if (Persona.Nombres != PrevPersona.Nombres)
+            if (Persona.Nombres != PrevPersona.Nombres) //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "Nombre(s)"
                 Modificaciones.ModificacionNombres = true;
-            if (Persona.Apellidos != PrevPersona.Apellidos)
+
+            if (Persona.Apellidos != PrevPersona.Apellidos) //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "Apellido(s)"
                 Modificaciones.ModificacionApellidos = true;
-            if (Persona.FechaNacimiento != PrevPersona.FechaNacimiento)
+
+            if (Persona.FechaNacimiento != PrevPersona.FechaNacimiento) //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "FechaNacimiento"
                 Modificaciones.ModificacionFecha = true;
-            if (Persona.Telefono != PrevPersona.Telefono)
+                
+            if (Persona.Telefono != PrevPersona.Telefono)   //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "Telefono"
                 Modificaciones.ModificacionTelefono = true;
-            if (Persona.Correo != PrevPersona.Correo)
+
+            if (Persona.Correo != PrevPersona.Correo)   //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "Correo"
                 Modificaciones.ModificacionCorreo = true;
-            if (Usuario.Username != PrevUsuario.Username)
+
+            if (Usuario.Username != PrevUsuario.Username)   //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "Username"
                 Modificaciones.ModificacionUsername = true;
-            if (Usuario.Password != PrevUsuario.Password)
+
+            if (Usuario.Password != PrevUsuario.Password)   //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "Password"
                 Modificaciones.ModificacionPassword = true;
 
+            //SE RETORNA EL OBJETO CREADO
             return Modificaciones;
         }
     }
@@ -198,6 +249,7 @@ namespace MttoApi.Model
     //===================================================================================
     public partial class Personas
     {
+        //ATRIBUTOS (PROPIEDADES) DE LA TABLA "Personas"
         public string Nombres { get; set; }
         public string Apellidos { get; set; }
         public double Cedula { get; set; }
@@ -209,7 +261,8 @@ namespace MttoApi.Model
 
         //==================================================================================================
         //==================================================================================================
-        public static Personas NewPersonas(Personas persona)
+        //FUNCIONES QUE RETORNAN UN OBJETO DE TIPO "Personas"
+        public static Personas NewPersonas(Personas persona) //=> SE PASA UN OBJETO PERSONA COMO PARAMETRO
         {
             return new Personas()
             {
@@ -224,8 +277,14 @@ namespace MttoApi.Model
             };
         }
 
-        public static Personas NewPersonas(string nombres, string apellidos, double cedula, int numeroficha, double telefono, string correo,
-            DateTime fechanacimiento, DateTime fechacreacion)
+        public static Personas NewPersonas(string nombres,
+                                           string apellidos,
+                                           double cedula,
+                                           int numeroficha,
+                                           double telefono,
+                                           string correo,
+                                           DateTime fechanacimiento,
+                                           DateTime fechacreacion) //=> SE PASAN CADA UNO DE LOS DATOS A INSERTAR EN EL OBJETO PERSONA
         {
             return new Personas()
             {
@@ -242,32 +301,44 @@ namespace MttoApi.Model
 
         //==================================================================================================
         //==================================================================================================
-        public static Personas NewPersonaInfo(Personas persona, ConfiguracionU newinfo)
+        //FUNCIONES QUE RETORNAN UN OBJETO PERSONA CON LA NUEVA INFORMACION MODIFICADA
+        //NOTA: PUESTO QUE EXISTEN DOS NIVELES DE ACCESO PARA MODIFICAR UN REGISTRO DE USUARIO, SE DECIDIO
+        //CREAR DOS FUNCIONES DENTRO DE LA CLASE PERSONAS QUE MODIFIQUEN ESPECIFICAMENTE LOS CAMPOS "MODIFICABLES"
+        //DE CADA PAGINA ("PaginaConfiguracion" y "PaginaConfiguracionAdmin")
+        public static Personas NewPersonaInfo(Personas persona,         //=> INFORMACION REGISTRADA DEL USUARIO 
+                                              ConfiguracionU newinfo)   //=> CAMPOS POSIBLEMENTE MODIFICADOS
         {
             //SE LLENAN LOS VALORES DEL REGISTRO
             return new Personas()
             {
+                //INFORMACION SIN MODIFICAR
                 Nombres = persona.Nombres,
                 Apellidos = persona.Apellidos,
                 Cedula = persona.Cedula,
                 NumeroFicha = persona.NumeroFicha,
                 FechaCreacion = persona.FechaCreacion,
                 FechaNacimiento = persona.FechaNacimiento,
-
+                //POSIBLE INFORMACION MODIFICADA
+                //NOTA: SE DESCRIBE COMO POSIBLE DEBIDO A QUE NO ES NECESARIO MODIFICAR
+                //LOS DOS CAMPOS PARA GENERAR UN REGISTRO
                 Telefono = newinfo.Telefono,
                 Correo = newinfo.Correo,
             };
         }
 
-        public static Personas NewPersonaInfo(Personas persona, ConfiguracionA newinfo)
+        public static Personas NewPersonaInfo(Personas persona,         //=> INFORMACION REGISTRADA DEL USUARIO
+                                              ConfiguracionA newinfo)   //=> CAMPOS POSIBLEMENTE MODIFICADOS
         {
             //SE LLENAN LOS VALORES DEL REGISTRO
             return new Personas()
             {
+                //INFORMACION SIN MODIFICAR
                 Cedula = persona.Cedula,
                 NumeroFicha = persona.NumeroFicha,
                 FechaCreacion = persona.FechaCreacion,
-
+                //POSIBLE INFORMACION MODIFICADA
+                //NOTA: SE DESCRIBE COMO POSIBLE DEBIDO A QUE NO ES NECESARIO MODIFICAR
+                //LOS CINCO CAMPOS PARA GENERAR UN REGISTRO
                 Nombres = newinfo.Nombres,
                 Apellidos = newinfo.Apellidos,
                 Telefono = newinfo.Telefono,
@@ -281,6 +352,7 @@ namespace MttoApi.Model
     //===================================================================================
     public partial class Tableros
     {
+        //ATRIBUTOS (PROPIEDADES) DE LA TABLA "Tableros"
         public string TableroId { get; set; }
         public string SapId { get; set; }
         public double Idcreador { get; set; }
@@ -295,6 +367,7 @@ namespace MttoApi.Model
     //===================================================================================
     public partial class Ultimaconexion
     {
+        //ATRIBUTOS (PROPIEDADES) DE LA TABLA "UltimaConexion"
         public int Id { get; set; }
         public DateTime UltimaConexion1 { get; set; }
         public double UserId { get; set; }
@@ -329,6 +402,7 @@ namespace MttoApi.Model
     //===================================================================================
     public partial class Usuarios
     {
+        //ATRIBUTOS (PROPIEDADES) DE LA TABLA USUARIOS
         public string Username { get; set; }
         public string Password { get; set; }
         public double Cedula { get; set; }
@@ -337,9 +411,10 @@ namespace MttoApi.Model
 
         //==================================================================================================
         //==================================================================================================
-
-        public static Usuarios NewUsuarios(Usuarios usuario)
+        //FUNCIONES PARA RETORNAR UN NUEVO OBJETO USUARIOS
+        public static Usuarios NewUsuarios(Usuarios usuario) //=> SE ENVIA UN OBJETO USUARIOS COMO PARAMETRO
         {
+            //SE RETORNA UN OBJETO DE TIPO "Usuarios"
             return new Usuarios()
             {
                 Username = usuario.Username,
@@ -350,8 +425,13 @@ namespace MttoApi.Model
             };
         }
 
-        public static Usuarios NewUsuarios(string username, string password, double cedula, int nivelusuario, DateTime fechacreacion)
+        public static Usuarios NewUsuarios(string username,     //=> SE ENVIAN LOS DATOS QUE SERAN INSERTADOS
+                                           string password,     //   EN CADA UNA DE LAS PROPIEDADES
+                                           double cedula,
+                                           int nivelusuario,
+                                           DateTime fechacreacion)
         {
+            //SE RETORNA UN OBJETO DE TIPO "Usuarios"
             return new Usuarios()
             {
                 Username = username,
@@ -364,9 +444,14 @@ namespace MttoApi.Model
 
         //==================================================================================================
         //==================================================================================================
-
-        public static Usuarios NewUsuarioInfo(Usuarios usuario, ConfiguracionU newinfo)
+        //FUNCIONES QUE RETORNAN UN OBJETO USUARIO CON LA NUEVA INFORMACION MODIFICADA
+        //NOTA: PUESTO QUE EXISTEN DOS NIVELES DE ACCESO PARA MODIFICAR UN REGISTRO DE USUARIO, SE DECIDIO
+        //CREAR DOS FUNCIONES DENTRO DE LA CLASE PERSONAS QUE MODIFIQUEN ESPECIFICAMENTE LOS CAMPOS "MODIFICABLES"
+        //DE CADA PAGINA ("PaginaConfiguracion" y "PaginaConfiguracionAdmin")
+        public static Usuarios NewUsuarioInfo(Usuarios usuario,         //=> INFORMACION REGISTRADA DEL USUARIO
+                                              ConfiguracionU newinfo)   //=> CAMPOS POSIBLEMENTE MODIFICADOS
         {
+            //SE LLENAN LOS VALORES DEL REGISTRO
             return new Usuarios
             {
                 Username = usuario.Username,
@@ -377,8 +462,10 @@ namespace MttoApi.Model
             };
         }
 
-        public static Usuarios NewUsuarioInfo(Usuarios usuario, ConfiguracionA newinfo)
+        public static Usuarios NewUsuarioInfo(Usuarios usuario,         //=> INFORMACION REGISTRADA DEL USUARIO
+                                              ConfiguracionA newinfo)   //=> CAMPOS POSIBLEMENTE MODIFICADOS
         {
+            //SE LLENAN LOS VALORES DEL REGISTRO
             return new Usuarios()
             {
                 Cedula = usuario.Cedula,

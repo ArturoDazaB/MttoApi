@@ -323,6 +323,12 @@
         09/02/2021                                   =  *Se modificaron y se dio formato a todas las clases de tipo
                                                      =  Controller (Clases representadas por los archivos de la carpeta
                                                      =  "Controllers" del proyecto).
+                                                     =
+                                                     =  *Se agregaron comentarios y se dio formato a la clase 
+                                                     =  "MTTOAPP_V6Context" (Clase ubicada en el archivo Model/Context)
+                                                     =
+                                                     =  *Se agregaron comentarios y se dio formato a la clase
+                                                     =  "Tablas" (Clase ubiada en la carpeta Model)
 ========================================================================================================================
 ========================================================================================================================
 --------------------------------------------------CODIGO BORRADO--------------------------------------------------------
