@@ -31,7 +31,7 @@ namespace MttoApi.Model
         //FUNCION QUE RETORNA UN OBJETO DE TIPO "ConfiguracionU"
         public static ConfiguracionU NewConfiguracionU(ConfiguracionU newinfo) //=> SE RECIBE UN OBJETO "ConfiguracionU" COMO PARAMETRO
         {
-            //INICIALIZA Y RETORNA UN OBJETO DE TIPO "ConfiguracionU"
+            //SE INICIALIZA Y RETORNA UN OBJETO DE TIPO "ConfiguracionU"
             return new ConfiguracionU
             {
                 Cedula = newinfo.Cedula,
@@ -48,7 +48,7 @@ namespace MttoApi.Model
     //NOTA: ESTA CLASE ES DERIVADA DE LA CLASE "ConfiguracionU", ESTO DEBIDO A QUE LA CLASE "ConfiguracionA"
     //POSEE LOS MISMO ATRIBUTOS MODIFICABLES DE LA CLASE "ConfiguracionU", SIN EMBARGO, PUESTO QUE ESTA CLASE
     //ES USADA CUANDO SE REALIZAN MODIFICACIONES DESDE LA PAGINA "PaginaConfiguracionAdmin" SE ADICIONAN NUEVAS
-    //PROPIEDADES A MODIFICAR.
+    //PROPIEDADES MODIFICABLES.
     public partial class ConfiguracionA : ConfiguracionU
     {
         //ATRIBUTOS (PROPIEDADES) DE LA CLASE "ConfiguracionA"
@@ -60,8 +60,9 @@ namespace MttoApi.Model
         //======================================================================
         //======================================================================
         //FUNCION QUE RETORNAN UN OBJETO DE TIPO "ConfiguracionA"
-        public static ConfiguracionA NewConfiguracionA(ConfiguracionA newinfo)
+        public static ConfiguracionA NewConfiguracionA(ConfiguracionA newinfo)  //=> SE RECIBE UN OBJETO "ConfiguracionA" COMO PARAMETRO
         {
+            //SE INICIALIZA Y RETORNA UN OBJETO DE TIPO "ConfiguracionA"
             return new ConfiguracionA
             {
                 Nombres = newinfo.Nombres,
@@ -116,8 +117,10 @@ namespace MttoApi.Model
         //==========================================================================================
         //==========================================================================================
         //FUNCION QUE RETORNA UN OBJETO DE TIPO "LogInResponse"
-        public static LogInResponse NewLogInResponse(InformacionGeneral info, DateTime ultimoingreso)
+        public static LogInResponse NewLogInResponse(InformacionGeneral info,   //SE RECIBE UN OBJETO "InformacionGeneral"
+                                                     DateTime ultimoingreso)    //SE RECIBE UN OBJETO "Datetime"
         {
+            //SE RETORNA UN OBJETO DE TIPO "LogInResponse"
             return new LogInResponse()
             {
                 UserInfo = info,
@@ -133,7 +136,7 @@ namespace MttoApi.Model
     //Y EL ID DEL USUARIO QUE SE ENCUENTRA REALIZANDO EL REGISTRO
     public partial class RequestRegistroUsuario
     {
-        //ATRIBUTOS (PROPIEDADES) DE LA CLASE
+        //ATRIBUTOS (PROPIEDADES) DE LA CLASE "RequestRegistroUsuario"
         public InformacionGeneral NewUser { get; set; }
         public double UserId { get; set; }
     }
@@ -201,7 +204,7 @@ namespace MttoApi.Model
         //NOTA: LAS PROPIEDADES "TableroId" Y "SapId" SON MUTUAMENTE EXCLUYENTES. ESTO IMPLICA
         //QUE AL REALIZAR LA CONSULTA, AL RECIBIR UN OBJETO DE TIPO "ResquestConsultaTablero" 
         //SI LA PROPIEDAD "TableroId" CONTIENE INFORMCION ENTONCES LA PROPIEDAD "SapId" DEBE SER
-        //NULA O VACIA. LO MISMO OCURRE SI LA PROPIEDAD "SapId" CONTIENE INFORMACION 
+        //NULA O VACIA. LO MISMO OCURRE SI LA PROPIEDAD "SapId" CONTIENE INFORMACION.
     }
 
     //=======================================================================================================
@@ -210,8 +213,9 @@ namespace MttoApi.Model
     //LA LISTA DE USUARIOS QUE COINCIDAN CON EL PARAMETRO ENVIADO Y LA OPCION DE CONSULTA SELECCIONADA.
     public partial class RequestQueryAdmin
     {
-        public string Parametro { get; set; }
-        public double UserId { get; set; }
+        //ATRIBUTOS (PARAMETROS) DE LA CLASE "RequestQueryAdmin".
+        public string Parametro { get; set; }   //=> PARAMETRO DE CONSULTA ENVIADO COMO REFERENCIA
+        public double UserId { get; set; }      //=> Id (CEDULA) DEL USUARIO QUE REALIZO LA SOLICITUD
     }
 
     //=======================================================================================================
@@ -219,7 +223,6 @@ namespace MttoApi.Model
     //CLASE USADA EN LA PAGINA "PaginaQueryAdmin" ENVIADA DESDE LA APLICACION AL SERVIDOR PARA SOLICITAR
     //LA INFORMACION DEL USUARIO SELECCIONADO POR LA LISTA DE USUARIOS QUE COINCIDEN CON EL PARAMETRO
     //ENVIADO.
-
     public partial class UserSelectedRequest
     {
         //ATRIBUTOS (PROPIEDADES) DE LA CLASE 

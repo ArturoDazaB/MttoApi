@@ -9,6 +9,12 @@ using Microsoft.Extensions.Logging;
 
 namespace MttoApi
 {
+    //=========================================================================================================
+    //=========================================================================================================
+    //ASP.NET CORE APPLICATION MUST INCLUDE A "STAR UP" CLASS. IT IS EXECUTED FIRST WHEN THE APPLICATION 
+    //STARTS. THIS CLASS CAN BE CONFIGURED USING.
+    //=========================================================================================================
+    //=========================================================================================================
     public class Program
     {
         public static void Main(string[] args)
