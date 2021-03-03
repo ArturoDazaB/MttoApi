@@ -178,8 +178,8 @@ namespace MttoApi.Controllers
 
         //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
         //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
-        //https:/<ipadress>:<port>/mttoapp/configuracion/administrator/<numero_de_cedula> <=> 
-        //https://192.168.1.192:8000/mttoapp/configuracion/administrator/<numero_de_cedula>
+        //https:/<ipadress>:<port>/mttoapp/configuracion/administrator/<cedula> <=> 
+        //https://192.168.1.192:8000/mttoapp/configuracion/administrator/<cedula>
         [Route("administrator/{cedula}")]
 
         //--------------------------------------------------------------------------------------------------

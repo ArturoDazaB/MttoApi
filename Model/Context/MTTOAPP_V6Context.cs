@@ -59,7 +59,7 @@ namespace MttoApi.Model.Context
             {
                 //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. 
                 //See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseMySql("server=Localhost;port=3306;database=MTTOAPP_V6;uid=root;pwd=Ca06Db0*", x => x.ServerVersion("8.0.21-mysql"));
+                optionsBuilder.UseMySql("Server=127.0.0.1;Port=3306;Database=MTTOAPP_V6;Uid=CarlosDaza;Pwd=*122900900625*", x => x.ServerVersion("8.0.23-mysql"));
             }
         }
 

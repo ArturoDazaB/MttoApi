@@ -51,7 +51,7 @@ namespace MttoApi.Controllers
         // -username: PARAMETRO ENVIADO EN EL URL DE LA SOLICITUD (username=<username> || USERNAME=<username>)
         // -password: PARAMETRO ENVIADO EN EL URL DE LA SOLICITUD (password=<password> || PASSWORD=<password>)
         //--------------------------------------------------------------------------------------------------
-        public async Task<IActionResult> Get(string username, string password)
+        public async Task<IActionResult> LogInRequest(string username, string password)
         {
             //SE CREA E INICIALIZA LA VARIABLE QUE SE RETORNARA SI TODAS LAS CONDICIONES SE CUMPLEN
             LogInResponse response = null;
