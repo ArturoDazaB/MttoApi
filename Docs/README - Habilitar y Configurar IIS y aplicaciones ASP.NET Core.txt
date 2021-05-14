@@ -8,6 +8,9 @@ HABILITAR Y CONFIGURAR IIS Y APLICACIONES ASP.NET CORE - Windows Server 2012 R2
 la 3.5 se debe instalar dicho framework en su version 3.5 antes de activar el 
 modulo de IIS y el propio modulo ASP.NET
 
+NOTA: SE DEBEN REALIZAR ESTOS INSTRUCTIVOS SI EL SERVIDOR NO TIENE INSTALADO
+.NET Framework
+
 1) Ejecute el cmd como administrador (run as administrator).
 
 2) Ejecute el siguiente comando en la aplicacion de lineas de comando
