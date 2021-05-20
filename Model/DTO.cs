@@ -57,6 +57,8 @@ namespace MttoApi.Model
         public DateTime FechaNacimiento { get; set; }
         public string Username { get; set; }
 
+        public int NivelUsuario { get; set; }
+
         //======================================================================
         //======================================================================
         //FUNCION QUE RETORNAN UN OBJETO DE TIPO "ConfiguracionA"
@@ -74,6 +76,7 @@ namespace MttoApi.Model
 
                 Username = newinfo.Username,
                 Userpassword = newinfo.Userpassword,
+                NivelUsuario = newinfo.NivelUsuario,
             };
         }
     }

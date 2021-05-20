@@ -186,6 +186,8 @@ namespace MttoApi.Model
         public bool? ModificacionTelefono { get; set; }
         public bool? ModificacionPassword { get; set; }
 
+        public bool? ModificacionNivelUsuario { get; set; }
+
         //===================================================================================
         //===================================================================================
         //CONSTRUCTOR
@@ -193,8 +195,8 @@ namespace MttoApi.Model
         {
             //SE INICIALIZAN LAS PROPIEDADES QUE IDENFITICARAN LOS CAMBIOS HECHOS ANTES DE
             //REALIZAR LA MODIFICACION
-            ModificacionNombres = ModificacionApellidos = ModificacionFecha =
-                ModificacionUsername = ModificacionCorreo = ModificacionTelefono = ModificacionPassword = false;
+            ModificacionNombres = ModificacionApellidos = ModificacionFecha = ModificacionUsername
+                = ModificacionCorreo = ModificacionTelefono = ModificacionPassword = ModificacionNivelUsuario = false;
         }
 
         //===================================================================================
@@ -212,7 +214,7 @@ namespace MttoApi.Model
             Modificacionesusuario Modificaciones = new Modificacionesusuario();
 
             //SE LE ASIGNA A LA PROPIEDAD "FechaHora" DEL OBJETO CREADO LA FECHA Y HORA RECIBIDA COMO PARAMETRO
-            Modificaciones.FechaHora = DateTime.Now;
+            Modificaciones.FechaHora = fechahora;
             //SE LE ASIGNA A LA PROPIEDAD "IdModificador" EL ID DEL USUARIO QUE SE ENCUENTRA REALIZANDO LA SOLICITUD DE MODIFICACION DE DATOS
             Modificaciones.IdModificador = userid;
             //SE LE ASIGNA A LA PROPIEDAD "IdModificado" EL ID DEL REGISTRO DE USUARIO A MODIFICAR
@@ -239,6 +241,9 @@ namespace MttoApi.Model
 
             if (Usuario.Password != PrevUsuario.Password)   //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "Password"
                 Modificaciones.ModificacionPassword = true;
+
+            if (Usuario.NivelUsuario != PrevUsuario.NivelUsuario)   //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "Nivel de Usuario"
+                Modificaciones.ModificacionNivelUsuario = true;
 
             //SE RETORNA EL OBJETO CREADO
             return Modificaciones;
