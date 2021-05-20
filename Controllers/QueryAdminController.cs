@@ -27,6 +27,8 @@ namespace MttoApi.Controllers
         //QUE MAPEARA LA INFORMACION PARA LECTURA Y ESCRITURA EN LA BASE DE DATOS
         private readonly MTTOAPP_V6Context _context;
 
+        private const string NotFoundMessage= "No ningun registro que coincida con el parametro de consulta ingresado";
+
         //===============================================================================================
         //===============================================================================================
         //CONSTRUCTOR
@@ -93,7 +95,7 @@ namespace MttoApi.Controllers
             //SE EVALUA CUANTOS ELEMENTOS HAY EN LA LISTA "result"
             if (result.Count == 0)
                 //CERO ELEMTENTOS: SE RETORNA EL CORIGO DE ESTATUS 404 NOTFOUND (NO HAY REGISTROS QUE CUMPLAN CON EL PARAMETRO ENVIADO)
-                return NotFound();
+                return NotFound(NotFoundMessage);
             else
             {
                 //SE INICIA EL CICLO TRY...CATCH
@@ -192,7 +194,7 @@ namespace MttoApi.Controllers
             //SE EVALUA CUANTOS ELEMENTOS HAY EN LA LISTA "result"
             if (result.Count == 0)
                 //CERO ELEMTENTOS: SE RETORNA EL CORIGO DE ESTATUS 404 NOTFOUND (NO HAY REGISTROS QUE CUMPLAN CON EL PARAMETRO ENVIADO)
-                return NotFound();
+                return NotFound(NotFoundMessage);
             else
             {
                 //INICIAMOS EL CICLO TRY... CATCH
@@ -289,7 +291,7 @@ namespace MttoApi.Controllers
             //SE EVALUA CUANTOS ELEMENTOS HAY EN LA LISTA "result"
             if (result.Count == 0)
                 //CERO ELEMTENTOS: SE RETORNA EL CORIGO DE ESTATUS 404 NOTFOUND (NO HAY REGISTROS QUE CUMPLAN CON EL PARAMETRO ENVIADO)
-                return NotFound();
+                return NotFound(NotFoundMessage);
             else
             {
                 //INICIAMOS EL CICLO TRY... CATCH
@@ -387,7 +389,7 @@ namespace MttoApi.Controllers
             //SE EVALUA CUANTOS ELEMENTOS HAY EN LA LISTA "result"
             if (result.Count == 0)
                 //CERO ELEMTENTOS: SE RETORNA EL CORIGO DE ESTATUS 404 NOTFOUND (NO HAY REGISTROS QUE CUMPLAN CON EL PARAMETRO ENVIADO)
-                return NotFound();
+                return NotFound(NotFoundMessage);
             else
             {
                 //INICIAMOS EL CICLO TRY... CATCH
@@ -497,7 +499,7 @@ namespace MttoApi.Controllers
             //SE EVALUA CUANTOS ELEMENTOS HAY EN LA LISTA "result"
             if (result.Count == 0)
                 //CERO ELEMTENTOS: SE RETORNA EL CORIGO DE ESTATUS 404 NOTFOUND (NO HAY REGISTROS QUE CUMPLAN CON EL PARAMETRO ENVIADO)
-                return NotFound();
+                return NotFound(NotFoundMessage);
             else
             {
                 //INICIAMOS EL CICLO TRY... CATCH
