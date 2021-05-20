@@ -255,7 +255,7 @@ namespace MttoApi.Controllers
             else
             {
                 //SE RETORNA EL CODIGO 404 NOT FOUND (NO ENCONTRADO)
-                return NotFound();
+                return NotFound("No se encontro registro de tableros con el siguiente Id: " + info.SapId);
             }
 
             //SE RETORNA EL CODIGO 200 OK JUNTO CON TODA LA INFORMACION DEL TABELRO SOLICITADO
