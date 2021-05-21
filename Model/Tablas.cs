@@ -474,9 +474,9 @@ namespace MttoApi.Model
             return new Usuarios()
             {
                 Cedula = usuario.Cedula,
-                NivelUsuario = usuario.NivelUsuario,
                 FechaCreacion = usuario.FechaCreacion,
                 Username = newinfo.Username,
+                NivelUsuario = newinfo.NivelUsuario,
                 Password = newinfo.Userpassword,
             };
         }

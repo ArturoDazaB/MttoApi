@@ -197,7 +197,7 @@ namespace MttoApi.Controllers
             if (cedula != newinfo.Cedula)
             {
                 //SE DA RETORNO A LA SOLICITUD CON LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO AL USUARIO
-                return BadRequest("La cedula no coincide con la informacion del objeto enviado");
+                return BadRequest("La cedula no coincide con la información del objeto enviado");
             }
 
             //SI EL PARAMETRO "cedula" Y LA PROPIEDAD "cedula" DEL OBJETO "newinfo" SON SIMILARES
@@ -222,7 +222,7 @@ namespace MttoApi.Controllers
 
                     //SE VERIFICA QUE LOS OBJETOS ENVIADOS NO SEAN NULOS
                     if (persona == null && usuario == null)
-                        return NotFound("Numero de cedula no registrado: " + cedula);
+                        return NotFound("Número de cedula no registrado: " + cedula);
 
                     //SE CREA E INICIALIZA UN OBJETO DEL TIPO "ModificacionesUsuario" QUE SERVIRA PARA CONTENER
                     //LA INFORMACION DEL NUEVO REGISTRO DENTRO DE LA TABLA "Modificacionesusuario"
