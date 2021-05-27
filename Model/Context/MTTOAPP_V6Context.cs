@@ -5,23 +5,24 @@ namespace MttoApi.Model.Context
     //========================================================================================
     //========================================================================================
     /*________________________________________________________________________________________
-     The DbContext class is an integral part of Entity Framework. An instance of DbContext 
-     represents a session with the database which can be used to query and save instances of 
+     The DbContext class is an integral part of Entity Framework. An instance of DbContext
+     represents a session with the database which can be used to query and save instances of
      your entities to a database.
     __________________________________________________________________________________________
      La clase DbContext es una parte integral del Entity Framework. Una instancia de tipo
      DbContext representa una sesion con la base de datos la cual puede ser usada para consultar
      y guardar instancias de tu entidad a la base de datos.*/
 
-    /*NOTA: ESTA CLASE, EN CONJUNTO CON LAS CLASES QUE SE ENCUENTRAN DESCRITAS DENTRO DEL ARCHIVO 
+    /*NOTA: ESTA CLASE, EN CONJUNTO CON LAS CLASES QUE SE ENCUENTRAN DESCRITAS DENTRO DEL ARCHIVO
      "Tablas" (ARCHIVO UBICADO EN LA CARPETA MODEL DEL PROYECTO) FUERON CREADOS MEDIANTE EL USO
-     DE LA "Consola Del Administrador De Paquetes (PACKAGE MANAGER CONSOLE)" Y EL PAQUETE 
+     DE LA "Consola Del Administrador De Paquetes (PACKAGE MANAGER CONSOLE)" Y EL PAQUETE
      (NIGET PACKAGE) "Pomelo.EntityFrameworkCore.MySql"
-    
-     PARA MAS INFORMACION: 
+
+     PARA MAS INFORMACION:
         https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql
         https://docs.microsoft.com/en-us/ef/core/cli/powershell
     */
+
     //========================================================================================
     //========================================================================================
     public partial class MTTOAPP_V6Context : DbContext
@@ -39,8 +40,9 @@ namespace MttoApi.Model.Context
         //========================================================================================
         //PROPIEDADES DE LA CLASE "MTTOAPP_V6Context"
         //NOTA: LOS OBJETOS DE TIPO "DbSet" REPRESENTA LA RECOLECCION DE TODAS LAS ENTIDADES
-        //DEL CONTEXTO. 
+        //DEL CONTEXTO.
         public virtual DbSet<Historialconsultatableros> Historialconsultatableros { get; set; }
+
         public virtual DbSet<Historialsolicitudesweb> Historialsolicitudesweb { get; set; }
         public virtual DbSet<Items> Items { get; set; }
         public virtual DbSet<Modificacionesusuario> Modificacionesusuario { get; set; }
@@ -48,14 +50,16 @@ namespace MttoApi.Model.Context
         public virtual DbSet<Tableros> Tableros { get; set; }
         public virtual DbSet<Ultimaconexion> Ultimaconexion { get; set; }
         public virtual DbSet<Usuarios> Usuarios { get; set; }
+
         //---------------------------------------------------------------------------
         //---------------------------------------------------------------------------
         //POR MOTIVOS DOCUMENTALES (5/27/2021) SE ADICIONO LA TABLA "tabla_borrador"
         //A LA BASE DE DATOS "MTTOAPP_V6" (SERVIDOR DE BASE DE DATOS ALOJADA EN EL
         //EQUIPO CORPORATIVO "10.10.4.104") CON EL FIN DE DOCUMENTAR LA MODIFICACION/
-        //INTERVENCION DE LA BASE DE DATOS Y EL CODIGO FUENTE DE LOS PROYECTOS 
+        //INTERVENCION DE LA BASE DE DATOS Y EL CODIGO FUENTE DE LOS PROYECTOS
         //"MttoApp" y "MttoApi".
-        public virtual DbSet<Tabla_Borrador> TablaBorrador { get; set; }
+        public virtual DbSet<TablaBorrador> TablaBorrador { get; set; }
+
         //---------------------------------------------------------------------------
         //---------------------------------------------------------------------------
 
@@ -67,7 +71,7 @@ namespace MttoApi.Model.Context
         {
             if (!optionsBuilder.IsConfigured)
             {
-                //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. 
+                //#warning To protect potentially sensitive information in your connection string, you should move it out of source code.
                 //See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseMySql("Server=127.0.0.1;Port=3306;Database=MTTOAPP_V6;Uid=CarlosDaza;Pwd=*122900900625*", x => x.ServerVersion("8.0.23-mysql"));
             }
@@ -276,9 +280,9 @@ namespace MttoApi.Model.Context
             //POR MOTIVOS DOCUMENTALES (5/27/2021) SE ADICIONO LA TABLA "tabla_borrador"
             //A LA BASE DE DATOS "MTTOAPP_V6" (SERVIDOR DE BASE DE DATOS ALOJADA EN EL
             //EQUIPO CORPORATIVO "10.10.4.104") CON EL FIN DE DOCUMENTAR LA MODIFICACION/
-            //INTERVENCION DE LA BASE DE DATOS Y EL CODIGO FUENTE DE LOS PROYECTOS 
+            //INTERVENCION DE LA BASE DE DATOS Y EL CODIGO FUENTE DE LOS PROYECTOS
             //"MttoApp" y "MttoApi".
-            modelBuilder.Entity<Tabla_Borrador>(entity =>
+            modelBuilder.Entity<TablaBorrador>(entity =>
             {
                 entity.ToTable("tabla_borrador");
 
@@ -287,8 +291,6 @@ namespace MttoApi.Model.Context
                     .HasColumnType("text")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
-
-                entity.Property(e => e.Columna2).HasColumnName("Columna2");
             });
             //---------------------------------------------------------------------------
             //---------------------------------------------------------------------------

@@ -15,6 +15,7 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PROPIEDADES) DE LA TABLA "HistorialConsultaTableros"
         public int Id { get; set; }
+
         public string TableroId { get; set; }
         public string TipoDeConsulta { get; set; }
         public double UsuarioId { get; set; }
@@ -42,17 +43,18 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PROPIEDADES) DE LA TABLA "Historialsolicitudesweb"
         public int Id { get; set; }
+
         public double UsuarioId { get; set; }
         public DateTime FechaHora { get; set; }
         public string Solicitud { get; set; }
 
         //===================================================================================
         //===================================================================================
-        //FUNCION QUE RECIBE COMO PARAMETROS EL USUARIO QUE ACABA DE REALIZAR LA SOLICITUD 
+        //FUNCION QUE RECIBE COMO PARAMETROS EL USUARIO QUE ACABA DE REALIZAR LA SOLICITUD
         //HTTP DESDE EL APLICATIVO Y EL NUMERO DE SOLICITUD QUE EJECUTO
         public static Historialsolicitudesweb NewHistorialSolocitudesWeb(double userid, int solicitud)
         {
-            //SE CREA E INICIALIZA LA VARIABLE SOLICITUD 
+            //SE CREA E INICIALIZA LA VARIABLE SOLICITUD
             //NOTA: VARIABLE QUE CONTENDRA LA CADENA DE TEXTO CON INFORMACION SIGNIFICATIVA DE
             //SOLICITUD HECHA: Controlador = <nombre del controlador ejecutado>
             //                 SolicitudHttp = <Tipo de solicitud RESTFul ejecutada>
@@ -81,6 +83,7 @@ namespace MttoApi.Model
                 case 2:
                     _solicitud = "Controlador=ConsultaTablerosController;SolicitudHTTP=HTTPGET;Metodo=ConsultaTableroId;RespuestaHTTP=Ok(<RegistroTablero> Object)";
                     break;
+
                 case 3:
                     _solicitud = "Controlador=ConsultaTablerosController;SolicitudHTTP=HTTPGET;Metodo=ConsultaSapId;RespuestaHTTP=Ok(<RegistroTablero> Object)";
                     break;
@@ -114,18 +117,23 @@ namespace MttoApi.Model
                 case 6:
                     _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPPOST;Metodo=QueryCedula;RespuestaHTTP=Ok(<List<QueryAdmin>> ObjetoLista)";
                     break;
+
                 case 7:
                     _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPPOST;Metodo=QueryFicha;RespuestaHTTP=Ok(<List<QueryAdmin>> ObjetoLista)";
                     break;
+
                 case 8:
                     _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPPOST;Metodo=QueryNombre;RespuestaHTTP=Ok(<List<QueryAdmin>> ObjetoLista)";
                     break;
+
                 case 9:
                     _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPPOST;Metodo=QueryApellido;RespuestaHTTP=Ok(<List<QueryAdmin>> ObjetoLista)";
                     break;
+
                 case 10:
                     _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPPOST;Metodo=QueryUsername;RespuestaHTTP=Ok(<List<QueryAdmin>> ObjetoLista)";
                     break;
+
                 case 11:
                     _solicitud = "Controlador=QueryAdminController;SolicitudHTTP=HTTPPOST;Metodo=GetUserSelectedInfo;RespuestaHTTP=Ok(<InformacionGeneral> Objeto)";
                     break;
@@ -139,6 +147,7 @@ namespace MttoApi.Model
                 case 12:
                     _solicitud = "Controlador=ConfiguracionController;SolicitudHTTP=HTTPPUT;Metodo=ActualizarUsuario;RespuestaHTTP=Ok(<string> mensaje)";
                     break;
+
                 case 13:
                     _solicitud = "Controlador=ConfiguracionController;SolicitudHTTP=HTTPPUT;Metodo=ActualizarUsuarioAdm;RespuestaHTTP=Ok(<string> mensaje)";
                     break;
@@ -152,7 +161,6 @@ namespace MttoApi.Model
                 Solicitud = _solicitud,     //=>INFORMACION SOBRE LA SOLICITUD
             };
         }
-
     }
 
     //=======================================================================================================
@@ -162,6 +170,7 @@ namespace MttoApi.Model
         //ATRIBUTOS (PROPIEDADES) DE LA TABLA "Items"
         //NOTA: ACTUALMENTE ESTA CLASE ES USADA PARA REPRESENTAR LOS ITEMS DENTRO DE LOS TABLEROS
         public int Id { get; set; }
+
         public string TableroId { get; set; }
         public string Descripcion { get; set; }
         public int Cantidad { get; set; }
@@ -173,12 +182,15 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PROPIEDADES) DE LA TABLA "Modificacionesusuario"
         public int Id { get; set; }
+
         public double IdModificado { get; set; }
         public double IdModificador { get; set; }
         public DateTime FechaHora { get; set; }
+
         //NOTA: LAS PROPIEDADES QUE FIGUREN EL CARACTER '?' SON PROPIEDADES
         //QUE DENTRO DE LA BASE DE DATO PUEDEN SER NULAS
         public bool? ModificacionNombres { get; set; }
+
         public bool? ModificacionApellidos { get; set; }
         public bool? ModificacionFecha { get; set; }
         public bool? ModificacionUsername { get; set; }
@@ -229,7 +241,7 @@ namespace MttoApi.Model
 
             if (Persona.FechaNacimiento != PrevPersona.FechaNacimiento) //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "FechaNacimiento"
                 Modificaciones.ModificacionFecha = true;
-                
+
             if (Persona.Telefono != PrevPersona.Telefono)   //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "Telefono"
                 Modificaciones.ModificacionTelefono = true;
 
@@ -256,6 +268,7 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PROPIEDADES) DE LA TABLA "Personas"
         public string Nombres { get; set; }
+
         public string Apellidos { get; set; }
         public double Cedula { get; set; }
         public int NumeroFicha { get; set; }
@@ -310,7 +323,7 @@ namespace MttoApi.Model
         //NOTA: PUESTO QUE EXISTEN DOS NIVELES DE ACCESO PARA MODIFICAR UN REGISTRO DE USUARIO, SE DECIDIO
         //CREAR DOS FUNCIONES DENTRO DE LA CLASE PERSONAS QUE MODIFIQUEN ESPECIFICAMENTE LOS CAMPOS "MODIFICABLES"
         //DE CADA PAGINA ("PaginaConfiguracion" y "PaginaConfiguracionAdmin")
-        public static Personas NewPersonaInfo(Personas persona,         //=> INFORMACION REGISTRADA DEL USUARIO 
+        public static Personas NewPersonaInfo(Personas persona,         //=> INFORMACION REGISTRADA DEL USUARIO
                                               ConfiguracionU newinfo)   //=> CAMPOS POSIBLEMENTE MODIFICADOS
         {
             //SE LLENAN LOS VALORES DEL REGISTRO
@@ -359,6 +372,7 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PROPIEDADES) DE LA TABLA "Tableros"
         public string TableroId { get; set; }
+
         public string SapId { get; set; }
         public double Idcreador { get; set; }
         public string Filial { get; set; }
@@ -374,6 +388,7 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PROPIEDADES) DE LA TABLA "UltimaConexion"
         public int Id { get; set; }
+
         public DateTime UltimaConexion1 { get; set; }
         public double UserId { get; set; }
 
@@ -409,6 +424,7 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PROPIEDADES) DE LA TABLA USUARIOS
         public string Username { get; set; }
+
         public string Password { get; set; }
         public double Cedula { get; set; }
         public int NivelUsuario { get; set; }
@@ -488,8 +504,9 @@ namespace MttoApi.Model
     //BASE DE DATOS "MTTOAPP_V6" (SERVIDOR DE BASE DE DATOS ALOJADA EN EL EQUIPO
     //CORPORATIVO "10.10.4.104") CON EL FIN DE DOCUMENTAR LA MODIFICACION/INTERVENCION DE
     //LA BASE DE DATOS Y EL CODIGO FUENTE DE LOS PROYECTOS "MttoApp" y "MttoApi".
-    public partial class Tabla_Borrador
+    public partial class TablaBorrador
     {
+        public int Id { get; set; }
         public string Columna1 { get; set; }
         public double Columna2 { get; set; }
     }
