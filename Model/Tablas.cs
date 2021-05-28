@@ -497,17 +497,4 @@ namespace MttoApi.Model
             };
         }
     }
-
-    //===================================================================================
-    //===================================================================================
-    //POR MOTIVOS DOCUMENTALES (5/27/2021) SE ADICIONO LA TABLA "tabla_borrador" A LA
-    //BASE DE DATOS "MTTOAPP_V6" (SERVIDOR DE BASE DE DATOS ALOJADA EN EL EQUIPO
-    //CORPORATIVO "10.10.4.104") CON EL FIN DE DOCUMENTAR LA MODIFICACION/INTERVENCION DE
-    //LA BASE DE DATOS Y EL CODIGO FUENTE DE LOS PROYECTOS "MttoApp" y "MttoApi".
-    public partial class TablaBorrador
-    {
-        public int Id { get; set; }
-        public string Columna1 { get; set; }
-        public double Columna2 { get; set; }
-    }
 }

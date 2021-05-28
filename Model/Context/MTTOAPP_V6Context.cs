@@ -51,13 +51,6 @@ namespace MttoApi.Model.Context
         public virtual DbSet<Ultimaconexion> Ultimaconexion { get; set; }
         public virtual DbSet<Usuarios> Usuarios { get; set; }
 
-        //---------------------------------------------------------------------------
-        //---------------------------------------------------------------------------
-        public virtual DbSet<TablaBorrador> TablaBorrador { get; set; }
-
-        //---------------------------------------------------------------------------
-        //---------------------------------------------------------------------------
-
         //========================================================================================
         //========================================================================================
         //FUNCION OnConfiguring DONDE SE ESPECIFICARA LA BASE DE DATOS QUE SE VA A USAR
@@ -269,26 +262,6 @@ namespace MttoApi.Model.Context
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_0900_ai_ci");
             });
-
-            //---------------------------------------------------------------------------
-            //---------------------------------------------------------------------------
-            //POR MOTIVOS DOCUMENTALES (5/27/2021) SE ADICIONO LA TABLA "tabla_borrador"
-            //A LA BASE DE DATOS "MTTOAPP_V6" (SERVIDOR DE BASE DE DATOS ALOJADA EN EL
-            //EQUIPO CORPORATIVO "10.10.4.104") CON EL FIN DE DOCUMENTAR LA MODIFICACION/
-            //INTERVENCION DE LA BASE DE DATOS Y EL CODIGO FUENTE DE LOS PROYECTOS
-            //"MttoApp" y "MttoApi".
-            modelBuilder.Entity<TablaBorrador>(entity =>
-            {
-                entity.ToTable("tabla_borrador");
-
-                entity.Property(e => e.Columna1)
-                    .IsRequired()
-                    .HasColumnType("text")
-                    .HasCharSet("utf8mb4")
-                    .HasCollation("utf8mb4_0900_ai_ci");
-            });
-            //---------------------------------------------------------------------------
-            //---------------------------------------------------------------------------
 
             OnModelCreatingPartial(modelBuilder);
         }
