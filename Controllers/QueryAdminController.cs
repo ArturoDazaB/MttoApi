@@ -130,8 +130,13 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }
                 
@@ -228,8 +233,13 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }
         }
@@ -325,8 +335,13 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }
                 
@@ -423,8 +438,13 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }
                 
@@ -533,8 +553,13 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }    
         }
@@ -626,8 +651,13 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }
 

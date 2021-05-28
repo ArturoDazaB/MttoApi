@@ -17,7 +17,7 @@ namespace MttoApi.Controllers
     //===================================================================================================
     //SE AÑADE A LA CLASE EL ROUTING "Route" JUNTO CON LA DIRECCION A LA CUAL SE DEBE LLAMAR PARA PODER
     //ACCESO A LA CLASE CONTROLLADOR. EJ:
-    //https:/<ipadress>:<port>/mttoapp/login <=> https://192.168.1.192:8000/mttoapp/borrador
+    //https:/<ipadress>:<port>/mttoapp/borrador <=> https://192.168.1.192:8000/mttoapp/borrador
     [Route("mttoapp/borrador")]
     public class TablaBorradorController : Controller
     {
@@ -40,7 +40,7 @@ namespace MttoApi.Controllers
         //===============================================================================================
         //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "Registro" RESPONDERA
         //A SOLICITUDES HTTP DE TIPO POST
-        // POST mttoapp/borrador
+        //POST mttoapp/borrador -> https:/<ipadress>:<port>/mttoapp/borrador?c1=<string>&c2=<string>
         [HttpPost]
         public async Task<ActionResult<string>> Registro(string c1, string c2)
         {
@@ -87,8 +87,13 @@ namespace MttoApi.Controllers
             catch (Exception ex) when (ex is DbUpdateException ||
                                        ex is DbUpdateConcurrencyException)
             {
+                Console.WriteLine("\n=================================================");
+                Console.WriteLine("=================================================");
+                Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                Console.WriteLine("=================================================");
+                Console.WriteLine("=================================================\n");
                 //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
             }
 
             //SE RETORNA UN MENSAJE INFORMATIVO

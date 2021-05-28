@@ -80,7 +80,7 @@ namespace MttoApi.Controllers
                         //--------------------------------------------------------------------------------------------------------
                         //CREACION E INICIALIZACION DEL OBJETO solicitudweb
                         Historialsolicitudesweb solicitudweb =
-                            Historialsolicitudesweb.NewHistorialSolocitudesWeb(newtablero.tableroInfo.Idcreador, 4);
+                            Historialsolicitudesweb.NewHistorialSolocitudesWeb(newtablero.tableroInfo.Idcreador, 4);    
 
                         //--------------------------------------------------------------------------------------------------------
                         //SE AÑADE EL NUEVO REGISTRO A LA BASE DE DATOS
@@ -99,8 +99,13 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }
             //NO SE CUMPLIO ALGUNA DE LAS TRES CONDICIONES, SE RETORNA UN MENSAJE INFORMANDO CUAL CONDICION FALLO.
