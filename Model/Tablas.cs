@@ -190,15 +190,12 @@ namespace MttoApi.Model
         //NOTA: LAS PROPIEDADES QUE FIGUREN EL CARACTER '?' SON PROPIEDADES
         //QUE DENTRO DE LA BASE DE DATO PUEDEN SER NULAS
         public bool? ModificacionNombres { get; set; }
-
         public bool? ModificacionApellidos { get; set; }
-        public bool? ModificacionFecha { get; set; }
         public bool? ModificacionUsername { get; set; }
         public bool? ModificacionCorreo { get; set; }
         public bool? ModificacionTelefono { get; set; }
         public bool? ModificacionPassword { get; set; }
-
-        public bool? ModificacionNivelUsuario { get; set; }
+        public bool? ModificacionesNivelUsuario { get; set; }
 
         //===================================================================================
         //===================================================================================
@@ -207,8 +204,8 @@ namespace MttoApi.Model
         {
             //SE INICIALIZAN LAS PROPIEDADES QUE IDENFITICARAN LOS CAMBIOS HECHOS ANTES DE
             //REALIZAR LA MODIFICACION
-            ModificacionNombres = ModificacionApellidos = ModificacionFecha = ModificacionUsername
-                = ModificacionCorreo = ModificacionTelefono = ModificacionPassword = ModificacionNivelUsuario = false;
+            ModificacionNombres = ModificacionApellidos  = ModificacionUsername
+                = ModificacionCorreo = ModificacionTelefono = ModificacionPassword = ModificacionesNivelUsuario = false;
         }
 
         //===================================================================================
@@ -239,8 +236,8 @@ namespace MttoApi.Model
             if (Persona.Apellidos != PrevPersona.Apellidos) //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "Apellido(s)"
                 Modificaciones.ModificacionApellidos = true;
 
-            if (Persona.FechaNacimiento != PrevPersona.FechaNacimiento) //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "FechaNacimiento"
-                Modificaciones.ModificacionFecha = true;
+            //if (Persona.FechaNacimiento != PrevPersona.FechaNacimiento) //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "FechaNacimiento"
+                //Modificaciones.ModificacionFecha = true;
 
             if (Persona.Telefono != PrevPersona.Telefono)   //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "Telefono"
                 Modificaciones.ModificacionTelefono = true;
@@ -255,7 +252,7 @@ namespace MttoApi.Model
                 Modificaciones.ModificacionPassword = true;
 
             if (Usuario.NivelUsuario != PrevUsuario.NivelUsuario)   //=> true => SE DETECTARON CAMBIOS EN LA PROPIEDAD "Nivel de Usuario"
-                Modificaciones.ModificacionNivelUsuario = true;
+                Modificaciones.ModificacionesNivelUsuario = true;
 
             //SE RETORNA EL OBJETO CREADO
             return Modificaciones;
@@ -268,13 +265,11 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PROPIEDADES) DE LA TABLA "Personas"
         public string Nombres { get; set; }
-
         public string Apellidos { get; set; }
         public double Cedula { get; set; }
         public int NumeroFicha { get; set; }
         public double? Telefono { get; set; }
         public string Correo { get; set; }
-        public DateTime FechaNacimiento { get; set; }
         public DateTime FechaCreacion { get; set; }
 
         //==================================================================================================
@@ -288,7 +283,6 @@ namespace MttoApi.Model
                 Apellidos = persona.Apellidos,
                 Cedula = persona.Cedula,
                 NumeroFicha = persona.NumeroFicha,
-                FechaNacimiento = persona.FechaNacimiento,
                 Telefono = persona.Telefono,
                 Correo = persona.Correo,
                 FechaCreacion = persona.FechaCreacion,
@@ -301,7 +295,6 @@ namespace MttoApi.Model
                                            int numeroficha,
                                            double telefono,
                                            string correo,
-                                           DateTime fechanacimiento,
                                            DateTime fechacreacion) //=> SE PASAN CADA UNO DE LOS DATOS A INSERTAR EN EL OBJETO PERSONA
         {
             return new Personas()
@@ -310,7 +303,6 @@ namespace MttoApi.Model
                 Apellidos = apellidos,
                 Cedula = cedula,
                 NumeroFicha = numeroficha,
-                FechaNacimiento = fechanacimiento,
                 Telefono = telefono,
                 Correo = correo,
                 FechaCreacion = fechacreacion,
@@ -335,7 +327,6 @@ namespace MttoApi.Model
                 Cedula = persona.Cedula,
                 NumeroFicha = persona.NumeroFicha,
                 FechaCreacion = persona.FechaCreacion,
-                FechaNacimiento = persona.FechaNacimiento,
                 //POSIBLE INFORMACION MODIFICADA
                 //NOTA: SE DESCRIBE COMO POSIBLE DEBIDO A QUE NO ES NECESARIO MODIFICAR
                 //LOS DOS CAMPOS PARA GENERAR UN REGISTRO
@@ -361,7 +352,6 @@ namespace MttoApi.Model
                 Apellidos = newinfo.Apellidos,
                 Telefono = newinfo.Telefono,
                 Correo = newinfo.Correo,
-                FechaNacimiento = newinfo.FechaNacimiento,
             };
         }
     }
@@ -424,7 +414,6 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PROPIEDADES) DE LA TABLA USUARIOS
         public string Username { get; set; }
-
         public string Password { get; set; }
         public double Cedula { get; set; }
         public int NivelUsuario { get; set; }

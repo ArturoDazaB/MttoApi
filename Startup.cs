@@ -50,7 +50,7 @@ namespace MttoApi
         public void ConfigureServices(IServiceCollection services)
         {
             //SE CONFIGURA LA CONEXION A LA BASE DE DATOS A LA CLASE CONTEXTO
-            services.AddDbContext<MttoApi.Model.Context.MTTOAPP_V6Context>(op => op.UseMySql(Configuration.GetConnectionString("MTTOAPPDB6")));
+            services.AddDbContext<MttoApi.Model.Context.MTTOAPP_V6Context>(op => op.UseMySql(Configuration.GetConnectionString("MTTOAPPDB7")));
             services.AddControllers();
         }
 
