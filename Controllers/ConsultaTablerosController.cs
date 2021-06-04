@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MttoApi.Model;
 using MttoApi.Model.Context;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -43,16 +43,16 @@ namespace MttoApi.Controllers
         //A SOLICITUDES HTTP DE TIPO POST
         [HttpPost]
 
-        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA
         //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
-        //https:/<ipadress>:<port>/mttoapp/consultatableros/tableroid <=> 
+        //https:/<ipadress>:<port>/mttoapp/consultatableros/tableroid <=>
         //https://192.168.1.192:8000/mttoapp/consultatableros/tableroid
         [Route("tableroid")]
 
         //--------------------------------------------------------------------------------------------------
-        //FUNCION QUE ACTUALIZARA LA INFORMACION DE UN USUARIO CUANDO SE REALICE EL LLAMADO DESDE 
-        //LA PAGINA "PaginaConsultaTableros" DE LA APLICACION "Mtto App". EN ESTA FUNCION SE RECIBEN 
-        //LOS PARAMETROS: 
+        //FUNCION QUE ACTUALIZARA LA INFORMACION DE UN USUARIO CUANDO SE REALICE EL LLAMADO DESDE
+        //LA PAGINA "PaginaConsultaTableros" DE LA APLICACION "Mtto App". EN ESTA FUNCION SE RECIBEN
+        //LOS PARAMETROS:
         // -info => OBJETO DEL TIPO "RequestConsultaTablero" ENVIADO EN EL BODY DE LA SOLICITUD HTTP
         // JUNTO CON LA INFORMACION NECESARIA PARA PROCESAR LA CONSULTA DE TABLEROS.
         //--------------------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ namespace MttoApi.Controllers
                 (x => x.TableroId.ToLower() == info.TableroId.ToLower())) //=> true => EXISTE UN REGISTRO DENTRO DE LA CLASE TABLERO CON DICHO DATO
             {
                 //SE INICIA LA TRANSACCIONES CON LA BASE DE DATOS
-                using(var transaction = this._context.Database.BeginTransaction())
+                using (var transaction = this._context.Database.BeginTransaction())
                 {
                     //SE INICIA EL CICLO TRY... CATCH
                     try
@@ -88,10 +88,10 @@ namespace MttoApi.Controllers
                             //SI ES DIFERENTE DE NULO DESECHAMOS LA ENTIDAD RETENIDA POR EF (ENTITYFRAMEWORK)
                             this._context.Entry(tableroinfo).State = EntityState.Detached;
                         }
-                            
+
                         //--------------------------------------------------------------------------------------------------------
                         //CREAMOS E INICIALIZAMOS UNA LISTA DE OBJETOS "Items" CON LOS ITEMS QUE POSEE DICHO TABLERO
-                        List<Items> itemstablero = 
+                        List<Items> itemstablero =
                             await this._context.Items.Where(x => x.TableroId.ToLower() == info.TableroId.ToLower()).ToListAsync();
 
                         //--------------------------------------------------------------------------------------------------------
@@ -109,7 +109,7 @@ namespace MttoApi.Controllers
                         //SE CREA E INICIALIZA UN OBJETO DEL TIPO "HistorialSolicitudesWeb" CON LA INFORMACION DEL NUEVO REGISTRO
                         //DE LA TABLA "HistorialSolicitudesWeb".
                         Historialsolicitudesweb solicitudweb =
-                            Historialsolicitudesweb.NewHistorialSolocitudesWeb(info.UserId,2);
+                            Historialsolicitudesweb.NewHistorialSolocitudesWeb(info.UserId, 2);
 
                         //--------------------------------------------------------------------------------------------------------
                         //SE AÑADE A LA TABLA "HistorialSolicitudesWeb" EL NUEVO REGISTRO
@@ -117,8 +117,8 @@ namespace MttoApi.Controllers
                         this._context.Entry(solicitudweb).State = EntityState.Added;//=> SE CAMBIA EL ESTADO DEL OBJETO CREADO COMO REFERENCIA.
 
                         //--------------------------------------------------------------------------------------------------------
-                        //INICIALIZAMOS EL OBJETO "RegistroTablero" (CREADO AL INICIO DE LA FUNCION) CON TODA LA 
-                        //INFORMACION DEL TABLERO SOLICITADO 
+                        //INICIALIZAMOS EL OBJETO "RegistroTablero" (CREADO AL INICIO DE LA FUNCION) CON TODA LA
+                        //INFORMACION DEL TABLERO SOLICITADO
                         tablero = RegistroTablero.NewRegistroTablero(tableroinfo, itemstablero);
 
                         //--------------------------------------------------------------------------------------------------------
@@ -156,16 +156,16 @@ namespace MttoApi.Controllers
         //A SOLICITUDES HTTP DE TIPO POST
         [HttpPost]
 
-        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA
         //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
-        //https:/<ipadress>:<port>/mttoapp/consultatableros/sapid <=> 
+        //https:/<ipadress>:<port>/mttoapp/consultatableros/sapid <=>
         //https://192.168.1.192:8000/mttoapp/consultatableros/sapid
         [Route("sapid")]
 
         //--------------------------------------------------------------------------------------------------
-        //FUNCION QUE ACTUALIZARA LA INFORMACION DE UN USUARIO CUANDO SE REALICE EL LLAMADO DESDE 
-        //LA PAGINA "PaginaConsultaTableros" DE LA APLICACION "Mtto App". EN ESTA FUNCION SE RECIBEN 
-        //LOS PARAMETROS: 
+        //FUNCION QUE ACTUALIZARA LA INFORMACION DE UN USUARIO CUANDO SE REALICE EL LLAMADO DESDE
+        //LA PAGINA "PaginaConsultaTableros" DE LA APLICACION "Mtto App". EN ESTA FUNCION SE RECIBEN
+        //LOS PARAMETROS:
         // -info => OBJETO DEL TIPO "RequestConsultaTablero" ENVIADO EN EL BODY DE LA SOLICITUD HTTP
         // JUNTO CON LA INFORMACION NECESARIA PARA PROCESAR LA CONSULTA DE TABLEROS.
         //--------------------------------------------------------------------------------------------------
@@ -203,7 +203,6 @@ namespace MttoApi.Controllers
                             this._context.Entry(tableroinfo).State = EntityState.Detached;
                         }
 
-
                         //--------------------------------------------------------------------------------------------------------
                         //CREAMOS E INICIALIZAMOS UNA LISTA DE OBJETOS "Items" CON LOS ITEMS QUE POSEE DICHO TABLERO
                         List<Items> itemstablero = await this._context.Items.Where
@@ -232,8 +231,8 @@ namespace MttoApi.Controllers
                         this._context.Entry(solicitudweb).State = EntityState.Added;//=> SE CAMBIA EL ESTADO DEL OBJETO CREADO COMO REFERENCIA.
 
                         //--------------------------------------------------------------------------------------------------------
-                        //INICIALIZAMOS EL OBJETO "RegistroTablero" (CREADO AL INICIO DE LA FUNCION) CON TODA LA 
-                        //INFORMACION DEL TABLERO SOLICITADO 
+                        //INICIALIZAMOS EL OBJETO "RegistroTablero" (CREADO AL INICIO DE LA FUNCION) CON TODA LA
+                        //INFORMACION DEL TABLERO SOLICITADO
                         tablero = RegistroTablero.NewRegistroTablero(tableroinfo, itemstablero);
 
                         //--------------------------------------------------------------------------------------------------------

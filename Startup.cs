@@ -9,7 +9,7 @@ namespace MttoApi
 {
     //=========================================================================================================
     //=========================================================================================================
-    //ASP.NET CORE APPLICATION MUST INCLUDE A "Starup" CLASS. IT IS EXECUTED FIRST WHEN THE APPLICATION 
+    //ASP.NET CORE APPLICATION MUST INCLUDE A "Starup" CLASS. IT IS EXECUTED FIRST WHEN THE APPLICATION
     //STARTS. THIS CLASS CAN BE CONFIGURED USING THE "UseStartup<T>()" METHOD AT THE TIME OF CONFIGURING
     //THE HOST IN THE "Main()" METHOD OF THE "Program".
     //
