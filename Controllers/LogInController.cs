@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MttoApi.Model;
 using MttoApi.Model.Context;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -45,20 +45,20 @@ namespace MttoApi.Controllers
         [HttpGet]
 
         //--------------------------------------------------------------------------------------------------
-        //FUNCION QUE ACTUALIZARA LA INFORMACION DE UN USUARIO CUANDO SE REALICE EL LLAMADO DESDE 
-        //LA PAGINA "PaginaConsultaTableros" DE LA APLICACION "Mtto App". EN ESTA FUNCION SE RECIBEN 
-        //LOS PARAMETROS: 
+        //FUNCION QUE ACTUALIZARA LA INFORMACION DE UN USUARIO CUANDO SE REALICE EL LLAMADO DESDE
+        //LA PAGINA "PaginaConsultaTableros" DE LA APLICACION "Mtto App". EN ESTA FUNCION SE RECIBEN
+        //LOS PARAMETROS:
         // -username: PARAMETRO ENVIADO EN EL URL DE LA SOLICITUD (username=<username> || USERNAME=<username>)
         // -password: PARAMETRO ENVIADO EN EL URL DE LA SOLICITUD (password=<password> || PASSWORD=<password>)
         //--------------------------------------------------------------------------------------------------
-        public async Task<IActionResult> Get(string username, string password)
+        public async Task<IActionResult> LogInRequest(string username, string password)
         {
             //SE CREA E INICIALIZA LA VARIABLE QUE SE RETORNARA SI TODAS LAS CONDICIONES SE CUMPLEN
             LogInResponse response = null;
 
             //SE EVALUA QUE EXISTA UN NOMBRE DE USUARIO QUE OBEDESCA AL NOMBRE DE USUARIO
-            if(this._context.Usuarios.Any
-                (x => x.Username.ToLower() == username.ToLower()))  //=> true => EXISTE UN REGISTRO EN LA TABLA USUARIOS QUE RESPONDE AL 
+            if (this._context.Usuarios.Any
+                (x => x.Username.ToLower() == username.ToLower()))  //=> true => EXISTE UN REGISTRO EN LA TABLA USUARIOS QUE RESPONDE AL
                                                                     //           NOMBRE DE USUARIO ENVIADO COMO PARAMETRO.
             {
                 //SI EXISTE, SE OBTIENE TODA LA INFORMACION DE DICHO REGISTRO Y SE ALMACENA EN UNA VARIABLE DEL TIPO USUARIO
@@ -67,7 +67,7 @@ namespace MttoApi.Controllers
 
                 //SE COMPARA QUE LA PROPIEDAD DEL OBJETO usuario (OBJETO QUE CONTIENE TODA LA INFORMACION DE USUARIO
                 //QUE DESEA INGRESAR) CON EL PARAMETRO "password"
-                if(usuario.Password == password) //=> true => LA CONTRASEÑA ENVIADA ES CORRECTA
+                if (usuario.Password == password) //=> true => LA CONTRASEÑA ENVIADA ES CORRECTA
                 {
                     //SE INICIA LA TRANSACCION CON LA BASE DE DATOS
                     using (var transaction = this._context.Database.BeginTransaction())
@@ -107,7 +107,7 @@ namespace MttoApi.Controllers
                             //SE LLENA LA LISTA PREVIAMENTE CREADA CON TODOS LOS REGISTROS DE CONEXION DEL USUARIO QUE DESEA INGRESAR
                             foreach (Ultimaconexion y in this._context.Ultimaconexion.ToList())
                             {
-                                //SE EVAUA CADA UNO DE LOS REGISTROS DE LA LISTA Y SE COMPARA SI EL PARAMETRO UserId 
+                                //SE EVAUA CADA UNO DE LOS REGISTROS DE LA LISTA Y SE COMPARA SI EL PARAMETRO UserId
                                 //DEL REGISTRO ES IGUAL AL ID (CEDULA) DEL USUARIO QUE ESTA INGRESANDO
                                 if (y.UserId == persona.Cedula)
                                     //SE AÑADE A LA LISTA EL REGISTRO.
@@ -116,7 +116,7 @@ namespace MttoApi.Controllers
 
                             //--------------------------------------------------------------------------------------------
                             //SE CREA UN NUEVO REGISTRO DE SOLICITUDES WEB Y SE AÑADE A LA TABLA "HistorialSolicitudesWeb"
-                            Historialsolicitudesweb solicitudweb = 
+                            Historialsolicitudesweb solicitudweb =
                                 Historialsolicitudesweb.NewHistorialSolocitudesWeb(fullinfo.Usuario.Cedula, 0);
 
                             //--------------------------------------------------------------------------------------------
@@ -148,8 +148,13 @@ namespace MttoApi.Controllers
                         catch (Exception ex) when (ex is DbUpdateException ||
                                                    ex is DbUpdateConcurrencyException)
                         {
+                            Console.WriteLine("\n=================================================");
+                            Console.WriteLine("=================================================");
+                            Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                            Console.WriteLine("=================================================");
+                            Console.WriteLine("=================================================\n");
                             //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                            return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                            return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                         }
                     }
                 }

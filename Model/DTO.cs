@@ -6,9 +6,9 @@ namespace MttoApi.Model
     //=======================================================================================================
     //=======================================================================================================
     //CLASES DTO (DATA TRANSFER OBJECT). ESTAS CLASES SON CREADAS PARA FUNCIONAR COMO CLASE MODELO PARA LA
-    //INFORMACION DE LOS OBJETOS QUE SON ENVIADOS O RECIBIDOS. 
-    //POR EJEMPLO: SI QUISIERAMOS MODIFICAR UN ATRIBUTO EN ESPECIFICO DE UN REGISTRO EN LA TABLAS PERSONAS 
-    //MEDIANTE LA SOLICITUD HTTP "PUT" DEBERIAMOS ENVIAR EL PRIMARY KEY O ID DE DICHO REGISTRO JUNTO CON 
+    //INFORMACION DE LOS OBJETOS QUE SON ENVIADOS O RECIBIDOS.
+    //POR EJEMPLO: SI QUISIERAMOS MODIFICAR UN ATRIBUTO EN ESPECIFICO DE UN REGISTRO EN LA TABLAS PERSONAS
+    //MEDIANTE LA SOLICITUD HTTP "PUT" DEBERIAMOS ENVIAR EL PRIMARY KEY O ID DE DICHO REGISTRO JUNTO CON
     //UN OBJETO JSON HOMOLOGO A EL OBJETO PERSONAS, ES DECIR CON TODOS LOS ATRIBUTOS QUE SE DESEAN MODIFICAR
     //ADEMAS DE LOS ATRIBUTOS QUE YA EXISTIAN ANTES.
     //______________________________________________________________________________________________________
@@ -24,7 +24,6 @@ namespace MttoApi.Model
         public double Telefono { get; set; }
         public string Correo { get; set; }
         public string Userpassword { get; set; }
-
 
         //======================================================================
         //======================================================================
@@ -53,9 +52,12 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PROPIEDADES) DE LA CLASE "ConfiguracionA"
         public string Nombres { get; set; }
+
         public string Apellidos { get; set; }
         public DateTime FechaNacimiento { get; set; }
         public string Username { get; set; }
+
+        public int NivelUsuario { get; set; }
 
         //======================================================================
         //======================================================================
@@ -74,6 +76,7 @@ namespace MttoApi.Model
 
                 Username = newinfo.Username,
                 Userpassword = newinfo.Userpassword,
+                NivelUsuario = newinfo.NivelUsuario,
             };
         }
     }
@@ -87,11 +90,12 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PROPIEDADES) DE LA CLASE INFORMACION GENERAL
         public Personas Persona { get; set; }
+
         public Usuarios Usuario { get; set; }
 
         //======================================================================
         //======================================================================
-        //FUNCION QUE RETORNA UN OBJETO "InformacionGeneral" 
+        //FUNCION QUE RETORNA UN OBJETO "InformacionGeneral"
         public static InformacionGeneral NewInformacionGeneral(Personas persona,    //=> SE RECIBE LA INFORMACION PERSONAL DE USUARIO
                                                                Usuarios usuario)    //=> SE RECIBE LA INFORMACION DE USUARIO DEL USUARIO
         {
@@ -111,6 +115,7 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PROPIEDADES) DE LA CLASE "LogInResponse"
         public InformacionGeneral UserInfo { get; set; }    //=> PROPIEDAD QUE CONTENDRA TODA LA INFORMACION
+
                                                             //   DEL USUARIO QUE DESEA INGRESAR A LA PLATAFORMA
         public DateTime UltimaFechaIngreso { get; set; }
 
@@ -127,7 +132,6 @@ namespace MttoApi.Model
                 UltimaFechaIngreso = ultimoingreso,
             };
         }
-
     }
 
     //=======================================================================================================
@@ -138,6 +142,7 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PROPIEDADES) DE LA CLASE "RequestRegistroUsuario"
         public InformacionGeneral NewUser { get; set; }
+
         public double UserId { get; set; }
     }
 
@@ -149,6 +154,7 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PROPIEDADES) DE LA CLASE "QueryAdmin"
         public string Nombres { get; set; }
+
         public string Apellidos { get; set; }
         public double Cedula { get; set; }
 
@@ -168,12 +174,13 @@ namespace MttoApi.Model
 
     //=======================================================================================================
     //=======================================================================================================
-    //CLASE USADA EN LA PAGINA "PaginaRegistroTablero" ENVIADA DESDE LA APLICACION AL SERVIDOR PARA REGISTRAR 
+    //CLASE USADA EN LA PAGINA "PaginaRegistroTablero" ENVIADA DESDE LA APLICACION AL SERVIDOR PARA REGISTRAR
     //UN NUEVO TALERO EN LA BASE DE DATOS
     public partial class RegistroTablero
     {
         //ATRIBUTOS (PROPIEDADES) DE LA CLASE
         public Tableros tableroInfo { get; set; }
+
         public List<Items> itemsTablero { get; set; }
 
         //======================================================================
@@ -198,11 +205,12 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PROPIEDADES) DE LA CLASE "RequestConsultaTablero"
         public double UserId { get; set; }      //=> ID DEL USUARIO QUE REALIZA LA SOLICITUD
+
         public string TableroId { get; set; }   //=> ID DEL TABLERO A CONSULTAR
         public string SapId { get; set; }       //=> ID DE SAP DEL TABLERO A CONSULTAR
 
         //NOTA: LAS PROPIEDADES "TableroId" Y "SapId" SON MUTUAMENTE EXCLUYENTES. ESTO IMPLICA
-        //QUE AL REALIZAR LA CONSULTA, AL RECIBIR UN OBJETO DE TIPO "ResquestConsultaTablero" 
+        //QUE AL REALIZAR LA CONSULTA, AL RECIBIR UN OBJETO DE TIPO "ResquestConsultaTablero"
         //SI LA PROPIEDAD "TableroId" CONTIENE INFORMCION ENTONCES LA PROPIEDAD "SapId" DEBE SER
         //NULA O VACIA. LO MISMO OCURRE SI LA PROPIEDAD "SapId" CONTIENE INFORMACION.
     }
@@ -215,6 +223,7 @@ namespace MttoApi.Model
     {
         //ATRIBUTOS (PARAMETROS) DE LA CLASE "RequestQueryAdmin".
         public string Parametro { get; set; }   //=> PARAMETRO DE CONSULTA ENVIADO COMO REFERENCIA
+
         public double UserId { get; set; }      //=> Id (CEDULA) DEL USUARIO QUE REALIZO LA SOLICITUD
     }
 
@@ -225,9 +234,9 @@ namespace MttoApi.Model
     //ENVIADO.
     public partial class UserSelectedRequest
     {
-        //ATRIBUTOS (PROPIEDADES) DE LA CLASE 
+        //ATRIBUTOS (PROPIEDADES) DE LA CLASE
         public double UserIdSelected { get; set; }  //=> ID DEL USUARIO QUE SE VA A RETORNAR
+
         public double UserIdRequested { get; set; } //=> ID DEL USUARIO QUE REALIZA LA SOLICITUD
     }
-
 }

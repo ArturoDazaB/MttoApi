@@ -1,0 +1,7 @@
+COMANDO UTILIZADO PARA REALIZAR UN MAPEO DE TODAS LAS TABLAS DENTRO DE LA BASE DE DATOS
+
+Scaffold-DbContext "Server=127.0.0.1;Port=3306;Database=MTTOAPP_V6;Uid=CarlosDaza;Pwd=*122900900625*" Pomelo.EntityFrameworkCore.MySql -OutputDir Model -ContextDir Model
+
+COMANDO UTILIZADO PARA REALIZAR UN MAPEO DE TABLAS ESPECIFICAS DENTRO DE LA BASE DE DATOS
+
+Scaffold-DbContext "Server=127.0.0.1;Port=3306;Database=MTTOAPP_V6;Uid=CarlosDaza;Pwd=*122900900625*" Pomelo.EntityFrameworkCore.MySql -Tables "nombre_tabla" -OutputDir Model -ContextDir Model

@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MttoApi.Model;
+using MttoApi.Model.Context;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MttoApi.Model;
-using MttoApi.Model.Context;
 
-using System.Text.Json.Serialization;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace MttoApi.Controllers
@@ -53,7 +52,7 @@ namespace MttoApi.Controllers
                 !MatchUsername(newuser.NewUser.Usuario.Username))           //TRUE: SE ENCONTRO UN REGISTRO CON EL MISMO NOMBRE DE USUARIO
             {
                 //SE INICIA EL CICLO TRY... CATCH
-                try 
+                try
                 {
                     using (var transaction = this._context.Database.BeginTransaction())
                     {
@@ -82,7 +81,7 @@ namespace MttoApi.Controllers
 
                         //--------------------------------------------------------------------------------------------------------
                         //SE COMPRUEBAN QUE LAS TABLAS "Personas" Y "Usuarios" TENGAN LA MISMA CANTIDAD DE REGISTROS
-                        //NOTA: ESTO DEBIDO A QUE ESTAS DOS TABLAS LLEVAN REGISTROS PARALELOS QUE SE CORRESPONDEN 
+                        //NOTA: ESTO DEBIDO A QUE ESTAS DOS TABLAS LLEVAN REGISTROS PARALELOS QUE SE CORRESPONDEN
                         if (this._context.Personas.Count() != this._context.Usuarios.Count()) //=> true => LAS DOS TABLAS TIENEN CANTIDAD DE REGISTROS DISTINTOS
                         {
                             //SE RETORNA UNA RESPUESTA A LA SOLICITUD Y SE PROCEDE A INFORMAR AL USUARIO
@@ -101,8 +100,13 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }
             //NO SE CUMPLIO ALGUNA DE LAS TRES CONDICIONES, SE RETORNA UN MENSAJE INFORMANDO CUAL CONDICION FALLO.
