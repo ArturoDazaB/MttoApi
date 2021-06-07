@@ -85,6 +85,9 @@ namespace MttoApi.Controllers
                         this._context.Entry(persona).State = EntityState.Detached;
                     }
 
+                    //SE PROCEDE A ENCRIPTAR LA CONTRASEÑA DEL OBJETO "newinfo"
+                    newinfo.Userpassword = new Metodos().EncryptString(newinfo.Userpassword);
+
                     //CON LA INFORMACION ENVIADA SE PROCEDE A BUSCAR LA INFORMACION DE USUARIO DENTRO DE LA BASE DE DATOS
                     //SE CREA EL OBJETO "usuario", Y SE INICIALIZA CON EL METODO DE BUSQUEDA PROPIO DEL OBJETO "Context"
                     //DECRITO AL INICIO DE LA CLASE
@@ -217,6 +220,9 @@ namespace MttoApi.Controllers
                     {
                         this._context.Entry(persona).State = EntityState.Detached;
                     }
+
+                    //SE PROCEDE A ENCRIPTAR LA CONTRASEÑA DEL OBJETO "newinfo"
+                    newinfo.Userpassword = new Metodos().EncryptString(newinfo.Userpassword);
 
                     Usuarios usuario = await this._context.Usuarios.FindAsync(newinfo.Cedula);
                     if (usuario != null)
