@@ -25,12 +25,12 @@ namespace MttoApi.Controllers
     {
         //SE CREA UNA VARIABLE LOCAL DEL TIPO "Context" LA CUAL FUNCIONA COMO LA CLASE
         //QUE MAPEARA LA INFORMACION PARA LECTURA Y ESCRITURA EN LA BASE DE DATOS
-        private readonly MTTOAPP_V6Context _context;
+        private readonly MTTOAPP_V7Context _context;
 
         //===============================================================================================
         //===============================================================================================
         //CONSTRUCTOR
-        public LogInController(MTTOAPP_V6Context context)
+        public LogInController(MTTOAPP_V7Context context)
         {
             //SE INICIALIZA LA VARIABLE LOCAL
             this._context = context;
