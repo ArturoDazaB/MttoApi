@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Threading.Tasks;
 using MttoApi.Model;
 using MttoApi.Model.Context;
+using System;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,17 +19,16 @@ namespace MttoApi.Controllers
     //ACCESO A LA CLASE CONTROLLADOR. EJ:
     //https:/<ipadress>:<port>/mttoapp/configuracion <=> https://192.168.1.192:8000/mttoapp/configuracion
     [Route("mttoapp/configuracion")]
-
     public class ConfiguracionController : ControllerBase
     {
         //SE CREA UNA VARIABLE LOCAL DEL TIPO "Context" LA CUAL FUNCIONA COMO LA CLASE
         //QUE MAPEARA LA INFORMACION PARA LECTURA Y ESCRITURA EN LA BASE DE DATOS
-        private readonly MTTOAPP_V6Context _context;
+        private readonly MTTOAPP_V7Context _context;
 
         //===============================================================================================
         //===============================================================================================
         //CONSTRUCTOR
-        public ConfiguracionController(MTTOAPP_V6Context context)
+        public ConfiguracionController(MTTOAPP_V7Context context)
         {
             //SE INICIALIZA LA VARIABLE LOCAL
             this._context = context;
@@ -41,19 +40,19 @@ namespace MttoApi.Controllers
         //A SOLICITUDES HTTP DE TIPO PUT
         [HttpPut]
 
-        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA
         //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
-        //https:/<ipadress>:<port>/mttoapp/configuracion/usuario/<numero_de_cedula> <=> 
+        //https:/<ipadress>:<port>/mttoapp/configuracion/usuario/<numero_de_cedula> <=>
         //https://192.168.1.192:8000/mttoapp/configuracion/usuario/<numero_de_cedula>
         [Route("usuario/{cedula}")]
 
         //--------------------------------------------------------------------------------------------------
-        //FUNCION QUE ACTUALIZARA LA INFORMACION DE UN USUARIO CUANDO SE REALICE EL LLAMADO DESDE 
-        //LA PAGINA "PaginaConfiguracion" DE LA APLICACION "Mtto App". EN ESTA FUNCION SE RECIBEN 
-        //LOS PARAMETROS: 
-        // -cedula => DATO DEFINIDO EN EL URL DE LA SOLICITUD (POR ESTA RAZON EL ROUTING "Route" 
+        //FUNCION QUE ACTUALIZARA LA INFORMACION DE UN USUARIO CUANDO SE REALICE EL LLAMADO DESDE
+        //LA PAGINA "PaginaConfiguracion" DE LA APLICACION "Mtto App". EN ESTA FUNCION SE RECIBEN
+        //LOS PARAMETROS:
+        // -cedula => DATO DEFINIDO EN EL URL DE LA SOLICITUD (POR ESTA RAZON EL ROUTING "Route"
         //CONTIENE LA PALABRA "{cedula}")
-        // -newinfo => OBJETO ENVIADO EN EL BODY DE LA SOLICITUD HTTP EL CUAL CONTIENE TODA LA 
+        // -newinfo => OBJETO ENVIADO EN EL BODY DE LA SOLICITUD HTTP EL CUAL CONTIENE TODA LA
         //INFORMACION (VIEJA Y ACTUALIZADA) DEL USUARIO A ACTUALIZAR/CONFIGURAR
         //--------------------------------------------------------------------------------------------------
         public async Task<IActionResult> ActualizarUsuario(double cedula, [FromBody] ConfiguracionU newinfo)
@@ -64,7 +63,7 @@ namespace MttoApi.Controllers
                 //SE DA RETORNO A LA SOLICITUD CON LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO AL USUARIO
                 return BadRequest("La cedula no coincide con la informacion del objeto enviado");
             }
-                
+
             //SI EL PARAMETRO "cedula" Y LA PROPIEDAD "cedula" DEL OBJETO "newinfo" SON SIMILARES
             //SE INICIA LA TRASACCION
             using (var transaction = this._context.Database.BeginTransaction())
@@ -81,7 +80,7 @@ namespace MttoApi.Controllers
                     if (persona != null)
                     {
                         //EL OBJETO "persona" NO SE ENCUENTRA NULO.
-                        //PUESTO QUE SE UTILIZO LA CLASE "Context" PARA REALIZAR LA BUSQUEDA DE INFORMACION DE UN REGISTRO 
+                        //PUESTO QUE SE UTILIZO LA CLASE "Context" PARA REALIZAR LA BUSQUEDA DE INFORMACION DE UN REGISTRO
                         //EN UNA TABLA ESPECIFICA SE DEBE "desechar" EL OBJETO QUE ACABA DE SER BUSCADO.
                         this._context.Entry(persona).State = EntityState.Detached;
                     }
@@ -94,7 +93,7 @@ namespace MttoApi.Controllers
                     if (usuario != null)
                     {
                         //EL OBJETO "persona" NO SE ENCUENTRA NULO.
-                        //PUESTO QUE SE UTILIZO LA CLASE "Context" PARA REALIZAR LA BUSQUEDA DE INFORMACION DE UN REGISTRO 
+                        //PUESTO QUE SE UTILIZO LA CLASE "Context" PARA REALIZAR LA BUSQUEDA DE INFORMACION DE UN REGISTRO
                         //EN UNA TABLA ESPECIFICA SE DEBE "desechar" EL OBJETO QUE ACABA DE SER BUSCADO.
                         this._context.Entry(usuario).State = EntityState.Detached;
                     }
@@ -103,7 +102,7 @@ namespace MttoApi.Controllers
                     //SE ENCUENTRAN NULOS (SE EVALUA LA "NULIDAD" DE AMBOS)
                     if (persona == null && usuario == null)
                     {
-                        //SI LOS OBJETOS (AMBOS O SOLO UNO) SE ENCUENTRAN NULOS ESTO IMPLICA QUE LA CLASE "Context" NO 
+                        //SI LOS OBJETOS (AMBOS O SOLO UNO) SE ENCUENTRAN NULOS ESTO IMPLICA QUE LA CLASE "Context" NO
                         //ENCONTRO NINGUN REGISTRO QUE RESPONDIERA AL NUMERO DE CEDULA ENVIADO COMO PARAMETRO.
                         //SE RETORNA LA RESPUESTA "NotFound" JUNTO CON UN MENSAJE INFORMANDO AL USUARIO.
                         return NotFound("Numero de cedula no registrado: " + cedula);
@@ -112,7 +111,7 @@ namespace MttoApi.Controllers
                     //--------------------------------------------------------------------------------------------------------
                     //SE CREA E INICIALIZA UN OBJETO DEL TIPO "ModificacionesUsuario" QUE SERVIRA PARA CONTENER
                     //LA INFORMACION DEL NUEVO REGISTRO DENTRO DE LA TABLA "Modificacionesusuario"
-                    Modificacionesusuario newmodificacionesiusuario = 
+                    Modificacionesusuario newmodificacionesiusuario =
                         Modificacionesusuario.NewModificacionesUsuarios(persona, Personas.NewPersonaInfo(persona, newinfo),
                                                                         usuario, Usuarios.NewUsuarioInfo(usuario, newinfo),
                                                                         DateTime.Now, newinfo.Cedula);
@@ -159,13 +158,18 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }
 
             //SI NO EXISTIERON ERRORES O EXCEPCIONES EN EL PROCESO DE LECTURA Y ESCRITURA, Y LA INFORMACION
-            //FUE ACTUALIZADA SATISFACTORIAMENTE SE RETORNA LA RESPUESTA "Ok" JUNTO CON UN MENSAJE INFORMANDO 
+            //FUE ACTUALIZADA SATISFACTORIAMENTE SE RETORNA LA RESPUESTA "Ok" JUNTO CON UN MENSAJE INFORMANDO
             //SOBRE LA ACTUALIZACION EXITOSA.
             return Ok("Datos actualizados");
         }
@@ -176,19 +180,19 @@ namespace MttoApi.Controllers
         //A SOLICITUDES HTTP DE TIPO PUT
         [HttpPut]
 
-        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA
         //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
-        //https:/<ipadress>:<port>/mttoapp/configuracion/administrator/<numero_de_cedula> <=> 
-        //https://192.168.1.192:8000/mttoapp/configuracion/administrator/<numero_de_cedula>
+        //https:/<ipadress>:<port>/mttoapp/configuracion/administrator/<cedula> <=>
+        //https://192.168.1.192:8000/mttoapp/configuracion/administrator/<cedula>
         [Route("administrator/{cedula}")]
 
         //--------------------------------------------------------------------------------------------------
-        //FUNCION QUE ACTUALIZARA LA INFORMACION DE UN USUARIO CUANDO SE REALICE EL LLAMADO DESDE 
-        //LA PAGINA "PaginaConfiguracionAdmin" DE LA APLICACION "Mtto App". EN ESTA FUNCION SE RECIBEN 
-        //LOS PARAMETROS: 
-        // -cedula => DATO DEFINIDO EN EL URL DE LA SOLICITUD (POR ESTA RAZON EL ROUTING "Route" 
+        //FUNCION QUE ACTUALIZARA LA INFORMACION DE UN USUARIO CUANDO SE REALICE EL LLAMADO DESDE
+        //LA PAGINA "PaginaConfiguracionAdmin" DE LA APLICACION "Mtto App". EN ESTA FUNCION SE RECIBEN
+        //LOS PARAMETROS:
+        // -cedula => DATO DEFINIDO EN EL URL DE LA SOLICITUD (POR ESTA RAZON EL ROUTING "Route"
         //CONTIENE LA PALABRA "{cedula}")
-        // -newinfo => OBJETO ENVIADO EN EL BODY DE LA SOLICITUD HTTP EL CUAL CONTIENE TODA LA 
+        // -newinfo => OBJETO ENVIADO EN EL BODY DE LA SOLICITUD HTTP EL CUAL CONTIENE TODA LA
         //INFORMACION (VIEJA Y ACTUALIZADA) DEL USUARIO A ACTUALIZAR/CONFIGURAR
         //--------------------------------------------------------------------------------------------------
         public async Task<IActionResult> ActualizarUsuarioAdm(double cedula, [FromBody] ConfiguracionA newinfo)
@@ -197,7 +201,7 @@ namespace MttoApi.Controllers
             if (cedula != newinfo.Cedula)
             {
                 //SE DA RETORNO A LA SOLICITUD CON LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO AL USUARIO
-                return BadRequest("La cedula no coincide con la informacion del objeto enviado");
+                return BadRequest("La cedula no coincide con la información del objeto enviado");
             }
 
             //SI EL PARAMETRO "cedula" Y LA PROPIEDAD "cedula" DEL OBJETO "newinfo" SON SIMILARES
@@ -222,7 +226,7 @@ namespace MttoApi.Controllers
 
                     //SE VERIFICA QUE LOS OBJETOS ENVIADOS NO SEAN NULOS
                     if (persona == null && usuario == null)
-                        return NotFound("Numero de cedula no registrado: " + cedula);
+                        return NotFound("Número de cedula no registrado: " + cedula);
 
                     //SE CREA E INICIALIZA UN OBJETO DEL TIPO "ModificacionesUsuario" QUE SERVIRA PARA CONTENER
                     //LA INFORMACION DEL NUEVO REGISTRO DENTRO DE LA TABLA "Modificacionesusuario"
@@ -245,7 +249,6 @@ namespace MttoApi.Controllers
                     //SE ACTUALIZA LA INFORMACION DE LAS RESPECTIVAS TABLAS DENTRO DE LA BASE DE DATOS
                     this._context.Personas.Update(persona);                     //=> SE ACTUALIZA LA INFORMACION EN LA TABLA PERSONA
                     this._context.Entry(persona).State = EntityState.Modified;  //=> SE CAMBIA EL ESTADO DEL OBJETO CREADO COMO REFERENCIA
-
 
                     this._context.Usuarios.Update(usuario);                     //=> SE ACTUALIZA LA INFORMACION EN LA TABLA USUARIO
                     this._context.Entry(usuario).State = EntityState.Modified;  //=> SE CAMBIA EL ESTADO DEL OBJETO CREADO COMO REFERENCIA
@@ -275,13 +278,18 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }
 
             //SI NO EXISTIERON ERRORES O EXCEPCIONES EN EL PROCESO DE LECTURA Y ESCRITURA, Y LA INFORMACION
-            //FUE ACTUALIZADA SATISFACTORIAMENTE SE RETORNA LA RESPUESTA "Ok" JUNTO CON UN MENSAJE INFORMANDO 
+            //FUE ACTUALIZADA SATISFACTORIAMENTE SE RETORNA LA RESPUESTA "Ok" JUNTO CON UN MENSAJE INFORMANDO
             //SOBRE LA ACTUALIZACION EXITOSA.
             return Ok("Datos Actualizados");
         }

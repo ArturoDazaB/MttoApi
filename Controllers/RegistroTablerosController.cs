@@ -24,12 +24,12 @@ namespace MttoApi.Controllers
     {
         //SE CREA UNA VARIABLE LOCAL DEL TIPO "Context" LA CUAL FUNCIONA COMO LA CLASE
         //QUE MAPEARA LA INFORMACION PARA LECTURA Y ESCRITURA EN LA BASE DE DATOS
-        private readonly MTTOAPP_V6Context _context;
+        private readonly MTTOAPP_V7Context _context;
 
         //===============================================================================================
         //===============================================================================================
         //CONSTRUCTOR
-        public RegistroTablerosController(MTTOAPP_V6Context context)
+        public RegistroTablerosController(MTTOAPP_V7Context context)
         {
             //SE INICIALIZA LA VARIABLE LOCAL
             this._context = context;
@@ -42,7 +42,7 @@ namespace MttoApi.Controllers
         // POST mttoapp/registrotableros
         [HttpPost]
         //--------------------------------------------------------------------------------------------------
-        //FUNCION QUE REGISTRA LA INFORMACION DE UN NUEVO TABLERO EN LA BASE DE DATOS 
+        //FUNCION QUE REGISTRA LA INFORMACION DE UN NUEVO TABLERO EN LA BASE DE DATOS
         //--------------------------------------------------------------------------------------------------
         public async Task<IActionResult> NewTablero([FromBody] RegistroTablero newtablero)
         {
@@ -52,12 +52,11 @@ namespace MttoApi.Controllers
                 !MatchTableroCodigoQRData(newtablero.tableroInfo.CodigoQrdata))     //TRUE: SE ENCONTRO UN REGISTRO CON EL MIDMO CodigoQRData
             {
                 //SE INICIA EL CICLO TRY... CATCH
-                try 
+                try
                 {
                     //SE INICIA LA TRANSACCION
                     using (var transaction = this._context.Database.BeginTransaction())
                     {
-
                         //--------------------------------------------------------------------------------------------------------
                         //SE AÑADE EL OBJETO "newtablero"
                         this._context.Tableros.Add(newtablero.tableroInfo);
@@ -99,14 +98,19 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }
             //NO SE CUMPLIO ALGUNA DE LAS TRES CONDICIONES, SE RETORNA UN MENSAJE INFORMANDO CUAL CONDICION FALLO.
             else
             {
-                //SE EVALUA CUAL DE LAS PROPIEDADES DEL OBJETO "newtablero" ENVIADO COINCIDE CON EL LA INFORMACION DE REGISTRO DE 
+                //SE EVALUA CUAL DE LAS PROPIEDADES DEL OBJETO "newtablero" ENVIADO COINCIDE CON EL LA INFORMACION DE REGISTRO DE
                 //ALGUN OTRO TABLERO
 
                 //SE EVALUA SI EXISTE ALGUN TABLERO CON EL ID DEL TABLERO QUE SE DESEA REGISTRAR

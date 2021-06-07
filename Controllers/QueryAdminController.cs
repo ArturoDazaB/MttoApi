@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using MttoApi.Model;
 using MttoApi.Model.Context;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,12 +24,14 @@ namespace MttoApi.Controllers
     {
         //SE CREA UNA VARIABLE LOCAL DEL TIPO "Context" LA CUAL FUNCIONA COMO LA CLASE
         //QUE MAPEARA LA INFORMACION PARA LECTURA Y ESCRITURA EN LA BASE DE DATOS
-        private readonly MTTOAPP_V6Context _context;
+        private readonly MTTOAPP_V7Context _context;
+
+        private const string NotFoundMessage = "No ningun registro que coincida con el parametro de consulta ingresado";
 
         //===============================================================================================
         //===============================================================================================
         //CONSTRUCTOR
-        public QueryAdminController(MTTOAPP_V6Context context)
+        public QueryAdminController(MTTOAPP_V7Context context)
         {
             //SE INICIALIZA LA VARIABLE LOCAL
             this._context = context;
@@ -44,7 +45,7 @@ namespace MttoApi.Controllers
         //A SOLICITUDES HTTP DE TIPO POST
         [HttpPost]
 
-        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA
         //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
         //https://<ipaddress>:<port>/mttoapp/queryadmin/cedula <=> https://192.168.1.192:8000/mttoapp/queryadmin/cedula
         //https://<ipaddress>:<port>/mttoapp/queryadmin/id <=> https://192.168.1.192:8000/mttoapp/queryadmin/id
@@ -54,7 +55,7 @@ namespace MttoApi.Controllers
         //--------------------------------------------------------------------------------------------------
         //FUNCION QUE RETORNARA UNA LISTA DE USUARIOS, LOS CUALES DEBEN CUMPLIR CON EL PARAMETRO DE BUSQUEDA
         //ENVIADO. EL LLAMADO SE HACE DESDE LA PAGINA "PaginaQueryAdmin" DE LA APLICACION "Mtto App".
-        //EN ESTA FUNCION SE RECIBEN LOS PARAMETROS: 
+        //EN ESTA FUNCION SE RECIBEN LOS PARAMETROS:
         // -request:  OBJETO DEL TIPO "RequestQueryAdmin" EL CUAL CONTENDRA EL PARAMETRO ENVIADO Y EL NUMERO
         // DE OPCION DE BUSQUEDA (0 => Consulta por cedula; 1=> Consulta por Ficha; 2=> Consulta por Nombr(s)
         // 3=> Consulta por Apellido(s); 4=> Consulta por Username)
@@ -93,7 +94,7 @@ namespace MttoApi.Controllers
             //SE EVALUA CUANTOS ELEMENTOS HAY EN LA LISTA "result"
             if (result.Count == 0)
                 //CERO ELEMTENTOS: SE RETORNA EL CORIGO DE ESTATUS 404 NOTFOUND (NO HAY REGISTROS QUE CUMPLAN CON EL PARAMETRO ENVIADO)
-                return NotFound();
+                return NotFound(NotFoundMessage);
             else
             {
                 //SE INICIA EL CICLO TRY...CATCH
@@ -113,7 +114,7 @@ namespace MttoApi.Controllers
                         this._context.Historialsolicitudesweb.Add(solicitudesweb);      //=> SE CREA LA INFORMACION DE UN NUEVO REGISTRO EN LA TABLA HistorialSolicitudesWeb.
                         this._context.Entry(solicitudesweb).State = EntityState.Added;  //=> SE CAMBIA EL ESTADO DEL OBJETO CREADO COMO REFERENCIA.
 
-                       //--------------------------------------------------------------------------------------------------------
+                        //--------------------------------------------------------------------------------------------------------
                         //SE GUARDAN LOS CAMBIOS REALIZADOS SOBRE LA BASE DE DATOS
                         await this._context.SaveChangesAsync();
                         //SE CULMINA LA TRANSACCION CON LA BASE DE DATOS
@@ -128,11 +129,15 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }
-                
         }
 
         //===============================================================================================
@@ -143,7 +148,7 @@ namespace MttoApi.Controllers
         //A SOLICITUDES HTTP DE TIPO POST
         [HttpPost]
 
-        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA
         //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
         //https://<ipaddress>:<port>/mttoapp/queryadmin/ficha <=> https://192.168.1.192:8000/mttoapp/queryadmin/ficha
         //https://<ipaddress>:<port>/mttoapp/queryadmin/numeroficha <=> https://192.168.1.192:8000/mttoapp/queryadmin/numeroficha
@@ -153,7 +158,7 @@ namespace MttoApi.Controllers
         //--------------------------------------------------------------------------------------------------
         //FUNCION QUE RETORNARA UNA LISTA DE USUARIOS, LOS CUALES DEBEN CUMPLIR CON EL PARAMETRO DE BUSQUEDA
         //ENVIADO. EL LLAMADO SE HACE DESDE LA PAGINA "PaginaQueryAdmin" DE LA APLICACION "Mtto App".
-        //EN ESTA FUNCION SE RECIBEN LOS PARAMETROS: 
+        //EN ESTA FUNCION SE RECIBEN LOS PARAMETROS:
         // -request:  OBJETO DEL TIPO "RequestQueryAdmin" EL CUAL CONTENDRA EL PARAMETRO ENVIADO Y EL NUMERO
         // DE OPCION DE BUSQUEDA (0 => Consulta por cedula; 1=> Consulta por Ficha; 2=> Consulta por Nombr(s)
         // 3=> Consulta por Apellido(s); 4=> Consulta por Username)
@@ -192,11 +197,11 @@ namespace MttoApi.Controllers
             //SE EVALUA CUANTOS ELEMENTOS HAY EN LA LISTA "result"
             if (result.Count == 0)
                 //CERO ELEMTENTOS: SE RETORNA EL CORIGO DE ESTATUS 404 NOTFOUND (NO HAY REGISTROS QUE CUMPLAN CON EL PARAMETRO ENVIADO)
-                return NotFound();
+                return NotFound(NotFoundMessage);
             else
             {
                 //INICIAMOS EL CICLO TRY... CATCH
-                try 
+                try
                 {
                     //DIFERENTE DE CERO: SE RETORNA EL CODIGO DE ESTATUS 200 OK JUNTO CON LA LISTA DE USUARIOS OBTENIDOS
                     using (var transaction = this._context.Database.BeginTransaction())
@@ -226,8 +231,13 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }
         }
@@ -240,7 +250,7 @@ namespace MttoApi.Controllers
         // POST: mttoapp/queryadmin/nombres
         [HttpPost]
 
-        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA
         //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
         //https://<ipaddress>:<port>/mttoapp/queryadmin/nombre <=> https://192.168.1.192:8000/mttoapp/queryadmin/nombre
         //https://<ipaddress>:<port>/mttoapp/queryadmin/nombres <=> https://192.168.1.192:8000/mttoapp/queryadmin/nombres
@@ -250,7 +260,7 @@ namespace MttoApi.Controllers
         //--------------------------------------------------------------------------------------------------
         //FUNCION QUE RETORNARA UNA LISTA DE USUARIOS, LOS CUALES DEBEN CUMPLIR CON EL PARAMETRO DE BUSQUEDA
         //ENVIADO. EL LLAMADO SE HACE DESDE LA PAGINA "PaginaQueryAdmin" DE LA APLICACION "Mtto App".
-        //EN ESTA FUNCION SE RECIBEN LOS PARAMETROS: 
+        //EN ESTA FUNCION SE RECIBEN LOS PARAMETROS:
         // -request:  OBJETO DEL TIPO "RequestQueryAdmin" EL CUAL CONTENDRA EL PARAMETRO ENVIADO Y EL NUMERO
         // DE OPCION DE BUSQUEDA (0 => Consulta por cedula; 1=> Consulta por Ficha; 2=> Consulta por Nombr(s)
         // 3=> Consulta por Apellido(s); 4=> Consulta por Username)
@@ -289,7 +299,7 @@ namespace MttoApi.Controllers
             //SE EVALUA CUANTOS ELEMENTOS HAY EN LA LISTA "result"
             if (result.Count == 0)
                 //CERO ELEMTENTOS: SE RETORNA EL CORIGO DE ESTATUS 404 NOTFOUND (NO HAY REGISTROS QUE CUMPLAN CON EL PARAMETRO ENVIADO)
-                return NotFound();
+                return NotFound(NotFoundMessage);
             else
             {
                 //INICIAMOS EL CICLO TRY... CATCH
@@ -323,11 +333,15 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }
-                
         }
 
         //===============================================================================================
@@ -338,7 +352,7 @@ namespace MttoApi.Controllers
         // POST: mttoapp/queryadmin/apellido
         [HttpPost]
 
-        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA
         //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
         //https://<ipaddress>:<port>/mttoapp/queryadmin/apellido <=> https://192.168.1.192:8000/mttoapp/queryadmin/apellido
         //https://<ipaddress>:<port>/mttoapp/queryadmin/apellidos <=> https://192.168.1.192:8000/mttoapp/queryadmin/apellidos
@@ -348,7 +362,7 @@ namespace MttoApi.Controllers
         //--------------------------------------------------------------------------------------------------
         //FUNCION QUE RETORNARA UNA LISTA DE USUARIOS, LOS CUALES DEBEN CUMPLIR CON EL PARAMETRO DE BUSQUEDA
         //ENVIADO. EL LLAMADO SE HACE DESDE LA PAGINA "PaginaQueryAdmin" DE LA APLICACION "Mtto App".
-        //EN ESTA FUNCION SE RECIBEN LOS PARAMETROS: 
+        //EN ESTA FUNCION SE RECIBEN LOS PARAMETROS:
         // -request:  OBJETO DEL TIPO "RequestQueryAdmin" EL CUAL CONTENDRA EL PARAMETRO ENVIADO Y EL NUMERO
         // DE OPCION DE BUSQUEDA (0 => Consulta por cedula; 1=> Consulta por Ficha; 2=> Consulta por Nombr(s)
         // 3=> Consulta por Apellido(s); 4=> Consulta por Username)
@@ -387,7 +401,7 @@ namespace MttoApi.Controllers
             //SE EVALUA CUANTOS ELEMENTOS HAY EN LA LISTA "result"
             if (result.Count == 0)
                 //CERO ELEMTENTOS: SE RETORNA EL CORIGO DE ESTATUS 404 NOTFOUND (NO HAY REGISTROS QUE CUMPLAN CON EL PARAMETRO ENVIADO)
-                return NotFound();
+                return NotFound(NotFoundMessage);
             else
             {
                 //INICIAMOS EL CICLO TRY... CATCH
@@ -421,11 +435,15 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }
-                
         }
 
         //===============================================================================================
@@ -435,7 +453,7 @@ namespace MttoApi.Controllers
         // POST: mttoapp/queryadmin/username
         [HttpPost]
 
-        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA
         //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
         //https://<ipaddress>:<port>/mttoapp/queryadmin/username <=> https://192.168.1.192:8000/mttoapp/queryadmin/username
         [Route("username")]
@@ -443,7 +461,7 @@ namespace MttoApi.Controllers
         //--------------------------------------------------------------------------------------------------
         //FUNCION QUE RETORNARA UNA LISTA DE USUARIOS, LOS CUALES DEBEN CUMPLIR CON EL PARAMETRO DE BUSQUEDA
         //ENVIADO. EL LLAMADO SE HACE DESDE LA PAGINA "PaginaQueryAdmin" DE LA APLICACION "Mtto App".
-        //EN ESTA FUNCION SE RECIBEN LOS PARAMETROS: 
+        //EN ESTA FUNCION SE RECIBEN LOS PARAMETROS:
         // -request:  OBJETO DEL TIPO "RequestQueryAdmin" EL CUAL CONTENDRA EL PARAMETRO ENVIADO Y EL NUMERO
         // DE OPCION DE BUSQUEDA (0 => Consulta por cedula; 1=> Consulta por Ficha; 2=> Consulta por Nombr(s)
         // 3=> Consulta por Apellido(s); 4=> Consulta por Username)
@@ -461,7 +479,7 @@ namespace MttoApi.Controllers
             foreach (Usuarios x in registros)
             {
                 //SE EVALUAN TODOS LOS REGISTROS MENOS EL REGISTRO DEL USUARIO ADMINISTRATOR
-                if (x.Cedula != 0   &&                              //=> ID (CEDULA) DEL REGISTRO EVALUADO DIFERENTE AL ID DEL ADMINISTRATOR
+                if (x.Cedula != 0 &&                              //=> ID (CEDULA) DEL REGISTRO EVALUADO DIFERENTE AL ID DEL ADMINISTRATOR
                     request.Parametro.Length <= x.Username.Length)  //=> EL LARGO DEL PARAMETRO DEBE SER MENOR AL LARGO DEL USERNAME DEL REGISTRO EVALUADO
                 {
                     //SE EVALUA QUE EL DATO ENVIADO SE ENCUENTRE DENTRO DE LA LISTA REGISTROS.
@@ -497,7 +515,7 @@ namespace MttoApi.Controllers
             //SE EVALUA CUANTOS ELEMENTOS HAY EN LA LISTA "result"
             if (result.Count == 0)
                 //CERO ELEMTENTOS: SE RETORNA EL CORIGO DE ESTATUS 404 NOTFOUND (NO HAY REGISTROS QUE CUMPLAN CON EL PARAMETRO ENVIADO)
-                return NotFound();
+                return NotFound(NotFoundMessage);
             else
             {
                 //INICIAMOS EL CICLO TRY... CATCH
@@ -531,10 +549,15 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
-            }    
+            }
         }
 
         //===============================================================================================
@@ -543,7 +566,7 @@ namespace MttoApi.Controllers
         //A SOLICITUDES HTTP DE TIPO POST
         [HttpPost]
 
-        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA
         //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
         //https://<ipaddress>:<port>/mttoapp/queryadmin/onuserselected <=> https://192.168.1.192:8000/mttoapp/queryadmin/onuserselected
         [Route("onuserselected")]
@@ -554,7 +577,7 @@ namespace MttoApi.Controllers
         //--------------------------------------------------------------------------------------------------
         public async Task<ActionResult<InformacionGeneral>> GetUserSelectedInfo([FromBody] UserSelectedRequest userselected)
         {
-            //SE CREA E INICIALIZA LA VARIABLE QUE 
+            //SE CREA E INICIALIZA LA VARIABLE QUE
             var fullinfo = new InformacionGeneral();
 
             //SE VERIFICA QUE EL OBJETO DEL TIPO "UserSelectedRequest" ENVIADO NO SEA NULO O VACIO
@@ -563,10 +586,10 @@ namespace MttoApi.Controllers
                 //SE RETORNA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMATIVO
                 return BadRequest("Error, vuelva a intentarlo nuevamente");
             }
-            else if(userselected != null)   //=> true => EL OBJETO NO ES NULO
+            else if (userselected != null)   //=> true => EL OBJETO NO ES NULO
             {
                 //INICIAMOS EL CICLO TRY... CATCH
-                try 
+                try
                 {
                     //SE INICIA LA TRANSACCION DE DATA CON LA BASE DE DATOS
                     using (var transaction = this._context.Database.BeginTransaction())
@@ -624,8 +647,13 @@ namespace MttoApi.Controllers
                 catch (Exception ex) when (ex is DbUpdateException ||
                                            ex is DbUpdateConcurrencyException)
                 {
+                    Console.WriteLine("\n=================================================");
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    Console.WriteLine("=================================================");
+                    Console.WriteLine("=================================================\n");
                     //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                    return BadRequest("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                    return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
                 }
             }
 

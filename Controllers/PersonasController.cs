@@ -1,9 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MttoApi.Model;
 using MttoApi.Model.Context;
 
 namespace MttoApi.Controllers
@@ -12,9 +7,9 @@ namespace MttoApi.Controllers
     [ApiController]
     public class PersonasController : ControllerBase
     {
-        private readonly MTTOAPP_V6Context _context;
+        private readonly MTTOAPP_V7Context _context;
 
-        public PersonasController(MTTOAPP_V6Context context)
+        public PersonasController(MTTOAPP_V7Context context)
         {
             _context = context;
         }

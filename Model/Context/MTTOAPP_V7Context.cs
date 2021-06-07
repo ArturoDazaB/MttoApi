@@ -1,45 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace MttoApi.Model.Context
 {
-    //========================================================================================
-    //========================================================================================
-    /*________________________________________________________________________________________
-     The DbContext class is an integral part of Entity Framework. An instance of DbContext 
-     represents a session with the database which can be used to query and save instances of 
-     your entities to a database.
-    __________________________________________________________________________________________
-     La clase DbContext es una parte integral del Entity Framework. Una instancia de tipo
-     DbContext representa una sesion con la base de datos la cual puede ser usada para consultar
-     y guardar instancias de tu entidad a la base de datos.*/
-
-    /*NOTA: ESTA CLASE, EN CONJUNTO CON LAS CLASES QUE SE ENCUENTRAN DESCRITAS DENTRO DEL ARCHIVO 
-     "Tablas" (ARCHIVO UBICADO EN LA CARPETA MODEL DEL PROYECTO) FUERON CREADOS MEDIANTE EL USO
-     DE LA "Consola Del Administrador De Paquetes (PACKAGE MANAGER CONSOLE)" Y EL PAQUETE 
-     (NIGET PACKAGE) "Pomelo.EntityFrameworkCore.MySql"
-    
-     PARA MAS INFORMACION: 
-        https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql
-        https://docs.microsoft.com/en-us/ef/core/cli/powershell
-    */
-    //========================================================================================
-    //========================================================================================
-    public partial class MTTOAPP_V6Context : DbContext
+    public partial class MTTOAPP_V7Context : DbContext
     {
-        public MTTOAPP_V6Context()
+        public MTTOAPP_V7Context()
         {
         }
 
-        public MTTOAPP_V6Context(DbContextOptions<MTTOAPP_V6Context> options)
+        public MTTOAPP_V7Context(DbContextOptions<MTTOAPP_V7Context> options)
             : base(options)
         {
         }
 
-        //========================================================================================
-        //========================================================================================
-        //PROPIEDADES DE LA CLASE "MTTOAPP_V6Context"
-        //NOTA: LOS OBJETOS DE TIPO "DbSet" REPRESENTA LA RECOLECCION DE TODAS LAS ENTIDADES
-        //DEL CONTEXTO. 
         public virtual DbSet<Historialconsultatableros> Historialconsultatableros { get; set; }
         public virtual DbSet<Historialsolicitudesweb> Historialsolicitudesweb { get; set; }
         public virtual DbSet<Items> Items { get; set; }
@@ -49,24 +24,15 @@ namespace MttoApi.Model.Context
         public virtual DbSet<Ultimaconexion> Ultimaconexion { get; set; }
         public virtual DbSet<Usuarios> Usuarios { get; set; }
 
-        //========================================================================================
-        //========================================================================================
-        //FUNCION OnConfiguring DONDE SE ESPECIFICARA LA BASE DE DATOS QUE SE VA A USAR
-        //ADEMAS DE LA CADENA DE CONEXION CON LA BASE DE DATOS
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. 
-                //See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseMySql("server=Localhost;port=3306;database=MTTOAPP_V6;uid=root;pwd=Ca06Db0*", x => x.ServerVersion("8.0.21-mysql"));
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseMySql("server=127.0.0.1;port=3306;database=MTTOAPP_V7;uid=CarlosDaza;pwd=*122900900625*", x => x.ServerVersion("8.0.23-mysql"));
             }
         }
 
-        //========================================================================================
-        //========================================================================================
-        //FUNCION "OnModelCreating" ENCARGADA DE MODELAR Y RELACIONAR CADA TABLA DE LA BASE
-        //DE DATOS CON EL OBJETO QUE LO REPRESENTARA COMO ENTIDAD
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Historialconsultatableros>(entity =>
@@ -163,8 +129,6 @@ namespace MttoApi.Model.Context
                     .HasCollation("utf8mb4_0900_ai_ci");
 
                 entity.Property(e => e.FechaCreacion).HasColumnType("datetime");
-
-                entity.Property(e => e.FechaNacimiento).HasColumnType("datetime");
 
                 entity.Property(e => e.Nombres)
                     .IsRequired()

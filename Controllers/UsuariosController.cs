@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MttoApi.Model;
 using MttoApi.Model.Context;
+using System.Linq;
 
 namespace MttoApi.Controllers
 {
@@ -22,12 +18,12 @@ namespace MttoApi.Controllers
     {
         //SE CREA UNA VARIABLE LOCAL DEL TIPO "Context" LA CUAL FUNCIONA COMO LA CLASE
         //QUE MAPEARA LA INFORMACION PARA LECTURA Y ESCRITURA EN LA BASE DE DATOS
-        private readonly MTTOAPP_V6Context _context;
+        private readonly MTTOAPP_V7Context _context;
 
         //===============================================================================================
         //===============================================================================================
         //CONSTRUCTOR
-        public UsuariosController(MTTOAPP_V6Context context)
+        public UsuariosController(MTTOAPP_V7Context context)
         {
             //SE INICIALIZA LA VARIABLE LOCAL
             this._context = context;
@@ -40,12 +36,12 @@ namespace MttoApi.Controllers
         // POST mttoapp/registro
         [HttpGet]
 
-        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA 
+        //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA
         //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
         //https:/<ipadress>:<port>/mttoapp/usuarios/verifygeneratedusername <=> https://192.168.1.192:8000/mttoapp/usuarios/verifygeneratedusername
         [Route("verifygeneratedusername")]
         //--------------------------------------------------------------------------------------------------
-        //FUNCION QUE RECIBIRA EL NOMBRE DE USUARIO GENERADO POR LA APLICACION, EVALUA SI DICHO APELLIDO 
+        //FUNCION QUE RECIBIRA EL NOMBRE DE USUARIO GENERADO POR LA APLICACION, EVALUA SI DICHO APELLIDO
         //SE ENCUENTRA O NO REGISTRADO Y RETORNA VERDADERO O FALSO DEPENIENDO DE LA EVALUACION
         //--------------------------------------------------------------------------------------------------
         public ActionResult<bool> VerifyUsername(string generatedusername)
