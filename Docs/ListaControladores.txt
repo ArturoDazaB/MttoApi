@@ -39,8 +39,7 @@
 
    A continuacion se listaran los URL que permitiran acceder a los metodos del controlador.
 
-     a) localhost:12345/mttoapp/login?username=<username>&password=<password>,
-        localhost:12345/mttoapp/login?USERNAME=<username>&PASSWORD=<password>.
+     a) localhost:12345/mttoapp/login,
 
         Este metodo recibe como parametros el nombre de usuario y la password como parametros (ambos string). Retorna
         tres valores distintos dependiendo de si se cumplen o no las condiciones:

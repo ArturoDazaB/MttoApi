@@ -136,6 +136,14 @@ namespace MttoApi.Model
 
     //=======================================================================================================
     //=======================================================================================================
+    public class LogInRequest
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+
+    //=======================================================================================================
+    //=======================================================================================================
     //CLASE USADA EN LA PAGINA "PaginaRegistro" PARA RECIBIR LA INFORMACION DEL USUARIO QUE SE VA A REGISTRAR
     //Y EL ID DEL USUARIO QUE SE ENCUENTRA REALIZANDO EL REGISTRO
     public partial class RequestRegistroUsuario
