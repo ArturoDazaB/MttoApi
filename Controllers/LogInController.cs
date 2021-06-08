@@ -38,11 +38,11 @@ namespace MttoApi.Controllers
 
         //========================================================================================================
         //========================================================================================================
-        // GET: mttoapp/login?username=<username>&password=<password>
-        // GET: mttoapp/login?USERNAME=<username>&PASSWORD=<password>
+        // GET: mttoapp/login
+        // GET: mttoapp/login
         //SE ADICIONA EL ROUTING "HttpGet" LO CUAL INDICARA QUE LA FUNCION "Get" RESPONDERA A
         //A SOLICITUDES HTTP DE TIPO GET
-        [HttpGet]
+        [HttpPost]
 
         //--------------------------------------------------------------------------------------------------
         //FUNCION QUE ACTUALIZARA LA INFORMACION DE UN USUARIO CUANDO SE REALICE EL LLAMADO DESDE
@@ -51,23 +51,23 @@ namespace MttoApi.Controllers
         // -username: PARAMETRO ENVIADO EN EL URL DE LA SOLICITUD (username=<username> || USERNAME=<username>)
         // -password: PARAMETRO ENVIADO EN EL URL DE LA SOLICITUD (password=<password> || PASSWORD=<password>)
         //--------------------------------------------------------------------------------------------------
-        public async Task<IActionResult> LogInRequest(string username, string password)
+        public async Task<IActionResult> LogInRequest([FromBody] LogInRequest request)
         {
             //SE CREA E INICIALIZA LA VARIABLE QUE SE RETORNARA SI TODAS LAS CONDICIONES SE CUMPLEN
             LogInResponse response = null;
 
             //SE EVALUA QUE EXISTA UN NOMBRE DE USUARIO QUE OBEDESCA AL NOMBRE DE USUARIO
             if (this._context.Usuarios.Any
-                (x => x.Username.ToLower() == username.ToLower()))  //=> true => EXISTE UN REGISTRO EN LA TABLA USUARIOS QUE RESPONDE AL
+                (x => x.Username.ToLower() == request.Username.ToLower()))  //=> true => EXISTE UN REGISTRO EN LA TABLA USUARIOS QUE RESPONDE AL
                                                                     //           NOMBRE DE USUARIO ENVIADO COMO PARAMETRO.
             {
                 //SI EXISTE, SE OBTIENE TODA LA INFORMACION DE DICHO REGISTRO Y SE ALMACENA EN UNA VARIABLE DEL TIPO USUARIO
                 Usuarios usuario = this._context.Usuarios.First         //=> METODO QUE RETORNA EL PRIMER REGISTRO QUE COINCIDA
-                    (x => x.Username.ToLower() == username.ToLower());  //CON LA COMPARACION DE NOMBRE DE USUARIOS
+                    (x => x.Username.ToLower() == request.Username.ToLower());  //CON LA COMPARACION DE NOMBRE DE USUARIOS
 
                 //SE COMPARA QUE LA PROPIEDAD DEL OBJETO usuario (OBJETO QUE CONTIENE TODA LA INFORMACION DE USUARIO
                 //QUE DESEA INGRESAR) CON EL PARAMETRO "password"
-                if (usuario.Password == password) //=> true => LA CONTRASEÑA ENVIADA ES CORRECTA
+                if (usuario.Password == request.Password) //=> true => LA CONTRASEÑA ENVIADA ES CORRECTA
                 {
                     //SE INICIA LA TRANSACCION CON LA BASE DE DATOS
                     using (var transaction = this._context.Database.BeginTransaction())
