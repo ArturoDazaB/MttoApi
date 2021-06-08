@@ -61,9 +61,6 @@ namespace MttoApi.Controllers
                         Personas persona = Personas.NewPersonas(newuser.NewUser.Persona);
                         Usuarios usuario = Usuarios.NewUsuarios(newuser.NewUser.Usuario);
 
-                        //SE ENCRIPTA LA CONTRASEÑA DE USUARIO RECIBIDA EN LA SOLICITUD
-                        usuario.Password = new Metodos().EncryptString(usuario.Password);
-
                         //--------------------------------------------------------------------------------------------------------
                         //SE REGISTRA LA INFORMACION NUEVA
                         this._context.Add(persona);
