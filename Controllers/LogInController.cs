@@ -65,213 +65,103 @@ namespace MttoApi.Controllers
                 Usuarios usuario = this._context.Usuarios.First         //=> METODO QUE RETORNA EL PRIMER REGISTRO QUE COINCIDA
                     (x => x.Username.ToLower() == username.ToLower());  //CON LA COMPARACION DE NOMBRE DE USUARIOS
 
-                //SE VERIFICA SI EL USUARIO QUE SE ENCUENTRA NAVEGANDO ES EL USUARIO ADMINISTRATOR
-                if (usuario.Cedula == 0)
+                //SE COMPARA QUE LA PROPIEDAD DEL OBJETO usuario (OBJETO QUE CONTIENE TODA LA INFORMACION DE USUARIO
+                //QUE DESEA INGRESAR) CON EL PARAMETRO "password"
+                if (usuario.Password == password) //=> true => LA CONTRASEÑA ENVIADA ES CORRECTA
                 {
-                    //SE COMPARA QUE LA PROPIEDAD DEL OBJETO usuario (OBJETO QUE CONTIENE TODA LA INFORMACION DE USUARIO
-                    //QUE DESEA INGRESAR) CON EL PARAMETRO "password"
-                    if (usuario.Password == password) //=> true => LA CONTRASEÑA ENVIADA ES CORRECTA
+                    //SE INICIA LA TRANSACCION CON LA BASE DE DATOS
+                    using (var transaction = this._context.Database.BeginTransaction())
                     {
-                        //SE INICIA LA TRANSACCION CON LA BASE DE DATOS
-                        using (var transaction = this._context.Database.BeginTransaction())
+                        //SE INICIA LA TRANSACCIONES CON LA BASE DE DATOS
+                        try
                         {
-                            //SE INICIA LA TRANSACCIONES CON LA BASE DE DATOS
-                            try
+                            //--------------------------------------------------------------------------------------------
+                            //SE BUSCA LA INFORMACION PERSONAL DEL USUARIO QUE DESEA INGRESAR
+                            var persona = await this._context.Personas.FindAsync(usuario.Cedula);
+
+                            //--------------------------------------------------------------------------------------------
+                            //SE EVALUA SI SE OBTUVO UN REGISTRO DE LA BUSQUEDA ANTERIOR
+                            if (persona != null)
                             {
-                                //--------------------------------------------------------------------------------------------
-                                //SE BUSCA LA INFORMACION PERSONAL DEL USUARIO QUE DESEA INGRESAR
-                                var persona = await this._context.Personas.FindAsync(usuario.Cedula);
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE EVALUA SI SE OBTUVO UN REGISTRO DE LA BUSQUEDA ANTERIOR
-                                if (persona != null)
-                                {
-                                    //DE EXISTIR SE DESECHA LA ENTIDAD RETENIDA
-                                    this._context.Entry(persona).State = EntityState.Detached;
-                                }
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE CREA E INICIALIZA UN OBJETO DEL TIPO "InformacionGeneral" (OBJETO QUE RETORNARA TODA LA
-                                //INFORMACION DEL USUARIO QUE DESEA INGRESAR)
-                                var fullinfo = InformacionGeneral.NewInformacionGeneral(persona, usuario);
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE CREA E INICALIZA UN OBJETO DEL TIPO "UltimaConexion"
-                                var ultimaconexion = new Ultimaconexion().NewUltimaConexion(persona, usuario);
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE AÑADE A LA TABLAS "UltimaConexion" EL NUEVO REGISTRO
-                                this._context.Ultimaconexion.Add(ultimaconexion);               //SE REGISTRA/AÑADE EN LA BASE DE DATOS
-                                this._context.Entry(ultimaconexion).State = EntityState.Added;  //SE CAMBIA EL ESTADO DE LA ENTIDAD RETENIDA
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE CREA E INICIALIZA UNA LISTA DE OBJETOS "UltimaConexion"
-                                List<Ultimaconexion> lista = new List<Ultimaconexion>();
-                                //SE LLENA LA LISTA PREVIAMENTE CREADA CON TODOS LOS REGISTROS DE CONEXION DEL USUARIO QUE DESEA INGRESAR
-                                foreach (Ultimaconexion y in this._context.Ultimaconexion.ToList())
-                                {
-                                    //SE EVAUA CADA UNO DE LOS REGISTROS DE LA LISTA Y SE COMPARA SI EL PARAMETRO UserId
-                                    //DEL REGISTRO ES IGUAL AL ID (CEDULA) DEL USUARIO QUE ESTA INGRESANDO
-                                    if (y.UserId == persona.Cedula)
-                                        //SE AÑADE A LA LISTA EL REGISTRO.
-                                        lista.Add(y);
-                                }
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE CREA UN NUEVO REGISTRO DE SOLICITUDES WEB Y SE AÑADE A LA TABLA "HistorialSolicitudesWeb"
-                                Historialsolicitudesweb solicitudweb =
-                                    Historialsolicitudesweb.NewHistorialSolocitudesWeb(fullinfo.Usuario.Cedula, 0);
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE REGISTRA/AÑADE UN NUEVO REGISTRO DE SOLICITUDES WEB
-                                this._context.Historialsolicitudesweb.Add(solicitudweb);
-                                this._context.Entry(solicitudweb).State = EntityState.Added;
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE EVALUA CUANTOS REGISTROS SE ACUMULARON EN LA LISTA "lista"
-                                //MAS DE UN REGISTRO
-                                if (lista.Count > 0)
-                                {
-                                    //SE ENVIA LA INFORMACION DEL USUARIO Y EL PENULTIMO REGISTRO (ULTIMA CONEXION PREVIA A LA ACTUAL)
-                                    response = LogInResponse.NewLogInResponse(fullinfo, lista[lista.Count - 1].UltimaConexion1);
-                                }
-                                if (lista.Count == 0)
-                                {
-                                    //SE ENVIA LA INFORMACION DEL USUARIO Y EL ULTIMO REGISTRO (CONEXION ACTUAL)
-                                    response = LogInResponse.NewLogInResponse(fullinfo, ultimaconexion.UltimaConexion1);
-                                }
-                                //--------------------------------------------------------------------------------------------
-                                //SE GUARDAN LOS CAMBIOS REALIZADOS SOBRE LA BASE DE DATOS
-                                await this._context.SaveChangesAsync();
-                                //SE CULMINA LA TRANSACCION CON LA BASE DE DATOS
-                                await transaction.CommitAsync();
+                                //DE EXISTIR SE DESECHA LA ENTIDAD RETENIDA
+                                this._context.Entry(persona).State = EntityState.Detached;
                             }
-                            //SI OCURRE ALGUNA EXCEPCION EN EL PROCESO DE LECTURA Y ESCRITURA DE LA BASE DE DATOS EL CODIGO
-                            //SE REDIRIGE A LA SECCION CATCH DEL CICLO TRY...CATCH
-                            catch (Exception ex) when (ex is DbUpdateException ||
-                                                       ex is DbUpdateConcurrencyException)
+
+                            //--------------------------------------------------------------------------------------------
+                            //SE CREA E INICIALIZA UN OBJETO DEL TIPO "InformacionGeneral" (OBJETO QUE RETORNARA TODA LA
+                            //INFORMACION DEL USUARIO QUE DESEA INGRESAR)
+                            var fullinfo = InformacionGeneral.NewInformacionGeneral(persona, usuario);
+
+                            //--------------------------------------------------------------------------------------------
+                            //SE CREA E INICALIZA UN OBJETO DEL TIPO "UltimaConexion"
+                            var ultimaconexion = new Ultimaconexion().NewUltimaConexion(persona, usuario);
+
+                            //--------------------------------------------------------------------------------------------
+                            //SE AÑADE A LA TABLAS "UltimaConexion" EL NUEVO REGISTRO
+                            this._context.Ultimaconexion.Add(ultimaconexion);               //SE REGISTRA/AÑADE EN LA BASE DE DATOS
+                            this._context.Entry(ultimaconexion).State = EntityState.Added;  //SE CAMBIA EL ESTADO DE LA ENTIDAD RETENIDA
+
+                            //--------------------------------------------------------------------------------------------
+                            //SE CREA E INICIALIZA UNA LISTA DE OBJETOS "UltimaConexion"
+                            List<Ultimaconexion> lista = new List<Ultimaconexion>();
+                            //SE LLENA LA LISTA PREVIAMENTE CREADA CON TODOS LOS REGISTROS DE CONEXION DEL USUARIO QUE DESEA INGRESAR
+                            foreach (Ultimaconexion y in this._context.Ultimaconexion.ToList())
                             {
-                                Console.WriteLine("\n=================================================");
-                                Console.WriteLine("=================================================");
-                                Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
-                                Console.WriteLine("=================================================");
-                                Console.WriteLine("=================================================\n");
-                                //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                                return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
+                                //SE EVAUA CADA UNO DE LOS REGISTROS DE LA LISTA Y SE COMPARA SI EL PARAMETRO UserId
+                                //DEL REGISTRO ES IGUAL AL ID (CEDULA) DEL USUARIO QUE ESTA INGRESANDO
+                                if (y.UserId == persona.Cedula)
+                                    //SE AÑADE A LA LISTA EL REGISTRO.
+                                    lista.Add(y);
                             }
+
+                            //--------------------------------------------------------------------------------------------
+                            //SE CREA UN NUEVO REGISTRO DE SOLICITUDES WEB Y SE AÑADE A LA TABLA "HistorialSolicitudesWeb"
+                            Historialsolicitudesweb solicitudweb =
+                                Historialsolicitudesweb.NewHistorialSolocitudesWeb(fullinfo.Usuario.Cedula, 0);
+
+                            //--------------------------------------------------------------------------------------------
+                            //SE REGISTRA/AÑADE UN NUEVO REGISTRO DE SOLICITUDES WEB
+                            this._context.Historialsolicitudesweb.Add(solicitudweb);
+                            this._context.Entry(solicitudweb).State = EntityState.Added;
+
+                            //--------------------------------------------------------------------------------------------
+                            //SE EVALUA CUANTOS REGISTROS SE ACUMULARON EN LA LISTA "lista"
+                            //MAS DE UN REGISTRO
+                            if (lista.Count > 0)
+                            {
+                                //SE ENVIA LA INFORMACION DEL USUARIO Y EL PENULTIMO REGISTRO (ULTIMA CONEXION PREVIA A LA ACTUAL)
+                                response = LogInResponse.NewLogInResponse(fullinfo, lista[lista.Count - 1].UltimaConexion1);
+                            }
+                            if (lista.Count == 0)
+                            {
+                                //SE ENVIA LA INFORMACION DEL USUARIO Y EL ULTIMO REGISTRO (CONEXION ACTUAL)
+                                response = LogInResponse.NewLogInResponse(fullinfo, ultimaconexion.UltimaConexion1);
+                            }
+                            //--------------------------------------------------------------------------------------------
+                            //SE GUARDAN LOS CAMBIOS REALIZADOS SOBRE LA BASE DE DATOS
+                            await this._context.SaveChangesAsync();
+                            //SE CULMINA LA TRANSACCION CON LA BASE DE DATOS
+                            await transaction.CommitAsync();
                         }
-                    }
-                    else
-                    {
-                        //SI EL NOMBRE DE USUARIO CONICIDE PERO LA CONTRASEÑA NO SE RETORNA UN BADREQUEST
-                        return BadRequest("Contraseña incorrecta");
+                        //SI OCURRE ALGUNA EXCEPCION EN EL PROCESO DE LECTURA Y ESCRITURA DE LA BASE DE DATOS EL CODIGO
+                        //SE REDIRIGE A LA SECCION CATCH DEL CICLO TRY...CATCH
+                        catch (Exception ex) when (ex is DbUpdateException ||
+                                                   ex is DbUpdateConcurrencyException)
+                        {
+                            Console.WriteLine("\n=================================================");
+                            Console.WriteLine("=================================================");
+                            Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                            Console.WriteLine("=================================================");
+                            Console.WriteLine("=================================================\n");
+                            //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
+                            return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
+                        }
                     }
                 }
-                //EL USUARIO QUE SE ENCUENTRA LOGEADO NO ES EL USUARIO ADMINISTRATOR
                 else
                 {
-                    //SE VERIFICA QUE LA CONTRASEÑA ENVIADA CORRESPONDA A LA CONTRASEÑA GUARDADA
-                    //CON UNA DOBLE VERIFICACION
-                    if (usuario.Password == new Metodos().EncryptString(password) &&    //=> CONTRASEÑA GUARDADA (ENCRYPTADA) V LA CONTRASEÑA ENCRIPTADA ENVIADA.
-                        new Metodos().DecryptString(usuario.Password) == password)      //=> CONTRASEÑA GUARDADA (DESENCRYPTADA) Y LA CONTRASEÑA ENVIADA.
-                    {
-                        //SE INICIA LA TRANSACCION CON LA BASE DE DATOS
-                        using (var transaction = this._context.Database.BeginTransaction())
-                        {
-                            //SE INICIA LA TRANSACCIONES CON LA BASE DE DATOS
-                            try
-                            {
-                                //SE DESENCRIPTA LA CONTRASEÑA DE USUARIO RECIBIDA EN LA SOLICITUD
-                                usuario.Password = new Metodos().DecryptString(usuario.Password);
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE BUSCA LA INFORMACION PERSONAL DEL USUARIO QUE DESEA INGRESAR
-                                var persona = await this._context.Personas.FindAsync(usuario.Cedula);
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE EVALUA SI SE OBTUVO UN REGISTRO DE LA BUSQUEDA ANTERIOR
-                                if (persona != null)
-                                {
-                                    //DE EXISTIR SE DESECHA LA ENTIDAD RETENIDA
-                                    this._context.Entry(persona).State = EntityState.Detached;
-                                }
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE CREA E INICIALIZA UN OBJETO DEL TIPO "InformacionGeneral" (OBJETO QUE RETORNARA TODA LA
-                                //INFORMACION DEL USUARIO QUE DESEA INGRESAR)
-                                var fullinfo = InformacionGeneral.NewInformacionGeneral(persona, usuario);
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE CREA E INICALIZA UN OBJETO DEL TIPO "UltimaConexion"
-                                var ultimaconexion = new Ultimaconexion().NewUltimaConexion(persona, usuario);
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE AÑADE A LA TABLAS "UltimaConexion" EL NUEVO REGISTRO
-                                this._context.Ultimaconexion.Add(ultimaconexion);               //SE REGISTRA/AÑADE EN LA BASE DE DATOS
-                                this._context.Entry(ultimaconexion).State = EntityState.Added;  //SE CAMBIA EL ESTADO DE LA ENTIDAD RETENIDA
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE CREA E INICIALIZA UNA LISTA DE OBJETOS "UltimaConexion"
-                                List<Ultimaconexion> lista = new List<Ultimaconexion>();
-                                //SE LLENA LA LISTA PREVIAMENTE CREADA CON TODOS LOS REGISTROS DE CONEXION DEL USUARIO QUE DESEA INGRESAR
-                                foreach (Ultimaconexion y in this._context.Ultimaconexion.ToList())
-                                {
-                                    //SE EVAUA CADA UNO DE LOS REGISTROS DE LA LISTA Y SE COMPARA SI EL PARAMETRO UserId
-                                    //DEL REGISTRO ES IGUAL AL ID (CEDULA) DEL USUARIO QUE ESTA INGRESANDO
-                                    if (y.UserId == persona.Cedula)
-                                        //SE AÑADE A LA LISTA EL REGISTRO.
-                                        lista.Add(y);
-                                }
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE CREA UN NUEVO REGISTRO DE SOLICITUDES WEB Y SE AÑADE A LA TABLA "HistorialSolicitudesWeb"
-                                Historialsolicitudesweb solicitudweb =
-                                    Historialsolicitudesweb.NewHistorialSolocitudesWeb(fullinfo.Usuario.Cedula, 0);
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE REGISTRA/AÑADE UN NUEVO REGISTRO DE SOLICITUDES WEB
-                                this._context.Historialsolicitudesweb.Add(solicitudweb);
-                                this._context.Entry(solicitudweb).State = EntityState.Added;
-
-                                //--------------------------------------------------------------------------------------------
-                                //SE EVALUA CUANTOS REGISTROS SE ACUMULARON EN LA LISTA "lista"
-                                //MAS DE UN REGISTRO
-                                if (lista.Count > 0)
-                                {
-                                    //SE ENVIA LA INFORMACION DEL USUARIO Y EL PENULTIMO REGISTRO (ULTIMA CONEXION PREVIA A LA ACTUAL)
-                                    response = LogInResponse.NewLogInResponse(fullinfo, lista[lista.Count - 1].UltimaConexion1);
-                                }
-                                if (lista.Count == 0)
-                                {
-                                    //SE ENVIA LA INFORMACION DEL USUARIO Y EL ULTIMO REGISTRO (CONEXION ACTUAL)
-                                    response = LogInResponse.NewLogInResponse(fullinfo, ultimaconexion.UltimaConexion1);
-                                }
-                                //--------------------------------------------------------------------------------------------
-                                //SE GUARDAN LOS CAMBIOS REALIZADOS SOBRE LA BASE DE DATOS
-                                await this._context.SaveChangesAsync();
-                                //SE CULMINA LA TRANSACCION CON LA BASE DE DATOS
-                                await transaction.CommitAsync();
-                            }
-                            //SI OCURRE ALGUNA EXCEPCION EN EL PROCESO DE LECTURA Y ESCRITURA DE LA BASE DE DATOS EL CODIGO
-                            //SE REDIRIGE A LA SECCION CATCH DEL CICLO TRY...CATCH
-                            catch (Exception ex) when (ex is DbUpdateException ||
-                                                       ex is DbUpdateConcurrencyException)
-                            {
-                                Console.WriteLine("\n=================================================");
-                                Console.WriteLine("=================================================");
-                                Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
-                                Console.WriteLine("=================================================");
-                                Console.WriteLine("=================================================\n");
-                                //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
-                                return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //SI EL NOMBRE DE USUARIO CONICIDE PERO LA CONTRASEÑA NO SE RETORNA UN BADREQUEST
-                        return BadRequest("Contraseña incorrecta");
-                    }
+                    //SI EL NOMBRE DE USUARIO CONICIDE PERO LA CONTRASEÑA NO SE RETORNA UN BADREQUEST
+                    return BadRequest("Contraseña incorrecta");
                 }
             }
             else

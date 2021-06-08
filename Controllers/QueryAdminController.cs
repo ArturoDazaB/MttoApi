@@ -614,9 +614,6 @@ namespace MttoApi.Controllers
                         {
                             //SI NO SE ENCUENTRA NULO SE DESECHA AL OBJETO RETENIDO POR LA CLASE CONTEXTO
                             this._context.Entry(fullinfo.Usuario).State = EntityState.Detached;
-
-                            //SE DESENCRIPTA LA CONTRASEÑA
-                            fullinfo.Usuario.Password = new Metodos().DecryptString(fullinfo.Usuario.Password);
                         }
 
                         //--------------------------------------------------------------------------------------------------------
