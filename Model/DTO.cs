@@ -247,4 +247,16 @@ namespace MttoApi.Model
 
         public double UserIdRequested { get; set; } //=> ID DEL USUARIO QUE REALIZA LA SOLICITUD
     }
+
+    //===================================================================================
+    //===================================================================================
+    public partial class ModificacionTableroResponse
+    {
+        public List<Items> ItemsTablerosMod { get; set; }
+        /*CLASE OBJETO FORMADA POR UN UNICO PAAMETRO
+         ItemsTableroMod => Lista de items del tablero consultado luego de 
+                            modificar uno o mas items dento del grupo de 
+                            items del tablero consultado.*/
+    }
+
 }
