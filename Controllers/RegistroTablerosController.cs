@@ -134,7 +134,7 @@ namespace MttoApi.Controllers
 
         //========================================================================================================
         //========================================================================================================
-        //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "NewTablero" RESPONDERA A
+        //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "ModifyItem" RESPONDERA A
         //A SOLICITUDES HTTP DE TIPO POST
         // POST mttoapp/registrotableros/modifyitem
         [HttpPost("modifyitem")]
@@ -229,6 +229,96 @@ namespace MttoApi.Controllers
             }
             return Ok(tableroitems);
         }
+
+        //========================================================================================================
+        //========================================================================================================
+        //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "DliminarItem" RESPONDERA A
+        //A SOLICITUDES HTTP DE TIPO POST
+        // POST mttoapp/registrotableros/deleteitem
+        [HttpPost("deleteitem")]
+        public async Task<ActionResult<List<Items>>> DeleteItem([FromBody] Items item2delete)
+        {
+            List<Items> tableroitems = new List<Items>();
+
+            //SE VERIFICA QUE EL OBJETO RECIBIDO EN EL BODY DE LA SOLICITUD NO SE ENCUENTE VACIO
+            if (item2delete != null)
+            {
+                //SE INICIA LA TRASACCION CON LA BASE DE DATOS
+                using (var transaction = this._context.Database.BeginTransaction())
+                {
+                    //SE INICIA EL CICLO TRY... CATCH PARA MANEJO DE EXCEPCIONES
+                    //CON LAS TRANSACCIONES CON LA BASE DE DATOS
+                    try
+                    {
+                        //SE BUSCA LA INFORMACION DEL ITEM QUE SE DESEA MODIFICAR
+                        var infoitem = await this._context.Items.FindAsync(item2delete.Id);
+                        //SE VERIFICA QUE LA INFORMACION DEL OBJETO DEVUELTO DE LA BUSQUEDA NO
+                        //SE ENCUENTRE NULO O VACIO
+                        if (infoitem != null)
+                        {
+                            //SE ENCONTRO EL ITEM EN LA BASE DE DATOS SE DESECHA 
+                            this._context.Entry(infoitem).State = EntityState.Detached;
+
+                            //SE ACTUALIZA EL REGISRO DENTRO DE LA BASE DE DATOS
+                            this._context.Remove(infoitem);
+
+                            //SE GUARDAN LOS CAMBIOS.
+                            await this._context.SaveChangesAsync();
+
+                            //SE LISTAN TODOS LOS REGISTROS DE LA TABLA "Items".
+                            List<Items> allitemlist = await this._context.Items.ToListAsync();
+
+                            //INSPECCIONAMOS CADA UNO DE LOS ELEMENTOS DENTRO DE LS LISTA "allitemslist"
+                            foreach (Items x in allitemlist)
+                            {
+                                //SI EL id DEL ELEMENTO INSPECCIONADO ES IGUAL AL ID DEL TABLERO 
+                                //DEL ITEM MODIFICADO
+                                if (x.TableroId == item2delete.TableroId)
+                                {
+                                    //SI LOS ID COINCIDEN AÑADIMOS EL ELEMENTO A LA LISTA "tableroitems".
+                                    tableroitems.Add(x);
+                                }
+                            }
+
+                            //CONTAMOS LA CANTIDAD DE ITEMS DE LA LISTA "tableroitems"
+                            if (tableroitems.Count == 0)
+                            {
+                                //SI LA LISTA NO TIENE NINGUN REGISTRO (LO CUAL NO PUEDE SER POSIBLE
+                                //DEBIDO A QUE DEBE EXISTIR MINIMO UN REGISTRO DEBIDO A QUE ESTA
+                                //FUNCION SE ACTIVA AL MOMENTO DE MODIFICAR UN REGISTRO DE ITEM) 
+                                //RETORNAREMOS UN MENSAJE DE ERROR JUNTO CON EL CODIGO DE SOLICITUD 
+                                //400 BAD REQUEST.
+                                return BadRequest("Error");
+                            }
+                        }
+                        else
+                        {
+                            //NO SE CONSIGUIO EL OBJETO EN LA BASE DE DATOS 
+                            return BadRequest("El item que desea modificar no se encuentra registado");
+                        }
+                    }
+                    //SI OCURRE ALGUNA EXCEPCION EN EL PROCESO DE LECTURA Y ESCRITURA DE LA BASE DE DATOS EL CODIGO
+                    //SE REDIRIGE A LA SECCION CATCH DEL CICLO TRY...CATCH
+                    catch (Exception ex) when (ex is DbUpdateException ||
+                                               ex is DbUpdateConcurrencyException)
+                    {
+                        Console.WriteLine("\n=================================================");
+                        Console.WriteLine("=================================================");
+                        Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                        Console.WriteLine("=================================================");
+                        Console.WriteLine("=================================================\n");
+                        //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
+                        BadRequest("Ha ocurrido un error");
+                    }
+
+                    //SE TERMINA LA TRANSACCION
+                    await transaction.CommitAsync();
+
+                }
+            }
+                return Ok(tableroitems);
+        }
+
         //========================================================================================================
         //========================================================================================================
         //FUNCIONES QUE EVALUAN SI EXISTE ALGUN TABLERO REGISTRADO QUE YA POSEA EL PARAMETRO QUE SE LE ES ENVIADO
