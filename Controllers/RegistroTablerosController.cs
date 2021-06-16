@@ -279,17 +279,6 @@ namespace MttoApi.Controllers
                                     tableroitems.Add(x);
                                 }
                             }
-
-                            //CONTAMOS LA CANTIDAD DE ITEMS DE LA LISTA "tableroitems"
-                            if (tableroitems.Count == 0)
-                            {
-                                //SI LA LISTA NO TIENE NINGUN REGISTRO (LO CUAL NO PUEDE SER POSIBLE
-                                //DEBIDO A QUE DEBE EXISTIR MINIMO UN REGISTRO DEBIDO A QUE ESTA
-                                //FUNCION SE ACTIVA AL MOMENTO DE MODIFICAR UN REGISTRO DE ITEM) 
-                                //RETORNAREMOS UN MENSAJE DE ERROR JUNTO CON EL CODIGO DE SOLICITUD 
-                                //400 BAD REQUEST.
-                                return BadRequest("Error");
-                            }
                         }
                         else
                         {
