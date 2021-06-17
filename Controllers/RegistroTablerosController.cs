@@ -136,10 +136,83 @@ namespace MttoApi.Controllers
         //========================================================================================================
         //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "ModifyItem" RESPONDERA A
         //A SOLICITUDES HTTP DE TIPO POST
+        // POST mttoapp/registrotableros/createitem
+        [HttpPost("createitem")]
+        public async Task<ActionResult<List<Items>>> CreateItem([FromBody] Items item2create)
+        {
+            //CREAMOS E INICIALIZAMOS LA LISTA QUE CONTENDRA LOS REGISTROS A RETORNAR
+            List<Items> tableroitems = new List<Items>();
+
+            //SE VERIFICA QUE EL OBJETO RECIBIDO EN EL BODY DE LA SOLICITUD NO SE ENCUENTE VACIO
+            if (item2create != null)
+            {
+                //SE INICIA LA TRASACCION CON LA BASE DE DATOS
+                using (var transaction = this._context.Database.BeginTransaction())
+                {
+                    //SE INICIA EL CICLO TRY... CATCH PARA MANEJO DE EXCEPCIONES
+                    //CON LAS TRANSACCIONES CON LA BASE DE DATOS
+                    try
+                    {
+                        //SE AÑADE EL OBJETO "Items"
+                        this._context.Items.Add(item2create);
+                        //SE CAMBIA EL ESTADO DE LA ENTIDAD QUE ESTA SIENDO RETENIDA POR EF
+                        this._context.Entry(item2create).State = EntityState.Added;
+
+                        //SE GUARDAN LOS CAMBIOS.
+                        await this._context.SaveChangesAsync();
+
+                        //SE LISTAN TODOS LOS REGISTROS DE LA TABLA "Items".
+                        List<Items> allitemlist = await this._context.Items.ToListAsync();
+
+                        //INSPECCIONAMOS CADA UNO DE LOS ELEMENTOS DENTRO DE LS LISTA "allitemslist"
+                        foreach (Items x in allitemlist)
+                        {
+                            //SI EL id DEL ELEMENTO INSPECCIONADO ES IGUAL AL ID DEL TABLERO 
+                            //DEL ITEM MODIFICADO
+                            if (x.TableroId == item2create.TableroId)
+                            {
+                                //SI LOS ID COINCIDEN AÑADIMOS EL ELEMENTO A LA LISTA "tableroitems".
+                                tableroitems.Add(x);
+                            }
+                        }
+                    }
+                    //SI OCURRE ALGUNA EXCEPCION EN EL PROCESO DE LECTURA Y ESCRITURA DE LA BASE DE DATOS EL CODIGO
+                    //SE REDIRIGE A LA SECCION CATCH DEL CICLO TRY...CATCH
+                    catch (Exception ex) when (ex is DbUpdateException ||
+                                               ex is DbUpdateConcurrencyException)
+                    {
+                        Console.WriteLine("\n=================================================");
+                        Console.WriteLine("=================================================");
+                        Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                        Console.WriteLine("=================================================");
+                        Console.WriteLine("=================================================\n");
+                        //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
+                        BadRequest("Ha ocurrido un error");
+                    }
+
+                    //SE TERMINA LA TRANSACCION
+                    await transaction.CommitAsync();
+
+                }
+            }
+            else
+            {
+                //NO SE CONSIGUIO EL OBJETO EN LA BASE DE DATOS 
+                return BadRequest("Ha ocurrido un error");
+            }
+
+            return await Task.FromResult(tableroitems);
+        }
+
+        //========================================================================================================
+        //========================================================================================================
+        //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "CreateItem" RESPONDERA A
+        //A SOLICITUDES HTTP DE TIPO POST
         // POST mttoapp/registrotableros/modifyitem
         [HttpPost("modifyitem")]
-        public async Task<ActionResult<Items>> ModifyItem([FromBody] Items item2modify)
+        public async Task<ActionResult<List<Items>>> ModifyItem([FromBody] Items item2modify)
         {
+            //CREAMOS E INICIALIZAMOS LA LISTA QUE CONTENDRA LOS REGISTROS A RETORNAR
             List<Items> tableroitems = new List<Items>();
 
             //SE VERIFICA QUE EL OBJETO RECIBIDO EN EL BODY DE LA SOLICITUD NO SE ENCUENTE VACIO
