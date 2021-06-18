@@ -266,5 +266,342 @@ namespace MttoApi.Controllers
             //SE RETORNA EL CODIGO 200 OK JUNTO CON TODA LA INFORMACION DEL TABELRO SOLICITADO
             return Ok(tablero);
         }
+
+        //========================================================================================================
+        //========================================================================================================
+        // DELETE: mttoapp/consultatableros/deleteinfo
+        //https://<ipaddress>:<port>/mttoapp/consultatableros/delete
+        [HttpPost]
+        [Route("delete")]
+        public async Task<IActionResult> EliminarTablero([FromBody] RequestConsultaTablero info)
+        {
+            //SE VERIFICA QUE EL OBJETO QUE CONTIENE LA INFOMACION RECIBIDA NO SEA NULO
+            if (info != null)   //=> OBJETO "info" NO NULO
+            {
+                //SE BUSCAN REGISTROS EXISTENTES QUE COINCIDAN CON LA INFORMACION RECIBIDA
+                if (this._context.Tableros.Any
+                    (x => x.SapId.ToLower() == info.SapId.ToLower()) &&       //=> SE VERIFICA LA EXISTENCIA DE UN REGISTRO CON LA INFORMACION CONTENIDA EN "info.SapId"
+                    this._context.Tableros.Any
+                    (x => x.TableroId.ToLower() == info.TableroId.ToLower())) //=> SE VERIFICA LA EXISTENCIA DE UN REGISTRO CON LA INFORMACION CONTENIDA EN "info.TableroID"
+                {
+                    //SE INICIA LA TRANSACCIONES CON LA BASE DE DATOS
+                    using (var transaction = this._context.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            //COMPARAMOS LA INFOMACION DE TABLERO DEVUELTA CUANDO SE REALIZAN LAS CONSULTAS POR:
+                            // - CONSULTA DE TABLERO FILTRANDO EL CAMPO "TableroID"
+                            // - CONSULTA DE TABLERO FILTRANDO EL CAMPO "SapID"
+                            //NOTA: CONDICIONAL USADO PARA CERTIFICAR LA INFORMACION CONTENIDA EN EL OBJETO "info"
+                            if ((this._context.Tableros.First(x => x.TableroId.ToLower() == info.TableroId.ToLower())) ==
+                                (this._context.Tableros.First(x => x.SapId.ToLower() == info.SapId.ToLower())))
+                            {
+                                //CREAMOS EL OBJETO QUE RECIBIRA TODA LA INFORMACION RELACIONADA CON EL TABLERO
+                                Tableros tableroinfo = await this._context.Tableros.FindAsync(info.TableroId);
+
+                                //SE ENCONTRO EL TABLERO EN LA BASE DE DATOS SE DESECHA 
+                                this._context.Entry(tableroinfo).State = EntityState.Deleted;
+
+                                //RECORREMOS TODOS LOS REGISTROS DE ITEMS 
+                                foreach (Items x in this._context.Items.ToList())
+                                {
+                                    //VERIFICAMOS QUE EL CAMPO "TableroID" DEL REGISTRO EVALUADO COINCIDA CON EL
+                                    //DATO CONTENIDO EN EL OBJETO REIBIDO.
+                                    if (x.TableroId.ToLower() == info.TableroId.ToLower())
+                                    {
+                                        //SE ELIMINA EL REGISTO DEL ITEM
+                                        this._context.Remove(x);
+                                        //SE ENCONTRO EL ITEM EN LA BASE DE DATOS SE DESECHA 
+                                        this._context.Entry(x).State = EntityState.Deleted;
+                                    }
+                                    else
+                                    {
+                                        //SE ENCONTRO EL ITEM EN LA BASE DE DATOS SE DESECHA 
+                                        this._context.Entry(x).State = EntityState.Detached;
+                                    }
+                                }
+
+                                //SE GUARDAN LOS CAMBIOS.
+                                await this._context.SaveChangesAsync();
+                            }
+                            else //LA INFORMACION DE TABLERO DEVUELTA CUANDO SE REALIZAN LAS CONSULTAS POR LOS CAMPOS
+                                //"TableroId" Y "SapID" NO COINCIDE.
+                            {
+                                //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
+                                BadRequest("Informacion de tablero inconsistente");
+                            }
+                            
+                        }
+                        //SI OCURRE ALGUNA EXCEPCION EN EL PROCESO DE LECTURA Y ESCRITURA DE LA BASE DE DATOS EL CODIGO
+                        //SE REDIRIGE A LA SECCION CATCH DEL CICLO TRY...CATCH
+                        catch (Exception ex) when (ex is DbUpdateException ||
+                                                   ex is DbUpdateConcurrencyException)
+                        {
+                            Console.WriteLine("\n=================================================");
+                            Console.WriteLine("=================================================");
+                            Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                            Console.WriteLine("=================================================");
+                            Console.WriteLine("=================================================\n");
+                            //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
+                            return BadRequest("\nHa ocurrico un error, intentelo nuevamente");
+                        }
+
+                        //SE TERMINA LA TRANSACCION
+                        await transaction.CommitAsync();
+                    }
+                }
+            }
+            else //=> OBJETO "info" NULO
+            {
+                //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
+                return BadRequest("Objeto vacio O nulo");
+            }
+
+            return Ok();
+        }
+
+        //========================================================================================================
+        //========================================================================================================
+        //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "ModifyItem" RESPONDERA A
+        //A SOLICITUDES HTTP DE TIPO POST
+        // POST mttoapp/consultatableros/createitem
+        [HttpPost("createitem")]
+        public async Task<ActionResult<List<Items>>> CreateItem([FromBody] Items item2create)
+        {
+            //CREAMOS E INICIALIZAMOS LA LISTA QUE CONTENDRA LOS REGISTROS A RETORNAR
+            List<Items> tableroitems = new List<Items>();
+
+            //SE VERIFICA QUE EL OBJETO RECIBIDO EN EL BODY DE LA SOLICITUD NO SE ENCUENTE VACIO
+            if (item2create != null)
+            {
+                //SE INICIA LA TRASACCION CON LA BASE DE DATOS
+                using (var transaction = this._context.Database.BeginTransaction())
+                {
+                    //SE INICIA EL CICLO TRY... CATCH PARA MANEJO DE EXCEPCIONES
+                    //CON LAS TRANSACCIONES CON LA BASE DE DATOS
+                    try
+                    {
+                        //SE AÑADE EL OBJETO "Items"
+                        this._context.Items.Add(item2create);
+                        //SE CAMBIA EL ESTADO DE LA ENTIDAD QUE ESTA SIENDO RETENIDA POR EF
+                        this._context.Entry(item2create).State = EntityState.Added;
+
+                        //SE GUARDAN LOS CAMBIOS.
+                        await this._context.SaveChangesAsync();
+
+                        //SE LISTAN TODOS LOS REGISTROS DE LA TABLA "Items".
+                        List<Items> allitemlist = await this._context.Items.ToListAsync();
+
+                        //INSPECCIONAMOS CADA UNO DE LOS ELEMENTOS DENTRO DE LS LISTA "allitemslist"
+                        foreach (Items x in allitemlist)
+                        {
+                            //SI EL id DEL ELEMENTO INSPECCIONADO ES IGUAL AL ID DEL TABLERO 
+                            //DEL ITEM MODIFICADO
+                            if (x.TableroId == item2create.TableroId)
+                            {
+                                //SI LOS ID COINCIDEN AÑADIMOS EL ELEMENTO A LA LISTA "tableroitems".
+                                tableroitems.Add(x);
+                            }
+                        }
+                    }
+                    //SI OCURRE ALGUNA EXCEPCION EN EL PROCESO DE LECTURA Y ESCRITURA DE LA BASE DE DATOS EL CODIGO
+                    //SE REDIRIGE A LA SECCION CATCH DEL CICLO TRY...CATCH
+                    catch (Exception ex) when (ex is DbUpdateException ||
+                                               ex is DbUpdateConcurrencyException)
+                    {
+                        //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
+                        BadRequest("Ha ocurrido un error");
+                    }
+
+                    //SE TERMINA LA TRANSACCION
+                    await transaction.CommitAsync();
+
+                }
+            }
+            else
+            {
+                //NO SE CONSIGUIO EL OBJETO EN LA BASE DE DATOS 
+                return BadRequest("Ha ocurrido un error");
+            }
+
+            return Ok(tableroitems);
+        }
+
+        //========================================================================================================
+        //========================================================================================================
+        //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "CreateItem" RESPONDERA A
+        //A SOLICITUDES HTTP DE TIPO POST
+        // POST mttoapp/consultatableros/modifyitem
+        [HttpPost("modifyitem")]
+        public async Task<ActionResult<List<Items>>> ModifyItem([FromBody] Items item2modify)
+        {
+            //CREAMOS E INICIALIZAMOS LA LISTA QUE CONTENDRA LOS REGISTROS A RETORNAR
+            List<Items> tableroitems = new List<Items>();
+
+            //SE VERIFICA QUE EL OBJETO RECIBIDO EN EL BODY DE LA SOLICITUD NO SE ENCUENTE VACIO
+            if (item2modify != null)
+            {
+                //SE INICIA LA TRASACCION CON LA BASE DE DATOS
+                using (var transaction = this._context.Database.BeginTransaction())
+                {
+                    //SE INICIA EL CICLO TRY... CATCH PARA MANEJO DE EXCEPCIONES
+                    //CON LAS TRANSACCIONES CON LA BASE DE DATOS
+                    try
+                    {
+                        //SE BUSCA LA INFORMACION DEL ITEM QUE SE DESEA MODIFICAR
+                        var infoitem = await this._context.Items.FindAsync(item2modify.Id);
+
+                        //SE VERIFICA QUE LA INFORMACION DEL OBJETO DEVUELTO DE LA BUSQUEDA NO
+                        //SE ENCUENTRE NULO O VACIO
+                        if (infoitem != null)
+                        {
+                            //SE ENCONTRO EL ITEM EN LA BASE DE DATOS SE DESECHA 
+                            this._context.Entry(infoitem).State = EntityState.Detached;
+
+                            //SE ACTUALIZA EL OBJETO CON LA INFORMACION REGISTRADA EN LA BASE 
+                            //DE DATOS CON LA INFORMACION RECIBIDA
+                            infoitem = item2modify;
+
+                            //SE ACTUALIZA EL REGISRO DENTRO DE LA BASE DE DATOS
+                            this._context.Update(infoitem);
+                            this._context.Entry(infoitem).State = EntityState.Modified;
+
+                            //SE GUARDAN LOS CAMBIOS.
+                            await this._context.SaveChangesAsync();
+
+                            //SE LISTAN TODOS LOS REGISTROS DE LA TABLA "Items".
+                            List<Items> allitemlist = await this._context.Items.ToListAsync();
+
+                            //INSPECCIONAMOS CADA UNO DE LOS ELEMENTOS DENTRO DE LS LISTA "allitemslist"
+                            foreach (Items x in allitemlist)
+                            {
+                                //SI EL id DEL ELEMENTO INSPECCIONADO ES IGUAL AL ID DEL TABLERO 
+                                //DEL ITEM MODIFICADO
+                                if (x.TableroId == item2modify.TableroId)
+                                {
+                                    //SI LOS ID COINCIDEN AÑADIMOS EL ELEMENTO A LA LISTA "tableroitems".
+                                    tableroitems.Add(x);
+                                }
+                            }
+
+                            //CONTAMOS LA CANTIDAD DE ITEMS DE LA LISTA "tableroitems"
+                            if (tableroitems.Count == 0)
+                            {
+                                //SI LA LISTA NO TIENE NINGUN REGISTRO (LO CUAL NO PUEDE SER POSIBLE
+                                //DEBIDO A QUE DEBE EXISTIR MINIMO UN REGISTRO DEBIDO A QUE ESTA
+                                //FUNCION SE ACTIVA AL MOMENTO DE MODIFICAR UN REGISTRO DE ITEM) 
+                                //RETORNAREMOS UN MENSAJE DE ERROR JUNTO CON EL CODIGO DE SOLICITUD 
+                                //400 BAD REQUEST.
+                                return BadRequest("Error");
+                            }
+                        }
+                        else
+                        {
+                            //NO SE CONSIGUIO EL OBJETO EN LA BASE DE DATOS 
+                            return BadRequest("El item que desea modificar no se encuentra registado");
+                        }
+                    }
+                    //SI OCURRE ALGUNA EXCEPCION EN EL PROCESO DE LECTURA Y ESCRITURA DE LA BASE DE DATOS EL CODIGO
+                    //SE REDIRIGE A LA SECCION CATCH DEL CICLO TRY...CATCH
+                    catch (Exception ex) when (ex is DbUpdateException ||
+                                               ex is DbUpdateConcurrencyException)
+                    {
+                        Console.WriteLine("\n=================================================");
+                        Console.WriteLine("=================================================");
+                        Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                        Console.WriteLine("=================================================");
+                        Console.WriteLine("=================================================\n");
+                        //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
+                        BadRequest("Ha ocurrido un error");
+                    }
+
+                    //SE TERMINA LA TRANSACCION
+                    await transaction.CommitAsync();
+                }
+            }
+            else
+            {
+                BadRequest("Ha ocurrido un error, intente nuevamente");
+            }
+            return Ok(tableroitems);
+        }
+
+        //========================================================================================================
+        //========================================================================================================
+        //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "DliminarItem" RESPONDERA A
+        //A SOLICITUDES HTTP DE TIPO POST
+        // POST mttoapp/consultatableros/deleteitem
+        [HttpPost("deleteitem")]
+        public async Task<ActionResult<List<Items>>> DeleteItem([FromBody] Items item2delete)
+        {
+            List<Items> tableroitems = new List<Items>();
+
+            //SE VERIFICA QUE EL OBJETO RECIBIDO EN EL BODY DE LA SOLICITUD NO SE ENCUENTE VACIO
+            if (item2delete != null)
+            {
+                //SE INICIA LA TRASACCION CON LA BASE DE DATOS
+                using (var transaction = this._context.Database.BeginTransaction())
+                {
+                    //SE INICIA EL CICLO TRY... CATCH PARA MANEJO DE EXCEPCIONES
+                    //CON LAS TRANSACCIONES CON LA BASE DE DATOS
+                    try
+                    {
+                        //SE BUSCA LA INFORMACION DEL ITEM QUE SE DESEA MODIFICAR
+                        var infoitem = await this._context.Items.FindAsync(item2delete.Id);
+                        //SE VERIFICA QUE LA INFORMACION DEL OBJETO DEVUELTO DE LA BUSQUEDA NO
+                        //SE ENCUENTRE NULO O VACIO
+                        if (infoitem != null)
+                        {
+                            //SE ENCONTRO EL ITEM EN LA BASE DE DATOS SE DESECHA 
+                            this._context.Entry(infoitem).State = EntityState.Detached;
+
+                            //SE ACTUALIZA EL REGISRO DENTRO DE LA BASE DE DATOS
+                            this._context.Remove(infoitem);
+
+                            //SE GUARDAN LOS CAMBIOS.
+                            await this._context.SaveChangesAsync();
+
+                            //SE LISTAN TODOS LOS REGISTROS DE LA TABLA "Items".
+                            List<Items> allitemlist = await this._context.Items.ToListAsync();
+
+                            //INSPECCIONAMOS CADA UNO DE LOS ELEMENTOS DENTRO DE LS LISTA "allitemslist"
+                            foreach (Items x in allitemlist)
+                            {
+                                //SI EL id DEL ELEMENTO INSPECCIONADO ES IGUAL AL ID DEL TABLERO 
+                                //DEL ITEM MODIFICADO
+                                if (x.TableroId == item2delete.TableroId)
+                                {
+                                    //SI LOS ID COINCIDEN AÑADIMOS EL ELEMENTO A LA LISTA "tableroitems".
+                                    tableroitems.Add(x);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //NO SE CONSIGUIO EL OBJETO EN LA BASE DE DATOS 
+                            return BadRequest("El item que desea modificar no se encuentra registado");
+                        }
+                    }
+                    //SI OCURRE ALGUNA EXCEPCION EN EL PROCESO DE LECTURA Y ESCRITURA DE LA BASE DE DATOS EL CODIGO
+                    //SE REDIRIGE A LA SECCION CATCH DEL CICLO TRY...CATCH
+                    catch (Exception ex) when (ex is DbUpdateException ||
+                                               ex is DbUpdateConcurrencyException)
+                    {
+                        Console.WriteLine("\n=================================================");
+                        Console.WriteLine("=================================================");
+                        Console.WriteLine("\nHa ocurrico un error:\n" + ex.Message.ToString());
+                        Console.WriteLine("=================================================");
+                        Console.WriteLine("=================================================\n");
+                        //SE RETONA LA RESPUESTA "BadRequest" JUNTO CON UN MENSAJE INFORMANDO SOBRE EL ERROR
+                        BadRequest("Ha ocurrido un error");
+                    }
+
+                    //SE TERMINA LA TRANSACCION
+                    await transaction.CommitAsync();
+
+                }
+            }
+            return Ok(tableroitems);
+        }
     }
 }
