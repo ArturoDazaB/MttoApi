@@ -297,7 +297,11 @@ namespace MttoApi.Controllers
                                 (this._context.Tableros.First(x => x.SapId.ToLower() == info.SapId.ToLower())))
                             {
                                 //CREAMOS EL OBJETO QUE RECIBIRA TODA LA INFORMACION RELACIONADA CON EL TABLERO
-                                Tableros tableroinfo = await this._context.Tableros.FindAsync(info.TableroId);
+                                Tableros tableroinfo = 
+                                    await this._context.Tableros.FirstAsync(x => x.TableroId.ToLower() == info.TableroId.ToLower());
+
+                                //SE ACTUALIZA EL REGISRO DENTRO DE LA BASE DE DATOS
+                                this._context.Tableros.Remove(tableroinfo);
 
                                 //SE ENCONTRO EL TABLERO EN LA BASE DE DATOS SE DESECHA 
                                 this._context.Entry(tableroinfo).State = EntityState.Deleted;

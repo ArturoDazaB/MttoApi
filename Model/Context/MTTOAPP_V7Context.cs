@@ -28,7 +28,7 @@ namespace MttoApi.Model.Context
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                //warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseMySql("server=127.0.0.1;port=3306;database=MTTOAPP_V7;uid=CarlosDaza;pwd=*122900900625*", x => x.ServerVersion("8.0.23-mysql"));
             }
         }
