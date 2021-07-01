@@ -1,9 +1,13 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Text;
 
 namespace MttoApi
 {
@@ -52,6 +56,29 @@ namespace MttoApi
             //SE CONFIGURA LA CONEXION A LA BASE DE DATOS A LA CLASE CONTEXTO
             services.AddDbContext<MttoApi.Model.Context.MTTOAPP_V7Context>(op => op.UseMySql(Configuration.GetConnectionString("MTTOAPPDB7")));
             services.AddControllers();
+
+            var tokenKey = Configuration.GetValue<string>("SecretKey");
+            var skey = Encoding.ASCII.GetBytes(tokenKey);
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(skey),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero,
+                };
+            });
+
+            services.AddSingleton<IJWTAuthenticationManager>(new JWTAuthenticationManager(tokenKey));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,6 +93,8 @@ namespace MttoApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

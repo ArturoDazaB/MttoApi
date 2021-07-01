@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MttoApi.Model;
 using MttoApi.Model.Context;
@@ -6,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,6 +18,7 @@ namespace MttoApi.Controllers
     //===================================================================================================
     //SE AÑADE A LA CLASE EL ROUTING "ApiController" LA CUAL IDENTIFICARA A LA CLASE "LogInController"
     //COMO UN CONTROLADOR DEL WEB API.
+    [Authorize]
     [ApiController]
 
     //SE AÑADE A LA CLASE EL ROUTING "Route" JUNTO CON LA DIRECCION A LA CUAL SE DEBE LLAMAR PARA PODER
@@ -26,14 +30,25 @@ namespace MttoApi.Controllers
         //SE CREA UNA VARIABLE LOCAL DEL TIPO "Context" LA CUAL FUNCIONA COMO LA CLASE
         //QUE MAPEARA LA INFORMACION PARA LECTURA Y ESCRITURA EN LA BASE DE DATOS
         private readonly MTTOAPP_V7Context _context;
+        private readonly IJWTAuthenticationManager jwtauthenticationManager;
 
         //===============================================================================================
         //===============================================================================================
         //CONSTRUCTOR
-        public LogInController(MTTOAPP_V7Context context)
+        public LogInController(MTTOAPP_V7Context context, IJWTAuthenticationManager jwtauthenticationManager)
         {
             //SE INICIALIZA LA VARIABLE LOCAL
             this._context = context;
+            this.jwtauthenticationManager = jwtauthenticationManager;
+        }
+
+        //========================================================================================================
+        //========================================================================================================
+        //FUNCION DE PRUEBA
+        [HttpGet]
+        public ActionResult<string> test()
+        {
+            return Ok("REQUEST RECIBIDO CON EXITO");
         }
 
         //========================================================================================================
@@ -43,7 +58,7 @@ namespace MttoApi.Controllers
         //SE ADICIONA EL ROUTING "HttpGet" LO CUAL INDICARA QUE LA FUNCION "Get" RESPONDERA A
         //A SOLICITUDES HTTP DE TIPO GET
         [HttpPost]
-
+        [AllowAnonymous]
         //--------------------------------------------------------------------------------------------------
         //FUNCION QUE ACTUALIZARA LA INFORMACION DE UN USUARIO CUANDO SE REALICE EL LLAMADO DESDE
         //LA PAGINA "PaginaConsultaTableros" DE LA APLICACION "Mtto App". EN ESTA FUNCION SE RECIBEN
@@ -125,17 +140,21 @@ namespace MttoApi.Controllers
                             this._context.Entry(solicitudweb).State = EntityState.Added;
 
                             //--------------------------------------------------------------------------------------------
+                            //SE RETORNA EL TOKEN GENERADO LUEGO DE LA AUTENTICACION
+                            string token = jwtauthenticationManager.Authenticate(request);
+
+                            //--------------------------------------------------------------------------------------------
                             //SE EVALUA CUANTOS REGISTROS SE ACUMULARON EN LA LISTA "lista"
                             //MAS DE UN REGISTRO
                             if (lista.Count > 0)
                             {
                                 //SE ENVIA LA INFORMACION DEL USUARIO Y EL PENULTIMO REGISTRO (ULTIMA CONEXION PREVIA A LA ACTUAL)
-                                response = LogInResponse.NewLogInResponse(fullinfo, lista[lista.Count - 1].UltimaConexion1);
+                                response = LogInResponse.NewLogInResponse(fullinfo, lista[lista.Count - 1].UltimaConexion1, token);
                             }
                             if (lista.Count == 0)
                             {
                                 //SE ENVIA LA INFORMACION DEL USUARIO Y EL ULTIMO REGISTRO (CONEXION ACTUAL)
-                                response = LogInResponse.NewLogInResponse(fullinfo, ultimaconexion.UltimaConexion1);
+                                response = LogInResponse.NewLogInResponse(fullinfo, ultimaconexion.UltimaConexion1, token);
                             }
                             //--------------------------------------------------------------------------------------------
                             //SE GUARDAN LOS CAMBIOS REALIZADOS SOBRE LA BASE DE DATOS

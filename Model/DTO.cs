@@ -119,17 +119,21 @@ namespace MttoApi.Model
                                                             //   DEL USUARIO QUE DESEA INGRESAR A LA PLATAFORMA
         public DateTime UltimaFechaIngreso { get; set; }
 
+        public string Token { get; set; }
+
         //==========================================================================================
         //==========================================================================================
         //FUNCION QUE RETORNA UN OBJETO DE TIPO "LogInResponse"
         public static LogInResponse NewLogInResponse(InformacionGeneral info,   //SE RECIBE UN OBJETO "InformacionGeneral"
-                                                     DateTime ultimoingreso)    //SE RECIBE UN OBJETO "Datetime"
+                                                     DateTime ultimoingreso,    //SE RECIBE UN OBJETO "Datetime"
+                                                     string token)              //SE RECIBE UNA CADENA DE TEXTO CON EL TOKEN DE ACCESO
         {
             //SE RETORNA UN OBJETO DE TIPO "LogInResponse"
             return new LogInResponse()
             {
                 UserInfo = info,
                 UltimaFechaIngreso = ultimoingreso,
+                Token = token,
             };
         }
     }

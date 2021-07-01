@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MttoApi.Model;
 using MttoApi.Model.Context;
@@ -15,6 +16,7 @@ namespace MttoApi.Controllers
     //===================================================================================================
     //SE AÑADE A LA CLASE EL ROUTING "ApiController" LA CUAL IDENTIFICARA A LA CLASE "ConsultaTablerosCon-
     //troller" COMO UN CONTROLADOR DEL WEB API.
+    [Authorize]
     [ApiController]
 
     //SE AÑADE A LA CLASE EL ROUTING "Route" JUNTO CON LA DIRECCION A LA CUAL SE DEBE LLAMAR PARA PODER
@@ -155,7 +157,6 @@ namespace MttoApi.Controllers
         //SE ADICIONA EL ROUTING "HttpPost" LO CUAL INDICARA QUE LA FUNCION "ConsultaTableroSapId" RESPONDERA A
         //A SOLICITUDES HTTP DE TIPO POST
         [HttpPost]
-
         //SE ADICIONA EL ROUTING "Route" JUNTO A DIRECCION A ADICIONAR PARA REALIZAR EL LLAMADO A ESTA
         //FUNCION MEDIANTE UNA SOLICITUD HTTP. EJ:
         //https:/<ipadress>:<port>/mttoapp/consultatableros/sapid <=>
