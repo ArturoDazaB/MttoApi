@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MttoApi.Model.Context;
 
 namespace MttoApi.Controllers
 {
     [Route("mttoapp/personas")]
+    [Authorize]
     [ApiController]
     public class PersonasController : ControllerBase
     {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MttoApi.Model;
 using MttoApi.Model.Context;
@@ -16,6 +17,7 @@ namespace MttoApi.Controllers
     //SE AÑADE A LA CLASE EL ROUTING "ApiController" LA CUAL IDENTIFICARA A LA CLASE "RegistroTableros-
     //Controller" COMO UN CONTROLADOR DEL WEB API.
     [ApiController]
+    [Authorize]
 
     //SE AÑADE A LA CLASE EL ROUTING "Route" JUNTO CON LA DIRECCION A LA CUAL SE DEBE LLAMAR PARA PODER
     //ACCESO A LA CLASE CONTROLLADOR. EJ:
