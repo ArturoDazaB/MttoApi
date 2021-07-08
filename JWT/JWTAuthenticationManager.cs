@@ -49,7 +49,7 @@ namespace MttoApi
                          new Claim(ClaimTypes.Name, request.Username),
                  }),
                 //EXPIRES: GETs OR SETs THE VALUE OF THE "expiration" claim.
-                Expires = DateTime.UtcNow.AddMinutes(2),
+                Expires = DateTime.UtcNow.AddHours(1),
 
                 //SIGNINGCREDENTIALS: GETs OR SETs THE "SigningCredentials" USED TO CREATE
                 //A SECURITY TOKEN.
