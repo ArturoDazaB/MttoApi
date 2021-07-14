@@ -1,0 +1,3 @@
+<h1 class="code-line" data-line-start=0 data-line-end=1 ><a id="MTTO_API_0"></a>MTTO API</h1>
+<h2 class="code-line" data-line-start=1 data-line-end=2 ><a id="_Servicio_web_REST_Api__1"></a><em>Servicio web REST Api</em></h2>
+<p class="has-line-data" data-line-start="3" data-line-end="4">El servicio web programado e implementado por el departamento de digitalización industrial, denominada inicialmente “MTTO Api”, es una API (Interfaz de programación de aplicaciones) de tipo REST (Representational State Transfer o Transferencia de estado representacional) orientado a la transferencia de datos e información manipulada por la aplicación “MTTO App”.</p>
