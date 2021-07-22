@@ -57,9 +57,12 @@ namespace MttoApi
             services.AddDbContext<MttoApi.Model.Context.MTTOAPP_V7Context>(op => op.UseMySql(Configuration.GetConnectionString("MTTOAPPDB7")));
             services.AddControllers();
 
+            //SE RECIBE LA CLAVE SECRETA PARA LA CREACION DE TOKENS (DICHA CLAVE PUEDE SER CONFIGUADA EN "appsettings.json")
             var tokenKey = Configuration.GetValue<string>("SecretKey");
+            //SE CREA UNA VARIABLE QUE CONTENDRA LA MISMA CLAVE SECRETA PERO CONVERTIDA A UN ARRAY (ARREGLO DE BYTES)
             var skey = Encoding.ASCII.GetBytes(tokenKey);
 
+            //SE ESPECIFICA EL PROTOCOLO DE AUTENTICACION QUE UTILIZARA EL SERVICIO WEB PARA 
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -94,6 +97,7 @@ namespace MttoApi
 
             app.UseRouting();
 
+            //SE ESPECIFICA QUE EL API WEB UTILIZARA AUTENTICACION PARA LA COMUNICACION
             app.UseAuthentication();
 
             app.UseAuthorization();

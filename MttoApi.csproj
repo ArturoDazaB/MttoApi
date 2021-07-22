@@ -4,6 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <SignAssembly>false</SignAssembly>
     <UserSecretsId>8e1e4f42-59f2-4dd1-a3a6-268c69955ea2</UserSecretsId>
+    <Version>1.0.4</Version>
   </PropertyGroup>
 
   <ItemGroup>
